@@ -1,0 +1,161 @@
+﻿<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salasilah Keluarga</title>
+  <meta name="theme-color" content="#4f8a6a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app" id="app" data-theme="light">
+    <header class="topbar">
+      <div class="brand">
+        <p class="kicker">Salasilah Keluarga</p>
+        <h1>Paparan Generasi Keluarga</h1>
+        <p class="subtitle">Semua ahli keluarga dalam satu pandangan yang jelas, mudah, dan mesra.</p>
+        <div class="brand-minimap-wrap">
+          <div class="minimap minimap-brand" id="minimap">
+            <canvas id="minimap-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <label for="search" class="label">Carian nama</label>
+          <div class="search-row">
+            <input id="search" type="search" placeholder="Cari nama ahli keluarga..." />
+            <button id="search-go" class="btn ghost small">Cari & Fokus</button>
+          </div>
+          <div id="search-results" class="search-results" aria-live="polite"></div>
+        </div>
+        <div class="control-group">
+          <label for="branch-filter" class="label">Tapis cabang</label>
+          <select id="branch-filter" class="select"></select>
+        </div>
+        <div class="control-row">
+          <button id="zoom-in" class="btn">Zoom +</button>
+          <button id="zoom-out" class="btn">Zoom -</button>
+          <button id="zoom-reset" class="btn ghost">Reset</button>
+          <button id="zoom-fit" class="btn ghost">Fit Skrin</button>
+        </div>
+        <div class="control-row">
+          <button id="focus-elders" class="btn ghost">Fokus Tok/Wan</button>
+          <button id="back-top" class="btn ghost">Kembali Atas</button>
+          <button id="path-toggle" class="btn ghost">Laluan Saya</button>
+          <button id="compact-toggle" class="btn ghost">Mode Ringkas</button>
+          <button id="toggle-theme" class="btn ghost">Light / Dark</button>
+          <button id="lang-toggle" class="btn ghost">BM / EN</button>
+          <button id="view-toggle" class="btn ghost">Lihat Timeline</button>
+          <button id="export-png" class="btn ghost">Export PNG</button>
+          <button id="export-pdf" class="btn ghost">Export PDF</button>
+          <button id="export-json" class="btn ghost">Export JSON</button>
+          <button id="import-json" class="btn ghost">Import JSON</button>
+          <button id="validate-data" class="btn ghost">Validasi Data</button>
+        </div>
+        <input id="import-json-file" type="file" accept="application/json" hidden />
+        <div id="validate-output" class="validate-output" aria-live="polite"></div>
+        <div class="control-row">
+          <button id="editor-toggle" class="btn ghost">Editor Data</button>
+        </div>
+        <div class="control-group">
+          <label class="label">Generasi (Collapse/Expand)</label>
+          <div id="generation-controls" class="generation-controls"></div>
+        </div>
+      </div>
+    </header>
+
+    <section class="legend">
+      <div class="legend-item">
+        <span class="legend-dot"></span>
+        <span>Garis sambungan ibu bapa → anak</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-couple"></span>
+        <span>Pasangan ditunjukkan secara selari</span>
+      </div>
+    </section>
+
+    <main class="tree-section">
+      <div class="content-grid">
+        <div class="tree-wrap" id="tree-wrap">
+          <div class="tree-zoom" id="tree-zoom">
+            <svg class="tree-lines" id="tree-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="tree-canvas" id="tree-canvas" aria-live="polite"></div>
+          </div>
+        </div>
+        <aside class="story-panel" id="story-panel">
+          <h2 id="story-title">Cerita Keluarga</h2>
+          <p id="story-body">Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.</p>
+        </aside>
+        <aside class="editor-panel" id="editor-panel" hidden>
+          <h2>Editor Ahli Keluarga</h2>
+          <div class="editor-grid">
+            <label class="label" for="editor-person">Pilih ahli</label>
+            <select id="editor-person" class="select"></select>
+
+            <label class="label" for="editor-name">Nama penuh</label>
+            <input id="editor-name" class="input" type="text" />
+
+            <label class="label" for="editor-relation">Hubungan</label>
+            <input id="editor-relation" class="input" type="text" />
+
+            <label class="label" for="editor-birth">Tarikh lahir</label>
+            <input id="editor-birth" class="input" type="text" />
+
+            <label class="label" for="editor-death">Tarikh meninggal</label>
+            <input id="editor-death" class="input" type="text" />
+
+            <label class="label" for="editor-photo">URL gambar</label>
+            <input id="editor-photo" class="input" type="text" />
+
+            <label class="label" for="editor-note">Nota ringkas</label>
+            <textarea id="editor-note" class="textarea"></textarea>
+
+            <label class="label" for="editor-story">Cerita panjang</label>
+            <textarea id="editor-story" class="textarea"></textarea>
+
+            <label class="label" for="editor-parent">Tambah sebagai anak kepada pasangan</label>
+            <select id="editor-parent" class="select"></select>
+
+            <label class="label" for="editor-partner">Tambah pasangan kepada ahli dipilih</label>
+            <select id="editor-partner" class="select"></select>
+
+            <label class="label">
+              <input id="editor-self" type="checkbox" />
+              Tandakan sebagai “Saya”
+            </label>
+          </div>
+          <div class="editor-actions">
+            <button id="editor-save" class="btn">Simpan</button>
+            <button id="editor-add" class="btn ghost">Tambah Ahli Baru</button>
+            <button id="editor-link-partner" class="btn ghost">Bina Pasangan</button>
+            <button id="editor-delete" class="btn danger">Padam</button>
+          </div>
+          <p class="editor-hint">Data disimpan di pelayar (localStorage). Guna Export PNG/PDF untuk kongsi, atau kemas kini data.json bila perlu.</p>
+        </aside>
+      </div>
+      <section class="timeline-section" id="timeline-section" hidden>
+        <h2>Timeline Keluarga</h2>
+        <div class="timeline-list" id="timeline-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="person-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close="true">Tutup</button>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
