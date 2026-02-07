@@ -61,19 +61,19 @@
           <div class="control-group mobile-select">
             <label class="label" id="mobile-action-label" for="mobile-action" data-i18n="mobileActions">Aksi lain</label>
             <select id="mobile-action" class="select">
-              <option value="">Pilih aksi...</option>
-              <option value="zoom-reset">Reset</option>
-              <option value="focus-elders">Fokus Tok/Wan</option>
-              <option value="back-top">Kembali Atas</option>
-              <option value="path-toggle">Laluan Saya</option>
-              <option value="compact-toggle">Mode Ringkas</option>
-              <option value="view-toggle">Lihat Timeline</option>
-              <option value="export-png">Export PNG</option>
-              <option value="export-pdf">Export PDF</option>
-              <option value="validate-data">Validasi Data</option>
-              <option value="editor-toggle">Editor Data</option>
+              <option value="" data-i18n="mobilePick">Pilih aksi...</option>
+              <option value="zoom-reset" data-i18n="zoomReset">Reset</option>
+              <option value="focus-elders" data-i18n="focusElders">Fokus Tok/Wan</option>
+              <option value="back-top" data-i18n="backTop">Kembali Atas</option>
+              <option value="path-toggle" data-i18n="pathOff">Laluan Saya</option>
+              <option value="compact-toggle" data-i18n="compactOff">Mode Ringkas</option>
+              <option value="view-toggle" data-i18n="viewTimeline">Lihat Timeline</option>
+              <option value="export-png" data-i18n="exportPng">Export PNG</option>
+              <option value="export-pdf" data-i18n="exportPdf">Export PDF</option>
+              <option value="validate-data" data-i18n="validateData">Validasi Data</option>
+              <option value="editor-toggle" data-i18n="editorToggle">Editor Data</option>
             </select>
-            <button id="mobile-action-go" class="btn ghost" disabled>OK</button>
+            <button id="mobile-action-go" class="btn ghost" disabled data-i18n="okBtn">OK</button>
           </div>
         </div>
         <div class="control-row actions-zoom">
@@ -100,7 +100,7 @@
             <div id="generation-controls" class="generation-controls"></div>
           </div>
           <div class="export-actions">
-            <button id="export-png" class="btn ghost" title="Export PNG" aria-label="Export PNG">
+          <button id="export-png" class="btn ghost" data-i18n-title="exportPng" data-i18n-aria="exportPng" title="Export PNG" aria-label="Export PNG">
               <span class="btn-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img" focusable="false">
                   <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.6"/>
@@ -111,7 +111,7 @@
               </span>
               <span class="sr-only" data-i18n="exportPng">Export PNG</span>
             </button>
-            <button id="export-pdf" class="btn ghost" title="Export PDF" aria-label="Export PDF">
+          <button id="export-pdf" class="btn ghost" data-i18n-title="exportPdf" data-i18n-aria="exportPdf" title="Export PDF" aria-label="Export PDF">
               <span class="btn-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img" focusable="false">
                   <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.6"/>
@@ -147,8 +147,52 @@
           </div>
         </div>
         <aside class="story-panel" id="story-panel">
-          <h2 id="story-title">Cerita Keluarga</h2>
-          <p id="story-body">Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.</p>
+          <div class="story-head">
+            <h2 id="story-title">Cerita Keluarga</h2>
+            <div class="story-actions">
+              <button id="panel-edit" class="btn ghost small" data-i18n="modalEdit">Edit</button>
+              <button id="panel-delete" class="btn danger small" data-i18n="modalDelete">Padam</button>
+            </div>
+          </div>
+          <div id="story-content" class="story-content">
+            <p id="story-body">Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.</p>
+          </div>
+          <form class="story-edit" id="panel-edit-form" hidden>
+            <label data-i18n="modalFullName">Nama penuh</label>
+            <input class="input" id="panel-edit-name" />
+            <label data-i18n="firstNameLabel">Nama pertama</label>
+            <input class="input" id="panel-edit-first" readonly />
+            <label data-i18n="lastNameLabel">Nama akhir</label>
+            <input class="input" id="panel-edit-last" readonly />
+            <div class="radio-group">
+              <span class="label" data-i18n="genderLabel">Jantina</span>
+              <label class="radio">
+                <input type="radio" name="panel-gender" value="male" disabled />
+                <span data-i18n="genderMale">Lelaki</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="panel-gender" value="female" disabled />
+                <span data-i18n="genderFemale">Perempuan</span>
+              </label>
+            </div>
+            <label data-i18n="modalRelation">Hubungan</label>
+            <input class="input" id="panel-edit-relation" />
+            <label data-i18n="modalBirth">Tarikh lahir</label>
+            <input class="input" id="panel-edit-birth" type="date" />
+            <label data-i18n="modalDeath">Tarikh meninggal</label>
+            <input class="input" id="panel-edit-death" type="date" />
+            <label data-i18n="modalImage">URL gambar</label>
+            <input class="input" id="panel-edit-photo" />
+            <input class="input" id="panel-edit-photo-file" type="file" accept="image/*" />
+            <label data-i18n="modalShortNote">Nota ringkas</label>
+            <textarea class="textarea" id="panel-edit-note"></textarea>
+            <label data-i18n="modalLongStory">Cerita panjang</label>
+            <textarea class="textarea" id="panel-edit-story"></textarea>
+            <div class="story-edit-actions">
+              <button type="button" class="btn ghost" id="panel-cancel" data-i18n="modalCancel">Batal</button>
+              <button type="submit" class="btn" data-i18n="modalSave">Simpan</button>
+            </div>
+          </form>
         </aside>
         <aside class="editor-panel" id="editor-panel" hidden>
           <h2 data-i18n="editorTitle">Editor Ahli Keluarga</h2>

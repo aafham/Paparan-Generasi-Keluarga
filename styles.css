@@ -169,6 +169,7 @@ body[data-theme="dark"] {
   display: grid;
   gap: 8px;
   align-items: flex-end;
+  pointer-events: none;
 }
 
 .minimap-label {
@@ -221,6 +222,13 @@ body[data-theme="dark"] {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.brand-minimap-wrap .minimap,
+.brand-minimap-wrap .minimap-label,
+.brand-minimap-wrap .minimap-hint,
+.brand-minimap-wrap .minimap-handle {
+  pointer-events: auto;
 }
 
 .controls {
@@ -557,6 +565,69 @@ input[type="file"].input {
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.story-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.story-actions {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.story-content {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.story-detail {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.story-detail strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.story-edit {
+  display: grid;
+  gap: 10px;
+}
+
+.radio-group {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 2px;
+}
+
+.radio {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.radio input {
+  accent-color: var(--primary);
+}
+
+.story-edit-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .editor-panel {
   background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg-soft-2) 100%);
   border-radius: var(--radius);
@@ -699,6 +770,7 @@ body.compact .person-name {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   animation: cardIn 0.35s ease both;
   animation-delay: var(--enter-delay, 0ms);
+  position: relative;
 }
 
 .person-card.deceased {
@@ -737,6 +809,8 @@ body.compact .person-name {
   font-weight: 600;
   box-shadow: 0 0 0 3px var(--gen-ring, var(--primary));
   flex-shrink: 0;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
 }
 
 .avatar img {
@@ -744,6 +818,7 @@ body.compact .person-name {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
+  display: block;
 }
 
 .person-name {
@@ -759,6 +834,9 @@ body.compact .person-name {
   background: rgba(0, 0, 0, 0.08);
   color: var(--muted);
   margin-top: 4px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
 }
 
 .person-meta {
@@ -871,11 +949,7 @@ body.compact .person-name {
 }
 
 .modal {
-  position: fixed;
-  inset: 0;
   display: none;
-  place-items: center;
-  z-index: 50;
 }
 
 .modal.active {
