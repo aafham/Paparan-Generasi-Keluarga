@@ -36,11 +36,11 @@ const editorRelation = document.getElementById("editor-relation");
 const editorBirth = document.getElementById("editor-birth");
 const editorDeath = document.getElementById("editor-death");
 const editorPhoto = document.getElementById("editor-photo");
+const editorPhotoFile = document.getElementById("editor-photo-file");
 const editorNote = document.getElementById("editor-note");
 const editorStory = document.getElementById("editor-story");
 const editorParent = document.getElementById("editor-parent");
 const editorPartner = document.getElementById("editor-partner");
-const editorSelf = document.getElementById("editor-self");
 const editorSave = document.getElementById("editor-save");
 const editorAdd = document.getElementById("editor-add");
 const editorLinkPartner = document.getElementById("editor-link-partner");
@@ -51,6 +51,12 @@ const backTopBtn = document.getElementById("back-top");
 const pathToggleBtn = document.getElementById("path-toggle");
 const compactToggleBtn = document.getElementById("compact-toggle");
 const langToggleBtn = document.getElementById("lang-toggle");
+const mobileActionSelect = document.getElementById("mobile-action");
+const mobileActionLabel = document.getElementById("mobile-action-label");
+const mobileActionGo = document.getElementById("mobile-action-go");
+const mobileQuickZoomIn = document.getElementById("m-zoom-in");
+const mobileQuickZoomOut = document.getElementById("m-zoom-out");
+const mobileQuickZoomFit = document.getElementById("m-zoom-fit");
 
 const layoutConfig = {
   cardWidth: 220,
@@ -91,6 +97,11 @@ let pathMode = false;
 const prefs = loadPrefs();
 const i18n = {
   ms: {
+    appKicker: "Salasilah Keluarga",
+    appTitle: "Paparan Generasi Keluarga",
+    appSubtitle: "Semua ahli keluarga dalam satu pandangan yang jelas, mudah, dan mesra.",
+    searchLabel: "Carian nama",
+    searchGo: "Cari & Fokus",
     viewTimeline: "Lihat Timeline",
     viewTree: "Lihat Tree",
     compactOn: "Mode Penuh",
@@ -100,11 +111,91 @@ const i18n = {
     focusElders: "Fokus Tok/Wan",
     backTop: "Kembali Atas",
     fit: "Fit Skrin",
+    zoomIn: "Zoom +",
+    zoomOut: "Zoom -",
+    zoomReset: "Reset",
+    themeToggle: "Cerah / Gelap",
+    langToggle: "BM / EN",
+    exportPng: "Export PNG",
+    exportPdf: "Export PDF",
+    exportJson: "Export JSON",
+    importJson: "Import JSON",
+    validateData: "Validasi Data",
+    editorToggle: "Editor Data",
+    branchLabel: "Tapis cabang",
+    generationLabel: "Generasi (Lipat/Buka)",
+    legendParentChild: "Garis sambungan ibu bapa \u2192 anak",
+    legendCouple: "Pasangan ditunjukkan secara selari",
+    storyTitle: "Cerita Keluarga",
+    storyEmpty: "Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.",
+    editorTitle: "Editor Ahli Keluarga",
+    editorPersonLabel: "Pilih ahli",
+    editorNameLabel: "Nama penuh",
+    editorRelationLabel: "Hubungan",
+    editorBirthLabel: "Tarikh lahir",
+    editorDeathLabel: "Tarikh meninggal",
+    editorPhotoLabel: "URL gambar",
+    editorNoteLabel: "Nota ringkas",
+    editorStoryLabel: "Cerita panjang",
+    editorParentLabel: "Tambah sebagai anak kepada pasangan",
+    editorPartnerLabel: "Tambah pasangan kepada ahli dipilih",
+    editorSave: "Simpan",
+    editorAdd: "Tambah Ahli Baru",
+    editorLinkPartner: "Bina Pasangan",
+    editorDelete: "Padam",
+    editorHint: "Data disimpan di pelayar (localStorage). Guna Export PNG/PDF untuk kongsi, atau kemas kini data.json bila perlu.",
+    timelineTitle: "Timeline Keluarga",
+    modalClose: "Tutup",
+    modalEdit: "Edit",
+    modalRelation: "Hubungan",
+    modalBirth: "Tarikh lahir",
+    modalDeath: "Tarikh meninggal",
+    modalNote: "Catatan",
+    modalStory: "Cerita",
+    modalFullName: "Nama penuh",
+    modalImage: "URL gambar",
+    modalShortNote: "Nota ringkas",
+    modalLongStory: "Cerita panjang",
+    modalCancel: "Batal",
+    modalSave: "Simpan",
+    legendGeneration: "Generasi",
+    branchAll: "Semua cabang",
+    branchName: "Cabang {n}",
+    parentNone: "Tiada (jadi root)",
+    genAll: "Tunjuk Semua",
+    searchNone: "Tiada nama ditemui",
+    datesUnknown: "Tarikh tidak dinyatakan",
+    bornPrefix: "Lahir: ",
+    diedPrefix: "Meninggal: ",
+    loadFail: "Gagal memuatkan data keluarga.",
+    importFail: "Import gagal: format JSON tidak sah.",
+    deleteBlocked: "Tidak boleh padam kerana masih terikat dengan pasangan/anak. Padam hubungan dahulu.",
+    partnerExists: "Pasangan ini sudah wujud.",
+    exportDate: "Tarikh eksport: {date}",
+    exportPngFail: "Gagal export PNG: library tidak tersedia.",
+    exportPdfFail: "Gagal export PDF: library tidak tersedia.",
+    minimapTitle: "Minimap",
+    minimapHint: "Klik pada kotak kecil untuk lompat lokasi. Kotak putih menunjukkan kawasan semasa.",
+    errStructure: "Struktur utama mesti ada `people` dan `unions`.",
+    errPersonNoId: "Ada ahli tanpa id.",
+    errDuplicateId: "ID berulang: {id}",
+    errUnionNoId: "Ada union tanpa id.",
+    errPartner1Missing: "Partner1 tidak wujud: {id}",
+    errPartner2Missing: "Partner2 tidak wujud: {id}",
+    errChildMissing: "Anak tidak wujud: {id}",
+    errChildMultiple: "Anak {id} terikat pada lebih satu union ({unions}).",
+    mobileActions: "Aksi lain",
+    mobilePick: "Pilih aksi...",
     validateOk: "Data sah. Tiada ralat ditemui.",
     validateErr: "Ralat data ditemui:",
     searchPlaceholder: "Cari nama ahli keluarga..."
   },
   en: {
+    appKicker: "Family Lineage",
+    appTitle: "Family Generation View",
+    appSubtitle: "All family members in one clear, simple, friendly view.",
+    searchLabel: "Name search",
+    searchGo: "Search & Focus",
     viewTimeline: "Timeline View",
     viewTree: "Tree View",
     compactOn: "Full Mode",
@@ -114,11 +205,90 @@ const i18n = {
     focusElders: "Focus Elders",
     backTop: "Back Top",
     fit: "Fit Screen",
+    zoomIn: "Zoom +",
+    zoomOut: "Zoom -",
+    zoomReset: "Reset",
+    themeToggle: "Light / Dark",
+    langToggle: "EN / BM",
+    exportPng: "Export PNG",
+    exportPdf: "Export PDF",
+    exportJson: "Export JSON",
+    importJson: "Import JSON",
+    validateData: "Validate Data",
+    editorToggle: "Data Editor",
+    branchLabel: "Filter branch",
+    generationLabel: "Generation (Collapse/Expand)",
+    legendParentChild: "Parent \u2192 child connection",
+    legendCouple: "Partners shown side by side",
+    storyTitle: "Family Story",
+    storyEmpty: "Tap any family member to see detailed notes.",
+    editorTitle: "Family Editor",
+    editorPersonLabel: "Select member",
+    editorNameLabel: "Full name",
+    editorRelationLabel: "Relation",
+    editorBirthLabel: "Birth date",
+    editorDeathLabel: "Death date",
+    editorPhotoLabel: "Image URL",
+    editorNoteLabel: "Short note",
+    editorStoryLabel: "Long story",
+    editorParentLabel: "Add as child to couple",
+    editorPartnerLabel: "Add partner to selected member",
+    editorSave: "Save",
+    editorAdd: "Add New Member",
+    editorLinkPartner: "Link Partner",
+    editorDelete: "Delete",
+    editorHint: "Data is stored in the browser (localStorage). Use Export PNG/PDF to share, or update data.json when needed.",
+    timelineTitle: "Family Timeline",
+    modalClose: "Close",
+    modalEdit: "Edit",
+    modalRelation: "Relation",
+    modalBirth: "Birth date",
+    modalDeath: "Death date",
+    modalNote: "Notes",
+    modalStory: "Story",
+    modalFullName: "Full name",
+    modalImage: "Image URL",
+    modalShortNote: "Short note",
+    modalLongStory: "Long story",
+    modalCancel: "Cancel",
+    modalSave: "Save",
+    legendGeneration: "Generation",
+    branchAll: "All branches",
+    branchName: "Branch {n}",
+    parentNone: "None (as root)",
+    genAll: "Show All",
+    searchNone: "No names found",
+    datesUnknown: "Date not specified",
+    bornPrefix: "Born: ",
+    diedPrefix: "Died: ",
+    loadFail: "Failed to load family data.",
+    importFail: "Import failed: invalid JSON format.",
+    deleteBlocked: "Cannot delete because this person is linked to a partner/child. Remove relationships first.",
+    partnerExists: "This partner pair already exists.",
+    exportDate: "Export date: {date}",
+    exportPngFail: "PNG export failed: library not available.",
+    exportPdfFail: "PDF export failed: library not available.",
+    minimapTitle: "Minimap",
+    minimapHint: "Tap the minimap to jump. The white box shows your current view.",
+    errStructure: "Root structure must include `people` and `unions`.",
+    errPersonNoId: "A person is missing an id.",
+    errDuplicateId: "Duplicate ID: {id}",
+    errUnionNoId: "A union is missing an id.",
+    errPartner1Missing: "Partner1 not found: {id}",
+    errPartner2Missing: "Partner2 not found: {id}",
+    errChildMissing: "Child not found: {id}",
+    errChildMultiple: "Child {id} is linked to multiple unions ({unions}).",
+    mobileActions: "More actions",
+    mobilePick: "Select action...",
     validateOk: "Data is valid. No issues found.",
     validateErr: "Data issues found:",
     searchPlaceholder: "Search family member..."
   }
 };
+
+function formatText(template, vars = {}) {
+  return template.replace(/\{(\w+)\}/g, (_, key) => (vars[key] !== undefined ? vars[key] : ""));
+}
 
 fetch("data.json")
   .then((res) => res.json())
@@ -155,7 +325,8 @@ fetch("data.json")
     if (pathMode) applyLineageHighlight();
   })
   .catch((err) => {
-    treeCanvas.textContent = "Gagal memuatkan data keluarga.";
+    const t = i18n[lang] || i18n.ms;
+    treeCanvas.textContent = t.loadFail;
     console.error(err);
   });
 
@@ -334,6 +505,7 @@ function buildLayout() {
 }
 
 function buildGenerationControls() {
+  const t = i18n[lang] || i18n.ms;
   generationControls.innerHTML = "";
   for (let depth = 1; depth <= maxDepth; depth += 1) {
     const chip = document.createElement("button");
@@ -360,11 +532,12 @@ function buildGenerationControls() {
   const reset = document.createElement("button");
   reset.type = "button";
   reset.className = "gen-chip";
-  reset.textContent = "Tunjuk Semua";
+  reset.textContent = t.genAll;
+  reset.dataset.reset = "true";
   reset.addEventListener("click", () => {
     hiddenGenerations.clear();
     generationControls.querySelectorAll(".gen-chip").forEach((chip) => {
-      if (chip.textContent !== "Tunjuk Semua") chip.classList.remove("inactive");
+      if (!chip.dataset.reset) chip.classList.remove("inactive");
     });
     savePrefs();
     scheduleRender();
@@ -374,16 +547,17 @@ function buildGenerationControls() {
 }
 
 function buildBranchFilter() {
+  const t = i18n[lang] || i18n.ms;
   branchFilter.innerHTML = "";
   const optionAll = document.createElement("option");
   optionAll.value = "all";
-  optionAll.textContent = "Semua cabang";
+  optionAll.textContent = t.branchAll;
   branchFilter.appendChild(optionAll);
 
   layoutRoot.children.forEach((child, index) => {
     const option = document.createElement("option");
     option.value = String(index);
-    option.textContent = `Cabang ${index + 1}`;
+    option.textContent = formatText(t.branchName, { n: index + 1 });
     branchFilter.appendChild(option);
   });
 
@@ -397,6 +571,19 @@ function buildBranchFilter() {
 }
 
 function initEditor() {
+  if (editorPhotoFile) {
+    editorPhotoFile.addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        editorPhoto.value = dataUrl;
+      } finally {
+        editorPhotoFile.value = "";
+      }
+    });
+  }
+
   editorToggle.addEventListener("click", () => {
     const next = editorPanel.hidden === true ? false : true;
     editorPanel.hidden = next;
@@ -419,11 +606,6 @@ function initEditor() {
     person.photo = editorPhoto.value.trim();
     person.note = editorNote.value.trim();
     person.story = editorStory.value.trim();
-    if (editorSelf.checked) {
-      treeData.selfId = id;
-    } else if (treeData.selfId === id) {
-      treeData.selfId = "";
-    }
     storeData();
     rebuildFromData();
   });
@@ -458,7 +640,7 @@ function initEditor() {
     const isPartner = treeData.unions.some((u) => u.partner1 === id || u.partner2 === id);
     const isChild = treeData.unions.some((u) => u.children.includes(id));
     if (isPartner || isChild) {
-      alert("Tidak boleh padam kerana masih terikat dengan pasangan/anak. Padam hubungan dahulu.");
+      alert(i18n[lang].deleteBlocked);
       return;
     }
     treeData.people = treeData.people.filter((p) => p.id !== id);
@@ -477,7 +659,7 @@ function initEditor() {
       return pairA === pairB;
     });
     if (exists) {
-      alert("Pasangan ini sudah wujud.");
+      alert(i18n[lang].partnerExists);
       return;
     }
     treeData.unions.push({
@@ -492,6 +674,7 @@ function initEditor() {
 }
 
 function refreshEditorLists() {
+  const t = i18n[lang] || i18n.ms;
   editorPerson.innerHTML = "";
   treeData.people.forEach((person) => {
     const option = document.createElement("option");
@@ -511,7 +694,7 @@ function refreshEditorLists() {
   editorParent.innerHTML = "";
   const empty = document.createElement("option");
   empty.value = "";
-  empty.textContent = "Tiada (jadi root)";
+  empty.textContent = t.parentNone;
   editorParent.appendChild(empty);
   treeData.unions.forEach((union) => {
     const p1 = peopleById.get(union.partner1);
@@ -538,7 +721,15 @@ function fillEditor(person) {
   editorPhoto.value = person.photo || "";
   editorNote.value = person.note || "";
   editorStory.value = person.story || "";
-  editorSelf.checked = treeData.selfId === person.id;
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Failed to read file."));
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
 }
 
 function rebuildFromData() {
@@ -640,7 +831,7 @@ function renderGenerationLabels() {
 
     const label = document.createElement("div");
     label.className = "generation-label";
-    label.textContent = `Generasi ${depth}`;
+    label.textContent = `${i18n[lang].legendGeneration} ${depth}`;
     label.style.top = `${y + labelOffset}px`;
     label.style.left = "16px";
     treeCanvas.appendChild(label);
@@ -755,13 +946,6 @@ function createPersonCard(person, depth) {
   nameWrap.appendChild(name);
   nameWrap.appendChild(meta);
   nameWrap.appendChild(genBadge);
-
-  if (treeData.selfId && person.id === treeData.selfId) {
-    const badge = document.createElement("span");
-    badge.className = "badge-self";
-    badge.textContent = "Saya";
-    nameWrap.appendChild(badge);
-  }
 
   header.appendChild(avatar);
   header.appendChild(nameWrap);
@@ -904,47 +1088,46 @@ function initials(name) {
 }
 
 function formatDates(birth, death) {
-  if (!birth && !death) return "Tarikh tidak dinyatakan";
+  const t = i18n[lang] || i18n.ms;
+  if (!birth && !death) return t.datesUnknown;
   if (birth && death) return `${birth} - ${death}`;
-  if (birth) return `Lahir: ${birth}`;
-  return `Meninggal: ${death}`;
+  if (birth) return `${t.bornPrefix}${birth}`;
+  return `${t.diedPrefix}${death}`;
 }
 
 function openModal(person) {
+  const t = i18n[lang] || i18n.ms;
   modalBody.innerHTML = `
     <div class="modal-header">
       <h2>${person.name}</h2>
-      <button class="btn ghost small" id="modal-edit">Edit</button>
+      <button class="btn ghost small" id="modal-edit">${t.modalEdit}</button>
     </div>
     <div class="modal-grid" id="modal-view">
-      <div class="modal-row"><strong>Hubungan</strong><span>${person.relation || "-"}</span></div>
-      <div class="modal-row"><strong>Tarikh lahir</strong><span>${person.birth || "-"}</span></div>
-      <div class="modal-row"><strong>Tarikh meninggal</strong><span>${person.death || "-"}</span></div>
-      <div class="modal-row"><strong>Catatan</strong><span>${person.note || "-"}</span></div>
-      <div class="modal-row"><strong>Cerita</strong><span>${person.story || "-"}</span></div>
+      <div class="modal-row"><strong>${t.modalRelation}</strong><span>${person.relation || "-"}</span></div>
+      <div class="modal-row"><strong>${t.modalBirth}</strong><span>${person.birth || "-"}</span></div>
+      <div class="modal-row"><strong>${t.modalDeath}</strong><span>${person.death || "-"}</span></div>
+      <div class="modal-row"><strong>${t.modalNote}</strong><span>${person.note || "-"}</span></div>
+      <div class="modal-row"><strong>${t.modalStory}</strong><span>${person.story || "-"}</span></div>
     </div>
     <form class="modal-edit" id="modal-edit-form" hidden>
-      <label>Nama penuh</label>
+      <label>${t.modalFullName}</label>
       <input class="input" id="edit-name" value="${person.name || ""}" />
-      <label>Hubungan</label>
+      <label>${t.modalRelation}</label>
       <input class="input" id="edit-relation" value="${person.relation || ""}" />
-      <label>Tarikh lahir</label>
-      <input class="input" id="edit-birth" value="${person.birth || ""}" />
-      <label>Tarikh meninggal</label>
-      <input class="input" id="edit-death" value="${person.death || ""}" />
-      <label>URL gambar</label>
+      <label>${t.modalBirth}</label>
+      <input class="input" id="edit-birth" type="date" value="${person.birth || ""}" />
+      <label>${t.modalDeath}</label>
+      <input class="input" id="edit-death" type="date" value="${person.death || ""}" />
+      <label>${t.modalImage}</label>
       <input class="input" id="edit-photo" value="${person.photo || ""}" />
-      <label>Nota ringkas</label>
+      <input class="input" id="edit-photo-file" type="file" accept="image/*" />
+      <label>${t.modalShortNote}</label>
       <textarea class="textarea" id="edit-note">${person.note || ""}</textarea>
-      <label>Cerita panjang</label>
+      <label>${t.modalLongStory}</label>
       <textarea class="textarea" id="edit-story">${person.story || ""}</textarea>
-      <label class="modal-check">
-        <input type="checkbox" id="edit-self" ${treeData.selfId === person.id ? "checked" : ""} />
-        Tandakan sebagai “Saya”
-      </label>
       <div class="modal-actions">
-        <button type="button" class="btn ghost" id="modal-cancel">Batal</button>
-        <button type="submit" class="btn">Simpan</button>
+        <button type="button" class="btn ghost" id="modal-cancel">${t.modalCancel}</button>
+        <button type="submit" class="btn">${t.modalSave}</button>
       </div>
     </form>
   `;
@@ -952,6 +1135,24 @@ function openModal(person) {
   const viewBlock = document.getElementById("modal-view");
   const editForm = document.getElementById("modal-edit-form");
   const cancelBtn = document.getElementById("modal-cancel");
+  const editPhotoFile = document.getElementById("edit-photo-file");
+  const editPhotoInput = document.getElementById("edit-photo");
+
+  if (viewBlock) viewBlock.hidden = false;
+  if (editForm) editForm.hidden = true;
+
+  if (editPhotoFile && editPhotoInput) {
+    editPhotoFile.addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        editPhotoInput.value = dataUrl;
+      } finally {
+        editPhotoFile.value = "";
+      }
+    });
+  }
 
   editBtn.addEventListener("click", () => {
     viewBlock.hidden = true;
@@ -961,6 +1162,8 @@ function openModal(person) {
   cancelBtn.addEventListener("click", () => {
     editForm.hidden = true;
     viewBlock.hidden = false;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
   });
 
   editForm.addEventListener("submit", (event) => {
@@ -972,13 +1175,11 @@ function openModal(person) {
     person.photo = document.getElementById("edit-photo").value.trim();
     person.note = document.getElementById("edit-note").value.trim();
     person.story = document.getElementById("edit-story").value.trim();
-    const selfChecked = document.getElementById("edit-self").checked;
-    if (selfChecked) treeData.selfId = person.id;
-    if (!selfChecked && treeData.selfId === person.id) treeData.selfId = "";
     storeData();
     rebuildFromData();
     updateStoryPanel(person);
-    openModal(person);
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
   });
   modal.classList.add("active");
   modal.setAttribute("aria-hidden", "false");
@@ -986,7 +1187,7 @@ function openModal(person) {
 
 function updateStoryPanel(person) {
   storyTitle.textContent = person.name;
-  storyBody.textContent = person.story || person.note || "Tiada catatan panjang untuk ahli keluarga ini.";
+  storyBody.textContent = person.story || person.note || i18n[lang].storyEmpty;
 }
 
 modal.addEventListener("click", (event) => {
@@ -1002,6 +1203,56 @@ function applyZoom() {
   treeZoom.style.width = `${baseSize.width * scale}px`;
   treeZoom.style.height = `${baseSize.height * scale}px`;
   updateMinimap();
+}
+
+const actionEntries = [
+  ["zoom-in", zoomInBtn],
+  ["zoom-out", zoomOutBtn],
+  ["zoom-reset", zoomResetBtn],
+  ["zoom-fit", zoomFitBtn],
+  ["focus-elders", focusEldersBtn],
+  ["back-top", backTopBtn],
+  ["path-toggle", pathToggleBtn],
+  ["compact-toggle", compactToggleBtn],
+  ["toggle-theme", toggleThemeBtn],
+  ["lang-toggle", langToggleBtn],
+  ["view-toggle", viewToggle],
+  ["export-png", exportPngBtn],
+  ["export-pdf", exportPdfBtn],
+  ["export-json", exportJsonBtn],
+  ["import-json", importJsonBtn],
+  ["validate-data", validateDataBtn],
+  ["editor-toggle", editorToggle]
+];
+const actionMap = new Map(actionEntries.filter(([, el]) => el));
+
+function runAction(actionId) {
+  const btn = actionMap.get(actionId);
+  if (btn) btn.click();
+}
+
+document.querySelectorAll(".mobile-actions [data-action]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    runAction(btn.dataset.action);
+  });
+});
+
+if (mobileActionSelect) {
+  mobileActionSelect.addEventListener("change", () => {
+    if (mobileActionGo) {
+      mobileActionGo.disabled = !mobileActionSelect.value;
+    }
+  });
+}
+
+if (mobileActionGo) {
+  mobileActionGo.addEventListener("click", () => {
+    const actionId = mobileActionSelect?.value;
+    if (!actionId) return;
+    runAction(actionId);
+    if (mobileActionSelect) mobileActionSelect.value = "";
+    mobileActionGo.disabled = true;
+  });
 }
 
 zoomInBtn.addEventListener("click", () => {
@@ -1052,48 +1303,53 @@ compactToggleBtn.addEventListener("click", () => {
   savePrefs();
 });
 
-langToggleBtn.addEventListener("click", () => {
-  lang = lang === "ms" ? "en" : "ms";
+langToggleBtn.addEventListener("change", () => {
+  lang = langToggleBtn.checked ? "en" : "ms";
   applyLanguage();
+  scheduleRender();
   savePrefs();
 });
 
-exportJsonBtn.addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(treeData, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  const stamp = new Date().toISOString().slice(0, 10);
-  link.download = `salasilah-backup-${stamp}.json`;
-  link.href = url;
-  link.click();
-  URL.revokeObjectURL(url);
-});
+if (exportJsonBtn) {
+  exportJsonBtn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(treeData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
+    link.download = `salasilah-backup-${stamp}.json`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+}
 
-importJsonBtn.addEventListener("click", () => {
-  importJsonFile.click();
-});
+if (importJsonBtn && importJsonFile) {
+  importJsonBtn.addEventListener("click", () => {
+    importJsonFile.click();
+  });
 
-importJsonFile.addEventListener("change", async (event) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  try {
-    const text = await file.text();
-    const parsed = JSON.parse(text);
-    const errors = validateTreeData(parsed);
-    if (errors.length > 0) {
-      validateOutput.textContent = `${i18n[lang].validateErr} ${errors.join(" | ")}`;
-      return;
+  importJsonFile.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const errors = validateTreeData(parsed);
+      if (errors.length > 0) {
+        validateOutput.textContent = `${i18n[lang].validateErr} ${errors.join(" | ")}`;
+        return;
+      }
+      treeData = parsed;
+      storeData();
+      rebuildFromData();
+      validateOutput.textContent = i18n[lang].validateOk;
+    } catch (err) {
+      validateOutput.textContent = i18n[lang].importFail;
+    } finally {
+      importJsonFile.value = "";
     }
-    treeData = parsed;
-    storeData();
-    rebuildFromData();
-    validateOutput.textContent = i18n[lang].validateOk;
-  } catch (err) {
-    validateOutput.textContent = "Import gagal: format JSON tidak sah.";
-  } finally {
-    importJsonFile.value = "";
-  }
-});
+  });
+}
 
 validateDataBtn.addEventListener("click", () => {
   const errors = validateTreeData(treeData);
@@ -1161,7 +1417,7 @@ searchInput.addEventListener("input", (event) => {
   if (results.length === 0) {
     const item = document.createElement("div");
     item.className = "search-item";
-    item.textContent = "Tiada nama ditemui";
+    item.textContent = i18n[lang].searchNone;
     searchResults.appendChild(item);
   } else {
     results.forEach((person) => {
@@ -1228,8 +1484,8 @@ function focusPerson(personId, open = false) {
   updateUrlState();
 }
 
-toggleThemeBtn.addEventListener("click", () => {
-  const next = app.dataset.theme === "light" ? "dark" : "light";
+toggleThemeBtn.addEventListener("change", () => {
+  const next = toggleThemeBtn.checked ? "dark" : "light";
   app.dataset.theme = next;
   document.body.dataset.theme = next;
   savePrefs();
@@ -1245,7 +1501,7 @@ viewToggle.addEventListener("click", () => {
 
 exportPngBtn.addEventListener("click", async () => {
   if (!window.html2canvas) {
-    alert("Gagal export PNG: library tidak tersedia.");
+    alert(i18n[lang].exportPngFail);
     return;
   }
   const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: 2 });
@@ -1257,7 +1513,7 @@ exportPngBtn.addEventListener("click", async () => {
 
 exportPdfBtn.addEventListener("click", async () => {
   if (!window.html2canvas || !window.jspdf) {
-    alert("Gagal export PDF: library tidak tersedia.");
+    alert(i18n[lang].exportPdfFail);
     return;
   }
 
@@ -1265,13 +1521,15 @@ exportPdfBtn.addEventListener("click", async () => {
   const imgData = canvas.toDataURL("image/png");
   const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
 
-  const title = treeData.familyName || "Salasilah Keluarga";
+  const title = treeData.familyName || i18n[lang].appKicker;
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(28);
   pdf.text(title, 40, 60);
   pdf.setFontSize(12);
   pdf.setFont("helvetica", "normal");
-  pdf.text(`Tarikh eksport: ${new Date().toLocaleDateString("ms-MY")}`, 40, 90);
+  const locale = lang === "en" ? "en-US" : "ms-MY";
+  const dateLabel = formatText(i18n[lang].exportDate, { date: new Date().toLocaleDateString(locale) });
+  pdf.text(dateLabel, 40, 90);
   pdf.addPage([canvas.width, canvas.height], "landscape");
   pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
   pdf.save("salasilah-keluarga.pdf");
@@ -1379,22 +1637,26 @@ function getLineageIds(startId) {
 function validateTreeData(data) {
   const errors = [];
   if (!data || !Array.isArray(data.people) || !Array.isArray(data.unions)) {
-    return ["Struktur utama mesti ada `people` dan `unions`."];
+    return [i18n[lang].errStructure];
   }
   const ids = new Set();
   data.people.forEach((person) => {
-    if (!person.id) errors.push("Ada ahli tanpa id.");
-    if (ids.has(person.id)) errors.push(`ID berulang: ${person.id}`);
+    if (!person.id) errors.push(i18n[lang].errPersonNoId);
+    if (ids.has(person.id)) errors.push(formatText(i18n[lang].errDuplicateId, { id: person.id }));
     ids.add(person.id);
   });
 
   const childMap = new Map();
   data.unions.forEach((union) => {
-    if (!union.id) errors.push("Ada union tanpa id.");
-    if (union.partner1 && !ids.has(union.partner1)) errors.push(`Partner1 tidak wujud: ${union.partner1}`);
-    if (union.partner2 && !ids.has(union.partner2)) errors.push(`Partner2 tidak wujud: ${union.partner2}`);
+    if (!union.id) errors.push(i18n[lang].errUnionNoId);
+    if (union.partner1 && !ids.has(union.partner1)) {
+      errors.push(formatText(i18n[lang].errPartner1Missing, { id: union.partner1 }));
+    }
+    if (union.partner2 && !ids.has(union.partner2)) {
+      errors.push(formatText(i18n[lang].errPartner2Missing, { id: union.partner2 }));
+    }
     (union.children || []).forEach((childId) => {
-      if (!ids.has(childId)) errors.push(`Anak tidak wujud: ${childId}`);
+      if (!ids.has(childId)) errors.push(formatText(i18n[lang].errChildMissing, { id: childId }));
       if (!childMap.has(childId)) childMap.set(childId, []);
       childMap.get(childId).push(union.id);
     });
@@ -1402,14 +1664,56 @@ function validateTreeData(data) {
 
   childMap.forEach((unions, childId) => {
     if (unions.length > 1) {
-      errors.push(`Anak ${childId} terikat pada lebih satu union (${unions.join(", ")}).`);
+      errors.push(formatText(i18n[lang].errChildMultiple, { id: childId, unions: unions.join(", ") }));
     }
   });
   return errors;
 }
 
+function syncMobileLabels() {
+  if (mobileQuickZoomIn) mobileQuickZoomIn.textContent = zoomInBtn.textContent;
+  if (mobileQuickZoomOut) mobileQuickZoomOut.textContent = zoomOutBtn.textContent;
+  if (mobileQuickZoomFit) mobileQuickZoomFit.textContent = zoomFitBtn.textContent;
+  if (mobileActionLabel) mobileActionLabel.textContent = i18n[lang].mobileActions;
+
+  if (mobileActionSelect) {
+    const placeholder = mobileActionSelect.querySelector('option[value=""]');
+    if (placeholder) placeholder.textContent = i18n[lang].mobilePick;
+
+    const optionMap = {
+      "zoom-reset": zoomResetBtn,
+      "focus-elders": focusEldersBtn,
+      "back-top": backTopBtn,
+      "path-toggle": pathToggleBtn,
+      "compact-toggle": compactToggleBtn,
+      "toggle-theme": toggleThemeBtn,
+      "lang-toggle": langToggleBtn,
+      "view-toggle": viewToggle,
+      "export-png": exportPngBtn,
+      "export-pdf": exportPdfBtn,
+      "validate-data": validateDataBtn,
+      "editor-toggle": editorToggle
+    };
+
+    Object.entries(optionMap).forEach(([value, btn]) => {
+      const option = mobileActionSelect.querySelector(`option[value="${value}"]`);
+      if (option && btn) option.textContent = btn.textContent;
+    });
+  }
+}
+
 function applyLanguage() {
   const t = i18n[lang];
+  document.title = t.appKicker;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.dataset.i18n;
+    if (key && t[key] !== undefined) el.textContent = t[key];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.dataset.i18nPlaceholder;
+    if (key && t[key] !== undefined) el.setAttribute("placeholder", t[key]);
+  });
+
   searchInput.placeholder = t.searchPlaceholder;
   viewToggle.textContent = viewMode === "timeline" ? t.viewTree : t.viewTimeline;
   compactToggleBtn.textContent = compactMode ? t.compactOn : t.compactOff;
@@ -1417,6 +1721,51 @@ function applyLanguage() {
   focusEldersBtn.textContent = t.focusElders;
   backTopBtn.textContent = t.backTop;
   zoomFitBtn.textContent = t.fit;
+  zoomInBtn.textContent = t.zoomIn;
+  zoomOutBtn.textContent = t.zoomOut;
+  zoomResetBtn.textContent = t.zoomReset;
+  if (exportPngBtn) {
+    const label = exportPngBtn.querySelector('[data-i18n="exportPng"]');
+    if (label) label.textContent = t.exportPng;
+  }
+  if (exportPdfBtn) {
+    const label = exportPdfBtn.querySelector('[data-i18n="exportPdf"]');
+    if (label) label.textContent = t.exportPdf;
+  }
+  if (exportJsonBtn) exportJsonBtn.textContent = t.exportJson;
+  if (importJsonBtn) importJsonBtn.textContent = t.importJson;
+  validateDataBtn.textContent = t.validateData;
+  editorToggle.textContent = t.editorToggle;
+  toggleThemeBtn.checked = app.dataset.theme === "dark";
+  langToggleBtn.checked = lang === "en";
+
+  const branchOptions = branchFilter?.options || [];
+  if (branchOptions.length > 0) {
+    branchOptions[0].textContent = t.branchAll;
+    for (let i = 1; i < branchOptions.length; i += 1) {
+      branchOptions[i].textContent = formatText(t.branchName, { n: i });
+    }
+  }
+
+  if (editorParent?.options?.length) {
+    editorParent.options[0].textContent = t.parentNone;
+  }
+
+  generationControls?.querySelectorAll(".gen-chip").forEach((chip) => {
+    if (chip.dataset.reset) chip.textContent = t.genAll;
+  });
+
+  if (!selectedPersonId) {
+    storyTitle.textContent = t.storyTitle;
+    storyBody.textContent = t.storyEmpty;
+  }
+
+  if (modal?.classList.contains("active") && selectedPersonId) {
+    const person = peopleById.get(selectedPersonId);
+    if (person) openModal(person);
+  }
+
+  syncMobileLabels();
 }
 
 minimapCanvas.addEventListener("click", (event) => {
@@ -1430,6 +1779,22 @@ minimapCanvas.addEventListener("click", (event) => {
   const targetY = y / miniScale - treeWrap.clientHeight / (2 * scale);
   treeWrap.scrollTo({ left: Math.max(0, targetX * scale), top: Math.max(0, targetY * scale), behavior: "smooth" });
 });
+
+const minimap = document.getElementById("minimap");
+if (minimap) {
+  const activate = () => {
+    minimap.classList.add("is-active");
+  };
+  const deactivate = () => {
+    minimap.classList.remove("is-active");
+  };
+  minimap.addEventListener("mousedown", activate);
+  minimap.addEventListener("touchstart", activate, { passive: true });
+  minimap.addEventListener("mouseup", deactivate);
+  minimap.addEventListener("mouseleave", deactivate);
+  minimap.addEventListener("touchend", deactivate);
+  minimap.addEventListener("touchcancel", deactivate);
+}
 
 function restoreFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -1447,7 +1812,7 @@ function restoreFromUrl() {
 
   if (focusId && peopleById.has(focusId)) {
     setTimeout(() => {
-      focusPerson(focusId, true);
+      focusPerson(focusId, false);
     }, 200);
   }
 }

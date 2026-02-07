@@ -34,6 +34,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: "Source Sans 3", sans-serif;
@@ -64,6 +68,77 @@ body[data-theme="dark"] {
   align-items: start;
 }
 
+.top-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.toggle input:checked + .toggle-track {
+  background: color-mix(in srgb, var(--primary) 70%, #fff);
+}
+
+.toggle input:checked + .toggle-track::after {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+[data-theme="dark"] .toggle {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--bg-soft) 75%, transparent);
+}
+
+[data-theme="dark"] .toggle-track {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .brand h1 {
   font-family: "Fraunces", serif;
   font-weight: 600;
@@ -87,6 +162,26 @@ body[data-theme="dark"] {
 
 .brand-minimap-wrap {
   margin-top: 18px;
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  z-index: 30;
+}
+
+.minimap-label {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.minimap-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 260px;
+  line-height: 1.5;
 }
 
 .controls {
@@ -163,6 +258,10 @@ input[type="search"]:focus,
   font-size: 14px;
 }
 
+input[type="file"].input {
+  padding: 8px 12px;
+}
+
 .search-results {
   position: absolute;
   top: calc(100% + 8px);
@@ -201,6 +300,22 @@ input[type="search"]:focus,
   flex-wrap: wrap;
 }
 
+.mobile-actions {
+  display: none;
+  gap: 12px;
+}
+
+.mobile-quick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mobile-select {
+  display: grid;
+  gap: 8px;
+}
+
 .validate-output {
   font-size: 12px;
   color: var(--muted);
@@ -211,6 +326,22 @@ input[type="search"]:focus,
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.generation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.export-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.export-actions .btn {
+  padding: 10px 12px;
 }
 
 .gen-chip {
@@ -241,6 +372,30 @@ input[type="search"]:focus,
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .btn.small {
@@ -639,15 +794,26 @@ body.compact .person-name {
   width: 220px;
   height: 140px;
   background: color-mix(in srgb, var(--bg-soft) 80%, transparent);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 2px solid rgba(0, 0, 0, 0.22);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
   pointer-events: auto;
+  opacity: 0.4;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 [data-theme="dark"] .minimap {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.minimap:hover,
+.minimap:focus-within,
+.minimap.is-active {
+  opacity: 1;
+  box-shadow: var(--shadow);
+  border-color: color-mix(in srgb, var(--primary-2) 50%, transparent);
+  background: color-mix(in srgb, var(--bg-soft) 90%, transparent);
 }
 
 .minimap canvas {
@@ -689,6 +855,8 @@ body.compact .person-name {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   width: min(520px, 90vw);
+  max-height: min(82vh, 760px);
+  overflow: auto;
   z-index: 1;
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -780,12 +948,40 @@ body.compact .person-name {
 
 @media (max-width: 640px) {
   :root {
-    --card-width: 190px;
+    --card-width: 180px;
+    --card-gap: 12px;
+  }
+
+  .topbar {
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .brand h1 {
+    font-size: 26px;
+  }
+
+  .brand .subtitle {
+    font-size: 14px;
   }
 
   .legend {
     flex-direction: column;
     align-items: flex-start;
+    padding: 0 16px 16px;
+  }
+
+  .tree-section {
+    padding: 0 12px 32px;
+  }
+
+  .tree-wrap {
+    padding: 18px;
+    min-height: 65svh;
   }
 
   .modal-row {
@@ -803,6 +999,61 @@ body.compact .person-name {
   .control-row .btn,
   .search-row .btn {
     width: 100%;
+  }
+
+  .generation-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .export-actions {
+    justify-content: flex-start;
+  }
+
+  .actions-zoom,
+  .actions-main,
+  .actions-editor {
+    display: none;
+  }
+
+  .mobile-actions {
+    display: grid;
+  }
+
+  .mobile-quick .btn {
+    width: 100%;
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .mobile-select .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --card-width: 165px;
+    --card-gap: 10px;
+  }
+
+  .person-card {
+    padding: 12px;
+  }
+
+  .person-name {
+    font-size: 14px;
+  }
+
+  .person-meta,
+  .timeline-meta,
+  .timeline-relation {
+    font-size: 12px;
+  }
+
+  .minimap {
+    width: 180px;
+    height: 120px;
   }
 }
 
@@ -846,3 +1097,7 @@ body.compact .person-name {
 }
 
 
+  .brand-minimap-wrap {
+    right: 12px;
+    bottom: 12px;
+  }
