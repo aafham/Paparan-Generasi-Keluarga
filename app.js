@@ -176,6 +176,7 @@ const i18n = {
     exportPdfFail: "Gagal export PDF: library tidak tersedia.",
     minimapTitle: "Minimap",
     minimapHint: "Klik pada kotak kecil untuk lompat lokasi. Kotak putih menunjukkan kawasan semasa.",
+    minimapShow: "Buka Minimap",
     errStructure: "Struktur utama mesti ada `people` dan `unions`.",
     errPersonNoId: "Ada ahli tanpa id.",
     errDuplicateId: "ID berulang: {id}",
@@ -270,6 +271,7 @@ const i18n = {
     exportPdfFail: "PDF export failed: library not available.",
     minimapTitle: "Minimap",
     minimapHint: "Tap the minimap to jump. The white box shows your current view.",
+    minimapShow: "Show Minimap",
     errStructure: "Root structure must include `people` and `unions`.",
     errPersonNoId: "A person is missing an id.",
     errDuplicateId: "Duplicate ID: {id}",
@@ -1766,21 +1768,28 @@ function applyLanguage() {
   }
 
   syncMobileLabels();
+  if (minimapHandle) minimapHandle.textContent = t.minimapShow;
 }
 
-minimapCanvas.addEventListener("click", (event) => {
+function minimapScrollTo(clientX, clientY) {
   const rect = minimapCanvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
   const scaleX = rect.width / baseSize.width;
   const scaleY = rect.height / baseSize.height;
   const miniScale = Math.min(scaleX, scaleY);
   const targetX = x / miniScale - treeWrap.clientWidth / (2 * scale);
   const targetY = y / miniScale - treeWrap.clientHeight / (2 * scale);
-  treeWrap.scrollTo({ left: Math.max(0, targetX * scale), top: Math.max(0, targetY * scale), behavior: "smooth" });
+  treeWrap.scrollTo({ left: Math.max(0, targetX * scale), top: Math.max(0, targetY * scale) });
+}
+
+minimapCanvas.addEventListener("click", (event) => {
+  minimapScrollTo(event.clientX, event.clientY);
 });
 
 const minimap = document.getElementById("minimap");
+const minimapWrap = document.querySelector(".brand-minimap-wrap");
+const minimapHandle = document.getElementById("minimap-handle");
 if (minimap) {
   const activate = () => {
     minimap.classList.add("is-active");
@@ -1788,12 +1797,66 @@ if (minimap) {
   const deactivate = () => {
     minimap.classList.remove("is-active");
   };
-  minimap.addEventListener("mousedown", activate);
-  minimap.addEventListener("touchstart", activate, { passive: true });
+  let dragging = false;
+  let hideTimer = null;
+
+  const scheduleHide = () => {
+    if (!minimapWrap) return;
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      minimapWrap.classList.add("is-collapsed");
+    }, 2500);
+  };
+
+  const showMinimap = () => {
+    if (!minimapWrap) return;
+    minimapWrap.classList.remove("is-collapsed");
+    scheduleHide();
+  };
+
+  if (minimapWrap) {
+    minimapWrap.addEventListener("mouseenter", showMinimap);
+    minimapWrap.addEventListener("focusin", showMinimap);
+  }
+
+  if (minimapHandle) {
+    minimapHandle.addEventListener("click", showMinimap);
+    minimapHandle.addEventListener("touchstart", showMinimap, { passive: true });
+  }
+
+  minimap.addEventListener("pointerdown", (event) => {
+    if (!minimapCanvas) return;
+    dragging = true;
+    minimap.setPointerCapture(event.pointerId);
+    activate();
+    minimapScrollTo(event.clientX, event.clientY);
+    showMinimap();
+    event.preventDefault();
+  });
+
+  minimap.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    minimapScrollTo(event.clientX, event.clientY);
+    showMinimap();
+    event.preventDefault();
+  });
+
+  const endDrag = (event) => {
+    dragging = false;
+    deactivate();
+    if (event && minimap.hasPointerCapture(event.pointerId)) {
+      minimap.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  minimap.addEventListener("pointerup", endDrag);
+  minimap.addEventListener("pointercancel", endDrag);
+  minimap.addEventListener("mouseleave", () => {
+    if (dragging) endDrag();
+  });
   minimap.addEventListener("mouseup", deactivate);
-  minimap.addEventListener("mouseleave", deactivate);
-  minimap.addEventListener("touchend", deactivate);
-  minimap.addEventListener("touchcancel", deactivate);
+
+  scheduleHide();
 }
 
 function restoreFromUrl() {
