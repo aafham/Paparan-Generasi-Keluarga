@@ -2710,6 +2710,15 @@ if (viewTreeBtn) {
     savePrefs();
     updateUrlState();
   });
+  viewTreeBtn.addEventListener("touchstart", () => {
+    if (viewMode === "tree") return;
+    viewMode = "tree";
+    applyViewMode();
+    applyLanguage();
+    updateViewSwitch();
+    savePrefs();
+    updateUrlState();
+  }, { passive: true });
 }
 
 if (viewTimelineBtn) {
@@ -2722,6 +2731,15 @@ if (viewTimelineBtn) {
     savePrefs();
     updateUrlState();
   });
+  viewTimelineBtn.addEventListener("touchstart", () => {
+    if (viewMode === "timeline") return;
+    viewMode = "timeline";
+    applyViewMode();
+    applyLanguage();
+    updateViewSwitch();
+    savePrefs();
+    updateUrlState();
+  }, { passive: true });
 }
 
 if (timelineGenSelect) {
