@@ -926,6 +926,7 @@ body.compact .person-name {
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--shadow);
+  color: var(--card-ink, var(--ink));
   display: grid;
   gap: 10px;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -955,6 +956,38 @@ body.compact .person-name {
 
 .person-card.is-menantu {
   background: var(--card);
+}
+
+[data-theme="dark"] {
+  --card-ink: rgba(244, 245, 242, 0.92);
+}
+
+[data-theme="dark"] .person-card.soft-peach,
+[data-theme="dark"] .person-card.baby-blue,
+[data-theme="dark"] .person-card.mint-green,
+[data-theme="dark"] .person-card.lavender {
+  color: #1f2a24;
+}
+
+[data-theme="dark"] .person-card.soft-peach .person-meta,
+[data-theme="dark"] .person-card.baby-blue .person-meta,
+[data-theme="dark"] .person-card.mint-green .person-meta,
+[data-theme="dark"] .person-card.lavender .person-meta {
+  color: rgba(31, 42, 36, 0.7);
+}
+
+[data-theme="dark"] .person-card.soft-peach .tag,
+[data-theme="dark"] .person-card.baby-blue .tag,
+[data-theme="dark"] .person-card.mint-green .tag,
+[data-theme="dark"] .person-card.lavender .tag {
+  color: #1f2a24;
+}
+
+[data-theme="dark"] .person-card.soft-peach .gen-badge,
+[data-theme="dark"] .person-card.baby-blue .gen-badge,
+[data-theme="dark"] .person-card.mint-green .gen-badge,
+[data-theme="dark"] .person-card.lavender .gen-badge {
+  color: rgba(31, 42, 36, 0.7);
 }
 
 .person-card.deceased {
