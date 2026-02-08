@@ -197,8 +197,8 @@ const i18n = {
     zoomReset: "Reset",
     themeToggle: "Cerah / Gelap",
     langToggle: "BM / EN",
-    exportPng: "Export PNG",
-    exportPdf: "Export PDF",
+    exportPng: "Image (JPEG)",
+    exportPdf: "File (PDF)",
     branchLabel: "Tapis cabang",
     generationLabel: "Generasi (Lipat/Buka)",
     legendParentChild: "Garis sambungan ibu bapa \u2192 anak",
@@ -288,7 +288,7 @@ const i18n = {
     themeHeritage: "Heritage",
     themeOcean: "Ocean",
     themeSunset: "Sunset",
-    exportMenu: "Export",
+    exportMenu: "Download",
     settingsTitle: "Tetapan",
     settingsDisplay: "Paparan",
     settingsNav: "Navigasi",
@@ -331,8 +331,8 @@ const i18n = {
     zoomReset: "Reset",
     themeToggle: "Light / Dark",
     langToggle: "EN / BM",
-    exportPng: "Export PNG",
-    exportPdf: "Export PDF",
+    exportPng: "Image (JPEG)",
+    exportPdf: "File (PDF)",
     branchLabel: "Filter branch",
     generationLabel: "Generation (Collapse/Expand)",
     legendParentChild: "Parent \u2192 child connection",
@@ -422,7 +422,7 @@ const i18n = {
     themeHeritage: "Heritage",
     themeOcean: "Ocean",
     themeSunset: "Sunset",
-    exportMenu: "Export",
+    exportMenu: "Download",
     settingsTitle: "Settings",
     settingsDisplay: "Display",
     settingsNav: "Navigation",
@@ -1825,6 +1825,10 @@ function renderTimeline() {
     const item = document.createElement("div");
     item.className = "timeline-item";
     if (person.death) item.classList.add("deceased");
+    if (softPeachPeople.has(person.id)) item.classList.add("branch-soft-peach");
+    if (babyBluePeople.has(person.id)) item.classList.add("branch-baby-blue");
+    if (mintGreenPeople.has(person.id)) item.classList.add("branch-mint-green");
+    if (lavenderPeople.has(person.id)) item.classList.add("branch-lavender");
     const birthDate = parseDateValue(person.birth);
     const age = !person.death ? calcAge(birthDate) : null;
     const hasBirth = Boolean(person.birth);
@@ -2851,8 +2855,8 @@ if (exportPngBtn) {
     const exportScale = Math.min(3, (window.devicePixelRatio || 1) * 1.5);
     const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: exportScale });
     const link = document.createElement("a");
-    link.download = "salasilah-keluarga.png";
-    link.href = canvas.toDataURL("image/png");
+    link.download = "salasilah-keluarga.jpg";
+    link.href = canvas.toDataURL("image/jpeg", 0.92);
     link.click();
   });
 }

@@ -1143,6 +1143,26 @@ input[type="file"].input {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
+.timeline-item.branch-soft-peach {
+  background: color-mix(in srgb, var(--soft-peach) 22%, #fff);
+  border-color: color-mix(in srgb, var(--soft-peach) 55%, #fff);
+}
+
+.timeline-item.branch-baby-blue {
+  background: color-mix(in srgb, var(--baby-blue) 22%, #fff);
+  border-color: color-mix(in srgb, var(--baby-blue) 55%, #fff);
+}
+
+.timeline-item.branch-mint-green {
+  background: color-mix(in srgb, var(--mint-green) 22%, #fff);
+  border-color: color-mix(in srgb, var(--mint-green) 55%, #fff);
+}
+
+.timeline-item.branch-lavender {
+  background: color-mix(in srgb, var(--lavender) 22%, #fff);
+  border-color: color-mix(in srgb, var(--lavender) 55%, #fff);
+}
+
 .timeline-meta,
 .timeline-age,
 .timeline-relation {
