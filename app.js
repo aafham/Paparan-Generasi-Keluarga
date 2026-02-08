@@ -86,8 +86,8 @@ const settingsClearData = document.getElementById("setting-clear-data");
 const settingsDataVersion = document.getElementById("settings-data-version");
 const statPeople = document.getElementById("stat-people");
 const statCouples = document.getElementById("stat-couples");
-const statGenerations = document.getElementById("stat-generations");
-const statBranches = document.getElementById("stat-branches");
+const statMale = document.getElementById("stat-male");
+const statFemale = document.getElementById("stat-female");
 const themePresetSelect = document.getElementById("theme-preset");
 const timelineGenSelect = document.getElementById("timeline-gen");
 const timelineMonthSelect = document.getElementById("timeline-month");
@@ -259,8 +259,8 @@ const i18n = {
     searchPlaceholder: "Cari nama ahli keluarga...",
     statsPeople: "Jumlah Ahli",
     statsCouples: "Jumlah Pasangan",
-    statsGenerations: "Generasi",
-    statsBranches: "Cabang",
+    statsMale: "Lelaki (bin)",
+    statsFemale: "Perempuan (binti)",
     timelineGenLabel: "Generasi",
     timelineMonth: "Bulan Lahir",
     timelineYearFrom: "Dari Tahun",
@@ -382,8 +382,8 @@ const i18n = {
     searchPlaceholder: "Search family member...",
     statsPeople: "Total People",
     statsCouples: "Couples",
-    statsGenerations: "Generations",
-    statsBranches: "Branches",
+    statsMale: "Male (bin)",
+    statsFemale: "Female (binti)",
     timelineGenLabel: "Generation",
     timelineMonth: "Birth Month",
     timelineYearFrom: "From Year",
@@ -546,12 +546,17 @@ function updateStats() {
   if (!treeData) return;
   const peopleCount = treeData.people.length;
   const couplesCount = treeData.unions.length;
-  const generationsCount = maxDepth || 0;
-  const branchesCount = layoutRoot?.children?.length || 0;
+  let maleCount = 0;
+  let femaleCount = 0;
+  treeData.people.forEach((person) => {
+    const gender = detectGenderFromName(person.name);
+    if (gender === "male") maleCount += 1;
+    if (gender === "female") femaleCount += 1;
+  });
   if (statPeople) statPeople.textContent = String(peopleCount);
   if (statCouples) statCouples.textContent = String(couplesCount);
-  if (statGenerations) statGenerations.textContent = String(generationsCount);
-  if (statBranches) statBranches.textContent = String(branchesCount);
+  if (statMale) statMale.textContent = String(maleCount);
+  if (statFemale) statFemale.textContent = String(femaleCount);
 }
 
 function populateTimelineFilters() {
