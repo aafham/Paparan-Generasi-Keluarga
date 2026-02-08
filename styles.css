@@ -1038,23 +1038,95 @@ input[type="file"].input {
   gap: 12px;
 }
 
+.timeline-filters-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 16px;
+  display: grid;
+  gap: 12px;
+}
+
 .timeline-filters {
   display: grid;
+  gap: 12px;
+}
+
+.timeline-filters.primary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.timeline-filters.secondary {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
 }
 
 .timeline-filter {
   display: grid;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
 .timeline-filter .input,
 .timeline-filter .select {
-  font-size: 13px;
+  font-size: 14px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.timeline-reset {
+  align-self: end;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.timeline-more-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.timeline-more-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+
+.timeline-more-panel.is-open {
+  max-height: 280px;
+}
+
+.timeline-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeline-active-filters .chip {
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
+  color: var(--ink);
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.timeline-active-filters .chip.reset-all {
+  margin-left: auto;
+  border-style: dashed;
+  color: var(--muted);
+  background: transparent;
 }
 
 .timeline-list {
@@ -1765,6 +1837,28 @@ body.hide-tags .person-tags {
 
   .brand-minimap-wrap.is-open .minimap-close {
     display: inline-flex;
+  }
+
+  .timeline-filters.primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timeline-more-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
+  }
+
+  .timeline-active-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .timeline-active-filters .chip.reset-all {
+    margin-left: 0;
+    align-self: flex-end;
   }
 }
 

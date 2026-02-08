@@ -206,34 +206,42 @@
         <div class="timeline-head">
           <h2 data-i18n="timelineTitle">Timeline Keluarga</h2>
         </div>
-        <div class="timeline-filters">
-          <label class="timeline-filter">
-            <span data-i18n="timelineGenLabel">Generasi</span>
-            <select id="timeline-gen" class="select"></select>
-          </label>
-          <label class="timeline-filter">
-            <span data-i18n="timelineMonth">Bulan Lahir</span>
-            <select id="timeline-month" class="select"></select>
-          </label>
-          <label class="timeline-filter">
-            <span data-i18n="timelineGender">Jantina</span>
-            <select id="timeline-gender" class="select">
-              <option value="all" data-i18n="timelineGenderAll">Semua</option>
-              <option value="male" data-i18n="timelineGenderMale">Lelaki</option>
-              <option value="female" data-i18n="timelineGenderFemale">Perempuan</option>
-            </select>
-          </label>
-          <label class="timeline-filter">
-            <span data-i18n="timelineSort">Susun</span>
-            <select id="timeline-sort" class="select">
-              <option value="year" data-i18n="timelineSortYear">Ikut Tahun</option>
-              <option value="alpha" data-i18n="timelineSortAlpha">Ikut Abjad</option>
-              <option value="month" data-i18n="timelineSortMonth">Ikut Bulan</option>
-              <option value="gender" data-i18n="timelineSortGender">Ikut Jantina</option>
-              <option value="parent" data-i18n="timelineSortParent">Ikut Ibu Bapa</option>
-            </select>
-          </label>
-          <button id="timeline-clear" class="btn ghost small" type="button" data-i18n="timelineClear">Reset</button>
+        <div class="timeline-filters-card">
+          <div class="timeline-filters primary">
+            <label class="timeline-filter">
+              <span data-i18n="timelineMonth">Bulan Lahir</span>
+              <select id="timeline-month" class="select"></select>
+            </label>
+            <label class="timeline-filter">
+              <span data-i18n="timelineGender">Jantina</span>
+              <select id="timeline-gender" class="select">
+                <option value="all" data-i18n="timelineGenderAll">Semua</option>
+                <option value="male" data-i18n="timelineGenderMale">Lelaki</option>
+                <option value="female" data-i18n="timelineGenderFemale">Perempuan</option>
+              </select>
+            </label>
+            <label class="timeline-filter">
+              <span data-i18n="timelineSort">Susun</span>
+              <select id="timeline-sort" class="select">
+                <option value="year" data-i18n="timelineSortYear">Ikut Tahun</option>
+                <option value="alpha" data-i18n="timelineSortAlpha">Ikut Abjad</option>
+                <option value="month" data-i18n="timelineSortMonth">Ikut Bulan</option>
+                <option value="gender" data-i18n="timelineSortGender">Ikut Jantina</option>
+                <option value="parent" data-i18n="timelineSortParent">Ikut Ibu Bapa</option>
+              </select>
+            </label>
+            <button id="timeline-clear" class="btn ghost small timeline-reset" type="button" data-i18n="timelineClear">Reset</button>
+          </div>
+          <button id="timeline-more-btn" class="timeline-more-btn" type="button" aria-expanded="false" data-i18n="timelineMore">Tapis lagi</button>
+          <div id="timeline-more-panel" class="timeline-more-panel" aria-hidden="true">
+            <div class="timeline-filters secondary">
+              <label class="timeline-filter">
+                <span data-i18n="timelineGenLabel">Generasi</span>
+                <select id="timeline-gen" class="select"></select>
+              </label>
+            </div>
+          </div>
+          <div id="timeline-active-filters" class="timeline-active-filters" hidden></div>
         </div>
         <div class="timeline-list" id="timeline-list"></div>
       </section>

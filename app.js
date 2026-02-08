@@ -96,6 +96,9 @@ const timelineMonthSelect = document.getElementById("timeline-month");
 const timelineGenderSelect = document.getElementById("timeline-gender");
 const timelineSortSelect = document.getElementById("timeline-sort");
 const timelineClearBtn = document.getElementById("timeline-clear");
+const timelineMoreBtn = document.getElementById("timeline-more-btn");
+const timelineMorePanel = document.getElementById("timeline-more-panel");
+const timelineActiveFilters = document.getElementById("timeline-active-filters");
 
 
 function on(el, event, handler, options) {
@@ -174,6 +177,7 @@ let timelineFilters = {
   gender: "all",
   sort: "year"
 };
+let timelineMoreOpen = false;
 
 const prefs = loadPrefs();
 const i18n = {
@@ -276,6 +280,9 @@ const i18n = {
     timelineSortGender: "Ikut Jantina",
     timelineSortParent: "Ikut Ibu Bapa",
     timelineClear: "Reset",
+    timelineMore: "Tapis lagi",
+    timelineLess: "Tutup tapis",
+    timelineResetAll: "Reset semua",
     themePreset: "Tema",
     themeDefault: "Default",
     themeHeritage: "Heritage",
@@ -407,6 +414,9 @@ const i18n = {
     timelineSortGender: "By Gender",
     timelineSortParent: "By Parent",
     timelineClear: "Reset",
+    timelineMore: "More filters",
+    timelineLess: "Less filters",
+    timelineResetAll: "Reset all",
     themePreset: "Theme",
     themeDefault: "Default",
     themeHeritage: "Heritage",
@@ -613,6 +623,111 @@ function populateTimelineMonths() {
     timelineMonthSelect.appendChild(opt);
   });
   timelineMonthSelect.value = timelineFilters.month || "all";
+}
+
+function updateTimelineActiveFilters() {
+  if (!timelineActiveFilters) return;
+  const t = i18n[lang] || i18n.ms;
+  const defaults = { generation: "all", month: "all", gender: "all", sort: "year" };
+  const chips = [];
+
+  const labelMap = {
+    generation: t.timelineGenLabel,
+    month: t.timelineMonth,
+    gender: t.timelineGender,
+    sort: t.timelineSort
+  };
+
+  const getSelectText = (select, value) => {
+    if (!select) return value;
+    const opt = select.querySelector(`option[value="${value}"]`);
+    return opt ? opt.textContent : value;
+  };
+
+  if (timelineFilters.generation !== defaults.generation) {
+    chips.push({
+      key: "generation",
+      text: `${labelMap.generation}: ${getSelectText(timelineGenSelect, timelineFilters.generation)} ✕`
+    });
+  }
+  if (timelineFilters.month !== defaults.month) {
+    chips.push({
+      key: "month",
+      text: `${labelMap.month}: ${getSelectText(timelineMonthSelect, timelineFilters.month)} ✕`
+    });
+  }
+  if (timelineFilters.gender !== defaults.gender) {
+    chips.push({
+      key: "gender",
+      text: `${labelMap.gender}: ${getSelectText(timelineGenderSelect, timelineFilters.gender)} ✕`
+    });
+  }
+  if (timelineFilters.sort !== defaults.sort) {
+    chips.push({
+      key: "sort",
+      text: `${labelMap.sort}: ${getSelectText(timelineSortSelect, timelineFilters.sort)} ✕`
+    });
+  }
+
+  timelineActiveFilters.innerHTML = "";
+  if (!chips.length) {
+    timelineActiveFilters.hidden = true;
+    return;
+  }
+  timelineActiveFilters.hidden = false;
+  chips.forEach((chip) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chip";
+    btn.dataset.filter = chip.key;
+    btn.textContent = chip.text;
+    btn.addEventListener("click", () => {
+      if (chip.key === "generation") {
+        timelineFilters.generation = defaults.generation;
+        if (timelineGenSelect) timelineGenSelect.value = defaults.generation;
+      }
+      if (chip.key === "month") {
+        timelineFilters.month = defaults.month;
+        if (timelineMonthSelect) timelineMonthSelect.value = defaults.month;
+      }
+      if (chip.key === "gender") {
+        timelineFilters.gender = defaults.gender;
+        if (timelineGenderSelect) timelineGenderSelect.value = defaults.gender;
+      }
+      if (chip.key === "sort") {
+        timelineFilters.sort = defaults.sort;
+        if (timelineSortSelect) timelineSortSelect.value = defaults.sort;
+      }
+      renderTimeline();
+      updateTimelineActiveFilters();
+    });
+    timelineActiveFilters.appendChild(btn);
+  });
+
+  const resetAll = document.createElement("button");
+  resetAll.type = "button";
+  resetAll.className = "chip reset-all";
+  resetAll.textContent = t.timelineResetAll;
+  resetAll.addEventListener("click", () => {
+    timelineFilters = { generation: "all", month: "all", gender: "all", sort: "year" };
+    if (timelineGenSelect) timelineGenSelect.value = "all";
+    if (timelineMonthSelect) timelineMonthSelect.value = "all";
+    if (timelineGenderSelect) timelineGenderSelect.value = "all";
+    if (timelineSortSelect) timelineSortSelect.value = "year";
+    renderTimeline();
+    updateTimelineActiveFilters();
+  });
+  timelineActiveFilters.appendChild(resetAll);
+}
+
+function updateTimelineMoreState(nextState) {
+  if (!timelineMoreBtn || !timelineMorePanel) return;
+  const t = i18n[lang] || i18n.ms;
+  if (typeof nextState === "boolean") timelineMoreOpen = nextState;
+  timelineMorePanel.classList.toggle("is-open", timelineMoreOpen);
+  timelineMorePanel.setAttribute("aria-hidden", timelineMoreOpen ? "false" : "true");
+  timelineMoreBtn.setAttribute("aria-expanded", timelineMoreOpen ? "true" : "false");
+  timelineMoreBtn.textContent = timelineMoreOpen ? t.timelineLess : t.timelineMore;
 }
 
 function getPersonDepthMap() {
@@ -1723,6 +1838,7 @@ function renderTimeline() {
     });
     timelineList.appendChild(item);
   });
+  updateTimelineActiveFilters();
 }
 
 function parseYear(value) {
@@ -2558,6 +2674,7 @@ if (timelineGenSelect) {
   timelineGenSelect.addEventListener("change", () => {
     timelineFilters.generation = timelineGenSelect.value || "all";
     renderTimeline();
+    updateTimelineActiveFilters();
   });
 }
 
@@ -2565,6 +2682,7 @@ if (timelineMonthSelect) {
   timelineMonthSelect.addEventListener("change", () => {
     timelineFilters.month = timelineMonthSelect.value || "all";
     renderTimeline();
+    updateTimelineActiveFilters();
   });
 }
 
@@ -2572,6 +2690,7 @@ if (timelineGenderSelect) {
   timelineGenderSelect.addEventListener("change", () => {
     timelineFilters.gender = timelineGenderSelect.value || "all";
     renderTimeline();
+    updateTimelineActiveFilters();
   });
 }
 
@@ -2579,6 +2698,13 @@ if (timelineSortSelect) {
   timelineSortSelect.addEventListener("change", () => {
     timelineFilters.sort = timelineSortSelect.value || "year";
     renderTimeline();
+    updateTimelineActiveFilters();
+  });
+}
+
+if (timelineMoreBtn) {
+  timelineMoreBtn.addEventListener("click", () => {
+    updateTimelineMoreState(!timelineMoreOpen);
   });
 }
 
@@ -2590,6 +2716,7 @@ if (timelineClearBtn) {
     if (timelineGenderSelect) timelineGenderSelect.value = "all";
     if (timelineSortSelect) timelineSortSelect.value = "year";
     renderTimeline();
+    updateTimelineActiveFilters();
   });
 }
 
@@ -3065,6 +3192,8 @@ function applyLanguage() {
   if (timelineGenderSelect) timelineGenderSelect.value = timelineFilters.gender;
   if (timelineSortSelect) timelineSortSelect.value = timelineFilters.sort;
   populateTimelineFilters();
+  updateTimelineMoreState();
+  updateTimelineActiveFilters();
 
   const branchOptions = branchFilter?.options || [];
   if (branchOptions.length > 0) {
