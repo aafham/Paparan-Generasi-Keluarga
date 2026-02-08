@@ -2052,18 +2052,12 @@ if (mobilePanelBtn) {
   mobilePanelBtn.addEventListener("click", () => {
     toggleControlsCollapsed();
   });
-  mobilePanelBtn.addEventListener("touchstart", () => {
-    toggleControlsCollapsed();
-  }, { passive: true });
 }
 
 if (bottomSheetHandle) {
   bottomSheetHandle.addEventListener("click", () => {
     toggleControlsCollapsed();
   });
-  bottomSheetHandle.addEventListener("touchstart", () => {
-    toggleControlsCollapsed();
-  }, { passive: true });
 }
 
 const sheetControls = document.querySelector("#bottom-sheet .controls");
@@ -2089,6 +2083,8 @@ const resetSheetOffset = () => {
 if (bottomSheet) {
   bottomSheet.addEventListener("touchstart", (event) => {
     if (!isMobileView()) return;
+    if (event.target.closest("#mobile-panel-btn")) return;
+    if (event.target.closest("#sheet-handle")) return;
     const targetInControls = sheetControls && sheetControls.contains(event.target);
     if (targetInControls && sheetControls.scrollTop > 0 && !controlsCollapsed) return;
     const touch = event.touches[0];

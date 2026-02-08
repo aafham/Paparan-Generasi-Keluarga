@@ -1684,6 +1684,7 @@ body.hide-tags .person-tags {
     max-height: 70vh;
     overflow: auto;
     padding-bottom: 18px;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
   }
 
   .sheet-handle {
@@ -1715,6 +1716,7 @@ body.hide-tags .person-tags {
   body.controls-collapsed .bottom-sheet .controls {
     max-height: 56px;
     overflow: hidden;
+    opacity: 0.75;
   }
 
   body.controls-collapsed .bottom-sheet .controls .control-group,
