@@ -94,7 +94,6 @@ const themePresetSelect = document.getElementById("theme-preset");
 const timelineGenSelect = document.getElementById("timeline-gen");
 const timelineMonthSelect = document.getElementById("timeline-month");
 const timelineGenderSelect = document.getElementById("timeline-gender");
-const timelineYearTo = document.getElementById("timeline-year-to");
 const timelineSortSelect = document.getElementById("timeline-sort");
 const timelineClearBtn = document.getElementById("timeline-clear");
 
@@ -173,7 +172,6 @@ let timelineFilters = {
   generation: "all",
   month: "all",
   gender: "all",
-  yearTo: "",
   sort: "year"
 };
 
@@ -271,7 +269,6 @@ const i18n = {
     timelineGenderAll: "Semua",
     timelineGenderMale: "Lelaki",
     timelineGenderFemale: "Perempuan",
-    timelineYearTo: "Hingga Tahun",
     timelineSort: "Susun",
     timelineSortYear: "Ikut Tahun",
     timelineSortAlpha: "Ikut Abjad",
@@ -403,7 +400,6 @@ const i18n = {
     timelineGenderAll: "All",
     timelineGenderMale: "Male",
     timelineGenderFemale: "Female",
-    timelineYearTo: "To Year",
     timelineSort: "Sort",
     timelineSortYear: "By Year",
     timelineSortAlpha: "Alphabetical",
@@ -1649,7 +1645,6 @@ function renderTimeline() {
   if (!timelineSection) return;
   timelineList.innerHTML = "";
   const depthMap = getPersonDepthMap();
-  const yearTo = timelineFilters.yearTo ? Number(timelineFilters.yearTo) : null;
   const parentKeyByChild = new Map();
   treeData.unions.forEach((union) => {
     const parents = [union.partner1, union.partner2].filter(Boolean).sort().join("|") || "unknown";
@@ -1678,7 +1673,6 @@ function renderTimeline() {
       if (!birthMonth || String(birthMonth) !== String(timelineFilters.month)) return false;
     }
     if (timelineFilters.gender !== "all" && gender !== timelineFilters.gender) return false;
-    if (yearTo && (!birth || birth > yearTo)) return false;
     return true;
   });
 
@@ -2574,13 +2568,6 @@ if (timelineMonthSelect) {
   });
 }
 
-if (timelineYearTo) {
-  timelineYearTo.addEventListener("input", () => {
-    timelineFilters.yearTo = timelineYearTo.value;
-    renderTimeline();
-  });
-}
-
 if (timelineGenderSelect) {
   timelineGenderSelect.addEventListener("change", () => {
     timelineFilters.gender = timelineGenderSelect.value || "all";
@@ -2597,11 +2584,10 @@ if (timelineSortSelect) {
 
 if (timelineClearBtn) {
   timelineClearBtn.addEventListener("click", () => {
-    timelineFilters = { generation: "all", month: "all", gender: "all", yearTo: "", sort: "year" };
+    timelineFilters = { generation: "all", month: "all", gender: "all", sort: "year" };
     if (timelineGenSelect) timelineGenSelect.value = "all";
     if (timelineMonthSelect) timelineMonthSelect.value = "all";
     if (timelineGenderSelect) timelineGenderSelect.value = "all";
-    if (timelineYearTo) timelineYearTo.value = "";
     if (timelineSortSelect) timelineSortSelect.value = "year";
     renderTimeline();
   });
@@ -3077,7 +3063,6 @@ function applyLanguage() {
   if (settingsDefaultView) settingsDefaultView.value = viewMode;
   if (timelineMonthSelect) timelineMonthSelect.value = timelineFilters.month;
   if (timelineGenderSelect) timelineGenderSelect.value = timelineFilters.gender;
-  if (timelineYearTo) timelineYearTo.value = timelineFilters.yearTo;
   if (timelineSortSelect) timelineSortSelect.value = timelineFilters.sort;
   populateTimelineFilters();
 
