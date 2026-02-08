@@ -81,7 +81,6 @@ const mobileQuickZoomIn = document.getElementById("m-zoom-in");
 const mobileQuickZoomOut = document.getElementById("m-zoom-out");
 const mobileQuickZoomFit = document.getElementById("m-zoom-fit");
 const mobileSettingsBtn = document.getElementById("mobile-settings-btn");
-const mobileHelpBtn = document.getElementById("mobile-help-btn");
 const mobileSearchBtn = document.getElementById("mobile-search-btn");
 const bottomSheetHandle = document.getElementById("sheet-handle");
 const miniToolbar = document.getElementById("mini-toolbar");
@@ -97,21 +96,11 @@ const settingsCardScale = document.getElementById("setting-card-scale");
 const settingsMinimap = document.getElementById("settings-minimap");
 const settingsDrag = document.getElementById("settings-drag");
 const settingsDefaultView = document.getElementById("settings-default-view");
-const settingsShowTutorial = document.getElementById("setting-show-tutorial");
 const settingsReset = document.getElementById("setting-reset-settings");
 const settingsShowBirthdate = document.getElementById("setting-show-birthdate");
 const settingsShowAge = document.getElementById("setting-show-age");
 const settingsShowTags = document.getElementById("setting-show-tags");
 const settingsDataVersion = document.getElementById("settings-data-version");
-const helpBtn = document.getElementById("help-btn");
-const onboarding = document.getElementById("onboarding");
-const onboardingTitle = document.getElementById("onboarding-title");
-const onboardingList = document.getElementById("onboarding-list");
-const onboardingStep = document.getElementById("onboarding-step");
-const onboardingSkip = document.getElementById("onboarding-skip");
-const onboardingBack = document.getElementById("onboarding-back");
-const onboardingNext = document.getElementById("onboarding-next");
-const onboardingDone = document.getElementById("onboarding-done");
 const statPeople = document.getElementById("stat-people");
 const statCouples = document.getElementById("stat-couples");
 const statGenerations = document.getElementById("stat-generations");
@@ -123,7 +112,6 @@ const timelineYearFrom = document.getElementById("timeline-year-from");
 const timelineYearTo = document.getElementById("timeline-year-to");
 const timelineClearBtn = document.getElementById("timeline-clear");
 
-const ONBOARDING_KEY = "ft_onboarding_done";
 
 function on(el, event, handler, options) {
   if (!el) return;
@@ -344,7 +332,6 @@ const i18n = {
     settingsDefaultView: "Paparan Lalai",
     settingsViewTree: "Tree",
     settingsViewTimeline: "Timeline",
-    settingsShowTutorial: "Tunjuk tutorial semula",
     settingsReset: "Reset tetapan",
     settingsShowBirthdate: "Tarikh Lahir",
     settingsShowAge: "Umur",
@@ -493,7 +480,6 @@ const i18n = {
     settingsDefaultView: "Default View",
     settingsViewTree: "Tree",
     settingsViewTimeline: "Timeline",
-    settingsShowTutorial: "Show tutorial again",
     settingsReset: "Reset settings",
     settingsShowBirthdate: "Show Birthdate",
     settingsShowAge: "Show Age",
@@ -531,8 +517,6 @@ async function clearSiteCache() {
   window.location.reload();
 }
 
-let onboardingIndex = 0;
-let onboardingHighlightEl = null;
 
 function applyThemePreset() {
   if (!document.body || !app) return;
@@ -709,193 +693,7 @@ function applySelectionHighlight(personId) {
   applyClass(partners, "is-partner");
 }
 
-function hasOnboardingDone() {
-  try {
-    return localStorage.getItem(ONBOARDING_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
 
-function setOnboardingDone() {
-  try {
-    localStorage.setItem(ONBOARDING_KEY, "1");
-  } catch {
-    // ignore storage errors
-  }
-}
-
-function getOnboardingSteps() {
-  if (lang === "en") {
-    return [
-      {
-        title: "Welcome",
-        bullets: [
-          "This is a family tree viewer.",
-          "Use it to explore generations and relationships.",
-          "View-only mode by default."
-        ],
-        targetSelector: "#tree-wrap"
-      },
-      {
-        title: "Navigation",
-        bullets: [
-          "Scroll to zoom in/out.",
-          "Drag to pan the canvas.",
-          "Pinch to zoom on mobile."
-        ],
-        targetSelector: "#tree-wrap"
-      },
-      {
-        title: "Search",
-        bullets: [
-          "Type a name in the search box.",
-          "Click a result to jump to the person.",
-          "Use 'Search & Focus' for the top match."
-        ],
-        targetSelector: "#search"
-      },
-      {
-        title: "View Mode",
-        bullets: [
-          "This site is view-only.",
-          "Data comes from data.json.",
-          "Use export to share."
-        ],
-        targetSelector: "#app"
-      },
-      {
-        title: "Export",
-        bullets: [
-          "Export PNG or PDF from the buttons.",
-          "Use PNG for images, PDF for printing."
-        ],
-        targetSelector: "#export-png"
-      },
-      {
-        title: "Reset",
-        bullets: [
-          "Clear Cache resets preferences.",
-          "It reloads the page fresh."
-        ],
-        targetSelector: "#clear-cache"
-      }
-    ];
-  }
-
-  return [
-    {
-      title: "Pengenalan",
-      bullets: [
-        "Ini paparan salasilah keluarga.",
-        "Semak generasi dan hubungan ahli.",
-        "Mod paparan sahaja."
-      ],
-      targetSelector: "#tree-wrap"
-    },
-    {
-      title: "Navigasi",
-      bullets: [
-        "Scroll untuk zoom in/out.",
-        "Drag untuk gerakkan paparan.",
-        "Pinch untuk zoom di telefon."
-      ],
-      targetSelector: "#tree-wrap"
-    },
-    {
-      title: "Carian",
-      bullets: [
-        "Taip nama pada kotak carian.",
-        "Klik hasil untuk lompat ke ahli.",
-        "Guna 'Cari & Fokus' untuk hasil teratas."
-      ],
-      targetSelector: "#search"
-    },
-    {
-      title: "Mod Paparan",
-      bullets: [
-        "Laman ini untuk lihat sahaja.",
-        "Data diambil daripada data.json.",
-        "Guna export untuk kongsi."
-      ],
-      targetSelector: "#app"
-    },
-    {
-      title: "Eksport",
-      bullets: [
-        "Eksport PNG atau PDF melalui butang.",
-        "PNG untuk imej, PDF untuk cetak."
-      ],
-      targetSelector: "#export-png"
-    },
-    {
-      title: "Reset",
-      bullets: [
-        "Clear Cache reset tetapan anda.",
-        "Halaman akan dimuat semula."
-      ],
-      targetSelector: "#clear-cache"
-    }
-  ];
-}
-
-function clearOnboardingHighlight() {
-  if (!onboardingHighlightEl) return;
-  onboardingHighlightEl.classList.remove("onboarding-highlight");
-  onboardingHighlightEl = null;
-}
-
-function applyOnboardingHighlight(selector) {
-  clearOnboardingHighlight();
-  if (!selector) return;
-  const el = document.querySelector(selector);
-  if (!el) return;
-  el.classList.add("onboarding-highlight");
-  onboardingHighlightEl = el;
-}
-
-function renderOnboardingStep() {
-  if (!onboarding || !onboardingTitle || !onboardingList || !onboardingStep) return;
-  const steps = getOnboardingSteps();
-  onboardingIndex = Math.max(0, Math.min(onboardingIndex, steps.length - 1));
-  const step = steps[onboardingIndex];
-
-  onboardingTitle.textContent = step.title;
-  onboardingStep.textContent = `${onboardingIndex + 1}/${steps.length}`;
-  onboardingList.innerHTML = "";
-  step.bullets.forEach((text) => {
-    const li = document.createElement("li");
-    li.textContent = text;
-    onboardingList.appendChild(li);
-  });
-
-  if (onboardingBack) onboardingBack.disabled = onboardingIndex === 0;
-  if (onboardingNext) onboardingNext.style.display = onboardingIndex === steps.length - 1 ? "none" : "inline-flex";
-  if (onboardingDone) onboardingDone.style.display = onboardingIndex === steps.length - 1 ? "inline-flex" : "none";
-
-  applyOnboardingHighlight(step.targetSelector);
-}
-
-function openOnboarding() {
-  if (!onboarding) return;
-  onboardingIndex = 0;
-  renderOnboardingStep();
-  onboarding.classList.add("is-open");
-  onboarding.setAttribute("aria-hidden", "false");
-}
-
-function closeOnboarding(markDone = true) {
-  if (!onboarding) return;
-  onboarding.classList.remove("is-open");
-  onboarding.setAttribute("aria-hidden", "true");
-  clearOnboardingHighlight();
-  if (markDone) setOnboardingDone();
-}
-
-function checkOnboardingOnLoad() {
-  if (hasOnboardingDone()) return;
-  openOnboarding();
-}
 
 function initFromData(data) {
   treeData = data;
@@ -2475,10 +2273,6 @@ if (mobileSettingsBtn && settingsBtn) {
   mobileSettingsBtn.addEventListener("click", () => settingsBtn.click());
 }
 
-if (mobileHelpBtn && helpBtn) {
-  mobileHelpBtn.addEventListener("click", () => helpBtn.click());
-}
-
 if (mobileSearchBtn) {
   mobileSearchBtn.addEventListener("click", () => {
     if (controlsCollapsed && controlsToggleBtn) {
@@ -2903,17 +2697,6 @@ if (settingsDefaultView) {
   });
 }
 
-if (settingsShowTutorial) {
-  settingsShowTutorial.addEventListener("click", () => {
-    try {
-      localStorage.removeItem(ONBOARDING_KEY);
-    } catch {
-      // ignore storage errors
-    }
-    openOnboarding();
-  });
-}
-
 if (settingsReset) {
   settingsReset.addEventListener("click", () => {
     try {
@@ -3056,58 +2839,12 @@ window.addEventListener("resize", () => {
   updateMiniToolbarVisibility();
 });
 
-if (helpBtn) {
-  helpBtn.addEventListener("click", () => {
-    openOnboarding();
-  });
-}
-
-if (onboardingNext) {
-  onboardingNext.addEventListener("click", () => {
-    onboardingIndex += 1;
-    renderOnboardingStep();
-  });
-}
-
-if (onboardingBack) {
-  onboardingBack.addEventListener("click", () => {
-    onboardingIndex = Math.max(0, onboardingIndex - 1);
-    renderOnboardingStep();
-  });
-}
-
-if (onboardingSkip) {
-  onboardingSkip.addEventListener("click", () => {
-    closeOnboarding(true);
-  });
-}
-
-if (onboardingDone) {
-  onboardingDone.addEventListener("click", () => {
-    closeOnboarding(true);
-  });
-}
-
-if (onboarding) {
-  onboarding.addEventListener("click", (event) => {
-    if (!event.target.dataset.onboardingClose) return;
-    closeOnboarding(true);
-  });
-}
-
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
-  if (onboarding && onboarding.classList.contains("is-open")) {
-    closeOnboarding(true);
-  }
   if (settingsModal && settingsModal.classList.contains("is-open")) {
     settingsModal.classList.remove("is-open");
     settingsModal.setAttribute("aria-hidden", "true");
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  checkOnboardingOnLoad();
 });
 
 window.addEventListener("load", () => {
@@ -3323,12 +3060,7 @@ function applyLanguage() {
   if (controlsToggleBtn) {
     controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
   }
-  if (helpBtn) helpBtn.textContent = lang === "en" ? "Help" : "Cara Guna";
   if (settingsBtn) settingsBtn.textContent = t.settingsTitle;
-  if (onboardingSkip) onboardingSkip.textContent = lang === "en" ? "Skip" : "Langkau";
-  if (onboardingBack) onboardingBack.textContent = lang === "en" ? "Back" : "Kembali";
-  if (onboardingNext) onboardingNext.textContent = lang === "en" ? "Next" : "Seterusnya";
-  if (onboardingDone) onboardingDone.textContent = lang === "en" ? "Done" : "Selesai";
   if (themePresetSelect) themePresetSelect.value = themePreset;
   if (settingsCardScale) settingsCardScale.value = String(cardScale);
   if (settingsCompact) settingsCompact.checked = compactMode;
@@ -3372,9 +3104,6 @@ function applyLanguage() {
 
   syncMobileLabels();
   if (minimapHandle) minimapHandle.textContent = t.minimapShow;
-  if (onboarding && onboarding.classList.contains("is-open")) {
-    renderOnboardingStep();
-  }
 }
 
 function minimapScrollTo(clientX, clientY) {
@@ -3409,15 +3138,17 @@ if (minimap) {
     minimap.classList.remove("is-active");
   };
   let dragging = false;
+  let hovering = false;
   let hideTimer = null;
-  let autoHideInterval = null;
 
   const scheduleHide = () => {
     if (isMobileView()) return;
     if (!minimapWrap) return;
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
-      minimapWrap.classList.add("is-collapsed");
+      if (!dragging && !hovering) {
+        minimapWrap.classList.add("is-collapsed");
+      }
     }, 2500);
   };
 
@@ -3445,8 +3176,22 @@ if (minimap) {
 
   if (minimapWrap) {
     minimapWrap.classList.add("is-collapsed");
-    minimapWrap.addEventListener("mouseenter", showMinimap);
-    minimapWrap.addEventListener("focusin", showMinimap);
+    minimapWrap.addEventListener("mouseenter", () => {
+      hovering = true;
+      showMinimap();
+    });
+    minimapWrap.addEventListener("mouseleave", () => {
+      hovering = false;
+      scheduleHide();
+    });
+    minimapWrap.addEventListener("focusin", () => {
+      hovering = true;
+      showMinimap();
+    });
+    minimapWrap.addEventListener("focusout", () => {
+      hovering = false;
+      scheduleHide();
+    });
     minimapWrap.addEventListener("touchstart", showMinimap, { passive: true });
     if (isMobileView()) {
       minimapWrap.classList.remove("is-open");
@@ -3498,11 +3243,6 @@ if (minimap) {
   minimap.addEventListener("mouseup", deactivate);
 
   scheduleHide();
-  if (minimapWrap && !autoHideInterval) {
-    autoHideInterval = setInterval(() => {
-      if (!dragging && !isMobileView()) minimapWrap.classList.add("is-collapsed");
-    }, 3500);
-  }
   window.addEventListener("scroll", scheduleHide, true);
   window.addEventListener("touchend", scheduleHide, { passive: true });
   window.addEventListener("resize", () => {
