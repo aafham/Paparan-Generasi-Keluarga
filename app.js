@@ -793,10 +793,12 @@ function initEditor() {
     });
   }
 
-  editorToggle.addEventListener("click", () => {
-    const next = editorPanel.hidden === true ? false : true;
-    editorPanel.hidden = next;
-  });
+  if (editorToggle) {
+    editorToggle.addEventListener("click", () => {
+      const next = editorPanel.hidden === true ? false : true;
+      editorPanel.hidden = next;
+    });
+  }
 
   refreshEditorLists();
   editorPerson.addEventListener("change", () => {
@@ -1773,27 +1775,35 @@ zoomFitBtn.addEventListener("click", () => {
   savePrefs();
 });
 
-focusEldersBtn.addEventListener("click", () => {
-  const elder = findElderPerson();
-  if (elder) focusPerson(elder.id, true);
-});
+if (focusEldersBtn) {
+  focusEldersBtn.addEventListener("click", () => {
+    const elder = findElderPerson();
+    if (elder) focusPerson(elder.id, true);
+  });
+}
 
-backTopBtn.addEventListener("click", () => {
-  treeWrap.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-});
+if (backTopBtn) {
+  backTopBtn.addEventListener("click", () => {
+    treeWrap.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+  });
+}
 
-pathToggleBtn.addEventListener("click", () => {
-  pathMode = !pathMode;
-  applyLineageHighlight();
-  savePrefs();
-});
+if (pathToggleBtn) {
+  pathToggleBtn.addEventListener("click", () => {
+    pathMode = !pathMode;
+    applyLineageHighlight();
+    savePrefs();
+  });
+}
 
-compactToggleBtn.addEventListener("click", () => {
-  compactMode = !compactMode;
-  document.body.classList.toggle("compact", compactMode);
-  applyLanguage();
-  savePrefs();
-});
+if (compactToggleBtn) {
+  compactToggleBtn.addEventListener("click", () => {
+    compactMode = !compactMode;
+    document.body.classList.toggle("compact", compactMode);
+    applyLanguage();
+    savePrefs();
+  });
+}
 
 langToggleBtn.addEventListener("change", () => {
   lang = langToggleBtn.checked ? "en" : "ms";
@@ -1849,14 +1859,16 @@ if (importJsonBtn && importJsonFile) {
   });
 }
 
-validateDataBtn.addEventListener("click", () => {
-  const errors = validateTreeData(treeData);
-  if (errors.length === 0) {
-    validateOutput.textContent = i18n[lang].validateOk;
-  } else {
-    validateOutput.textContent = `${i18n[lang].validateErr} ${errors.join(" | ")}`;
-  }
-});
+if (validateDataBtn) {
+  validateDataBtn.addEventListener("click", () => {
+    const errors = validateTreeData(treeData);
+    if (errors.length === 0) {
+      validateOutput.textContent = i18n[lang].validateOk;
+    } else {
+      validateOutput.textContent = `${i18n[lang].validateErr} ${errors.join(" | ")}`;
+    }
+  });
+}
 
 let isPanning = false;
 let panStart = { x: 0, y: 0, scrollLeft: 0, scrollTop: 0 };
@@ -2034,13 +2046,15 @@ toggleThemeBtn.addEventListener("change", () => {
   savePrefs();
 });
 
-viewToggle.addEventListener("click", () => {
-  viewMode = viewMode === "tree" ? "timeline" : "tree";
-  applyViewMode();
-  applyLanguage();
-  savePrefs();
-  updateUrlState();
-});
+if (viewToggle) {
+  viewToggle.addEventListener("click", () => {
+    viewMode = viewMode === "tree" ? "timeline" : "tree";
+    applyViewMode();
+    applyLanguage();
+    savePrefs();
+    updateUrlState();
+  });
+}
 
 exportPngBtn.addEventListener("click", async () => {
   if (!window.html2canvas) {
@@ -2253,17 +2267,10 @@ function syncMobileLabels() {
 
     const optionMap = {
       "zoom-reset": zoomResetBtn,
-      "focus-elders": focusEldersBtn,
-      "back-top": backTopBtn,
-      "path-toggle": pathToggleBtn,
-      "compact-toggle": compactToggleBtn,
       "toggle-theme": toggleThemeBtn,
       "lang-toggle": langToggleBtn,
-      "view-toggle": viewToggle,
       "export-png": exportPngBtn,
-      "export-pdf": exportPdfBtn,
-      "validate-data": validateDataBtn,
-      "editor-toggle": editorToggle
+      "export-pdf": exportPdfBtn
     };
 
     Object.entries(optionMap).forEach(([value, btn]) => {
@@ -2294,11 +2301,11 @@ function applyLanguage() {
   });
 
   searchInput.placeholder = t.searchPlaceholder;
-  viewToggle.textContent = viewMode === "timeline" ? t.viewTree : t.viewTimeline;
-  compactToggleBtn.textContent = compactMode ? t.compactOn : t.compactOff;
-  pathToggleBtn.textContent = pathMode ? t.pathOn : t.pathOff;
-  focusEldersBtn.textContent = t.focusElders;
-  backTopBtn.textContent = t.backTop;
+  if (viewToggle) viewToggle.textContent = viewMode === "timeline" ? t.viewTree : t.viewTimeline;
+  if (compactToggleBtn) compactToggleBtn.textContent = compactMode ? t.compactOn : t.compactOff;
+  if (pathToggleBtn) pathToggleBtn.textContent = pathMode ? t.pathOn : t.pathOff;
+  if (focusEldersBtn) focusEldersBtn.textContent = t.focusElders;
+  if (backTopBtn) backTopBtn.textContent = t.backTop;
   zoomFitBtn.textContent = t.fit;
   zoomInBtn.textContent = t.zoomIn;
   zoomOutBtn.textContent = t.zoomOut;
@@ -2313,8 +2320,8 @@ function applyLanguage() {
   }
   if (exportJsonBtn) exportJsonBtn.textContent = t.exportJson;
   if (importJsonBtn) importJsonBtn.textContent = t.importJson;
-  validateDataBtn.textContent = t.validateData;
-  editorToggle.textContent = t.editorToggle;
+  if (validateDataBtn) validateDataBtn.textContent = t.validateData;
+  if (editorToggle) editorToggle.textContent = t.editorToggle;
   toggleThemeBtn.checked = app.dataset.theme === "dark";
   langToggleBtn.checked = lang === "en";
 
