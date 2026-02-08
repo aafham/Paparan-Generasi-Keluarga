@@ -164,19 +164,6 @@ body[data-theme="dark"] {
   max-width: 520px;
 }
 
-.update-banner {
-  margin-top: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--primary-2) 20%, #fff);
-  color: var(--ink);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: var(--shadow-soft);
-}
-
 .brand-minimap-wrap {
   margin-top: 18px;
   position: fixed;

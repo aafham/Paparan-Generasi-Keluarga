@@ -104,7 +104,6 @@ const VIRTUALIZE_THRESHOLD = 1000000;
 const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
 const FORCE_RESET = false;
-const BUILD_ID = window.BUILD_ID || "fallback";
 const PWA_CLEANUP_KEY = "pwa_cleanup_done";
 
 let treeData = null;
@@ -226,8 +225,6 @@ const i18n = {
     genderLabel: "Jantina",
     genderMale: "Lelaki",
     genderFemale: "Perempuan",
-    updateReady: "Versi baru tersedia.",
-    updateReload: "Muat Semula",
     controlsToggleOpen: "Buka Panel",
     controlsToggleClose: "Tutup Panel",
     resetView: "Reset View",
@@ -338,8 +335,6 @@ const i18n = {
     genderLabel: "Gender",
     genderMale: "Male",
     genderFemale: "Female",
-    updateReady: "Update available.",
-    updateReload: "Reload",
     controlsToggleOpen: "Show Panel",
     controlsToggleClose: "Hide Panel",
     resetView: "Reset View",
@@ -387,24 +382,30 @@ async function clearSiteCache() {
   } catch {
     // ignore storage errors
   }
-  if ("caches" in window) {
-    try {
-      const names = await caches.keys();
-      await Promise.all(names.map((name) => caches.delete(name)));
-    } catch {
-      // ignore cache errors
-    }
+  await clearBrowserCaches();
+  await unregisterServiceWorkers();
+  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
+}
+
+async function clearBrowserCaches() {
+  if (!("caches" in window)) return;
+  try {
+    const names = await caches.keys();
+    await Promise.all(names.map((name) => caches.delete(name)));
+  } catch {
+    // ignore cache errors
   }
+}
+
+async function unregisterServiceWorkers() {
   try {
     const sw = navigator["service" + "Worker"];
-    if (sw) {
-      const regs = await sw.getRegistrations();
-      await Promise.all(regs.map((reg) => reg.unregister()));
-    }
+    if (!sw) return;
+    const regs = await sw.getRegistrations();
+    await Promise.all(regs.map((reg) => reg.unregister()));
   } catch {
     // ignore service worker errors
   }
-  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
 }
 
 function hasPwaCleanupFlag() {
@@ -438,11 +439,15 @@ function setPwaCleanupFlag() {
 async function runPwaCleanupOnce() {
   if (hasPwaCleanupFlag()) return;
   setPwaCleanupFlag();
+  let didCleanup = false;
   try {
     const sw = navigator["service" + "Worker"];
     if (sw) {
       const regs = await sw.getRegistrations();
-      await Promise.all(regs.map((reg) => reg.unregister()));
+      if (regs.length) {
+        await Promise.all(regs.map((reg) => reg.unregister()));
+        didCleanup = true;
+      }
     }
   } catch {
     // ignore service worker errors
@@ -450,15 +455,18 @@ async function runPwaCleanupOnce() {
   if ("caches" in window) {
     try {
       const names = await caches.keys();
-      await Promise.all(names.map((name) => caches.delete(name)));
+      if (names.length) {
+        await Promise.all(names.map((name) => caches.delete(name)));
+        didCleanup = true;
+      }
     } catch {
       // ignore cache errors
     }
   }
-  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
+  if (didCleanup) {
+    window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
+  }
 }
-
-runPwaCleanupOnce();
 
 function initFromData(data) {
   treeData = data;
@@ -1908,12 +1916,14 @@ if (compactToggleBtn) {
   });
 }
 
-langToggleBtn.addEventListener("change", () => {
-  lang = langToggleBtn.checked ? "en" : "ms";
-  applyLanguage();
-  scheduleRender();
-  savePrefs();
-});
+if (langToggleBtn) {
+  langToggleBtn.addEventListener("change", () => {
+    lang = langToggleBtn.checked ? "en" : "ms";
+    applyLanguage();
+    scheduleRender();
+    savePrefs();
+  });
+}
 
 if (controlsToggleBtn) {
   controlsToggleBtn.addEventListener("click", () => {
@@ -2160,12 +2170,14 @@ function focusPerson(personId, open = false) {
   updateUrlState();
 }
 
-toggleThemeBtn.addEventListener("change", () => {
-  const next = toggleThemeBtn.checked ? "dark" : "light";
-  app.dataset.theme = next;
-  document.body.dataset.theme = next;
-  savePrefs();
-});
+if (toggleThemeBtn) {
+  toggleThemeBtn.addEventListener("change", () => {
+    const next = toggleThemeBtn.checked ? "dark" : "light";
+    app.dataset.theme = next;
+    document.body.dataset.theme = next;
+    savePrefs();
+  });
+}
 
 if (viewToggle) {
   viewToggle.addEventListener("click", () => {
@@ -2216,6 +2228,7 @@ exportPdfBtn.addEventListener("click", async () => {
 });
 
 window.addEventListener("load", () => {
+  runPwaCleanupOnce();
   if (treeData) {
     renderScene();
     applyZoom();

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" id="app-styles" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260208" />
 </head>
 <body>
   <div class="app" id="app" data-theme="light">
@@ -204,14 +204,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script>
-    window.BUILD_ID = "202602091200";
-    const buildId = window.BUILD_ID;
-    const appStyles = document.getElementById("app-styles");
-    if (appStyles) appStyles.href = `styles.css?v=${buildId}`;
-    const appScript = document.createElement("script");
-    appScript.src = `app.js?v=${buildId}`;
-    document.body.appendChild(appScript);
-  </script>
+  <script src="app.js?v=20260208" defer></script>
 </body>
 </html>
