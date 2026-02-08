@@ -1820,13 +1820,25 @@ function renderTimeline() {
     return a.order - b.order;
   });
 
+  const t = i18n[lang] || i18n.ms;
   filtered.forEach(({ person }) => {
     const item = document.createElement("div");
     item.className = "timeline-item";
     if (person.death) item.classList.add("deceased");
+    const birthDate = parseDateValue(person.birth);
+    const age = !person.death ? calcAge(birthDate) : null;
+    const hasBirth = Boolean(person.birth);
+    const hasDeath = Boolean(person.death);
+    const metaLine = hasBirth && hasDeath
+      ? `${formatDateDisplay(person.birth)} - ${formatDateDisplay(person.death)}`
+      : hasBirth
+        ? `${t.bornPrefix}${formatDateDisplay(person.birth)}`
+        : t.datesUnknown;
+    const ageLine = age !== null ? `${t.ageLabel}: ${age}` : "";
     item.innerHTML = `
       <div class="timeline-name">${formatDisplayName(person.name)}</div>
-      <div class="timeline-meta">${formatDates(person.birth, person.death)}</div>
+      <div class="timeline-meta">${metaLine}</div>
+      ${ageLine ? `<div class="timeline-age">${ageLine}</div>` : ""}
       <div class="timeline-relation">${person.relation || ""}</div>
     `;
     item.addEventListener("click", () => {
