@@ -558,7 +558,7 @@ input[type="file"].input {
   padding: 40px;
   cursor: grab;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  touch-action: none;
+  touch-action: pan-x pan-y;
 }
 
 .tree-wrap.is-dragging {

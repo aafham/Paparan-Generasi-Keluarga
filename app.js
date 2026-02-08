@@ -1250,22 +1250,26 @@ function createPersonCard(person, depth) {
   deathLine.textContent = person.death ? `${i18n[lang].diedPrefix}${person.death}` : "";
   if (birthLine.textContent) meta.appendChild(birthLine);
   if (deathLine.textContent) meta.appendChild(deathLine);
-  const genBadge = document.createElement("span");
-  genBadge.className = "gen-badge";
-  genBadge.textContent = `G${depth}`;
   nameWrap.appendChild(name);
   nameWrap.appendChild(meta);
-  nameWrap.appendChild(genBadge);
 
   header.appendChild(avatar);
   header.appendChild(nameWrap);
 
   const tags = document.createElement("div");
   tags.className = "person-tags";
-  if (person.relation) {
+  const relationText = person.relation || "";
+  const noteText = person.note || "";
+  let tagText = "";
+  if (noteText && relationText) {
+    tagText = `${noteText}, ${relationText}`;
+  } else {
+    tagText = relationText || noteText;
+  }
+  if (tagText) {
     const tag = document.createElement("span");
     tag.className = "tag";
-    tag.textContent = person.relation;
+    tag.textContent = tagText;
     tags.appendChild(tag);
   }
   // No Bin/Binti tag on card
@@ -1806,7 +1810,7 @@ treeWrap.addEventListener("pointerdown", (event) => {
     scrollLeft: treeWrap.scrollLeft,
     scrollTop: treeWrap.scrollTop
   };
-  event.preventDefault();
+  if (event.pointerType === "touch") event.preventDefault();
 });
 
 treeWrap.addEventListener("pointermove", (event) => {
@@ -1816,7 +1820,7 @@ treeWrap.addEventListener("pointermove", (event) => {
   const dy = event.clientY - panStart.y;
   treeWrap.scrollLeft = panStart.scrollLeft - dx;
   treeWrap.scrollTop = panStart.scrollTop - dy;
-  event.preventDefault();
+  if (event.pointerType === "touch") event.preventDefault();
 });
 
 const stopPointerPan = (event) => {
@@ -2306,6 +2310,7 @@ if (minimap) {
     minimapWrap.classList.add("is-collapsed");
     minimapWrap.addEventListener("mouseenter", showMinimap);
     minimapWrap.addEventListener("focusin", showMinimap);
+    minimapWrap.addEventListener("touchstart", showMinimap, { passive: true });
   }
 
   if (minimapHandle) {
