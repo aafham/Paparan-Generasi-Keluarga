@@ -48,7 +48,7 @@
           </div>
           <div id="search-results" class="search-results" aria-live="polite"></div>
         </div>
-        <div class="control-group">
+        <div class="control-group" hidden>
           <label for="branch-filter" class="label" data-i18n="branchLabel">Tapis cabang</label>
           <select id="branch-filter" class="select"></select>
         </div>
@@ -146,12 +146,14 @@
             <div class="tree-canvas" id="tree-canvas" aria-live="polite"></div>
           </div>
         </div>
-        <aside class="story-panel" id="story-panel">
+        <aside class="story-panel" id="story-panel" hidden>
           <div class="story-head">
             <h2 id="story-title">Cerita Keluarga</h2>
             <div class="story-actions">
+              <button id="panel-close" class="btn ghost small close-btn" aria-label="Tutup">
+                <span aria-hidden="true">×</span>
+              </button>
               <button id="panel-edit" class="btn ghost small" data-i18n="modalEdit">Edit</button>
-              <button id="panel-delete" class="btn danger small" data-i18n="modalDelete">Padam</button>
             </div>
           </div>
           <div id="story-content" class="story-content">

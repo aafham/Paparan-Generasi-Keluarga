@@ -29,6 +29,7 @@ const storyBody = document.getElementById("story-body");
 const storyContent = document.getElementById("story-content");
 const panelEditBtn = document.getElementById("panel-edit");
 const panelDeleteBtn = document.getElementById("panel-delete");
+const panelCloseBtn = document.getElementById("panel-close");
 const panelEditForm = document.getElementById("panel-edit-form");
 const panelCancelBtn = document.getElementById("panel-cancel");
 const panelEditName = document.getElementById("panel-edit-name");
@@ -85,10 +86,20 @@ const layoutConfig = {
 };
 
 const branchPalette = ["#4f8a6a", "#8bb8d4", "#c49b6c", "#c47a7a", "#6f8ac4", "#8a6cc4", "#6cc4a1"];
-const VIRTUALIZE_THRESHOLD = 200;
+const BRANCH_FILTER_ENABLED = false;
+const GENERATION_FILTER_ENABLED = true;
+const SOFT_PEACH_ROOT_ID = "p3";
+const SOFT_PEACH_COLOR = "var(--soft-peach)";
+const BABY_BLUE_ROOT_ID = "p5";
+const BABY_BLUE_COLOR = "var(--baby-blue)";
+const MINT_GREEN_ROOT_ID = "p7";
+const MINT_GREEN_COLOR = "var(--mint-green)";
+const LAVENDER_ROOT_ID = "p9";
+const LAVENDER_COLOR = "var(--lavender)";
+const VIRTUALIZE_THRESHOLD = 1000000;
 const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
-const FORCE_RESET = true;
+const FORCE_RESET = false;
 
 let treeData = null;
 let peopleById = new Map();
@@ -107,6 +118,12 @@ let lastSearchResults = [];
 let selectedPersonId = "";
 let viewMode = "tree";
 let branchFilterValue = "all";
+let softPeachPeople = new Set();
+let babyBluePeople = new Set();
+let mintGreenPeople = new Set();
+let lavenderPeople = new Set();
+let forceFreshData = false;
+let recoveryAttempted = false;
 let lang = "ms";
 let compactMode = false;
 let pathMode = false;
@@ -330,6 +347,11 @@ function formatText(template, vars = {}) {
 function initFromData(data) {
   treeData = data;
   peopleById = new Map(treeData.people.map((p) => [p.id, p]));
+  softPeachPeople = computeBranchPeople(SOFT_PEACH_ROOT_ID);
+  babyBluePeople = computeBranchPeople(BABY_BLUE_ROOT_ID);
+  mintGreenPeople = computeBranchPeople(MINT_GREEN_ROOT_ID);
+  lavenderPeople = computeBranchPeople(LAVENDER_ROOT_ID);
+  if (storyPanel) storyPanel.hidden = true;
 
   if (prefs.theme) {
     app.dataset.theme = prefs.theme;
@@ -345,8 +367,13 @@ function initFromData(data) {
   if (prefs.lang) lang = prefs.lang;
   if (prefs.compactMode) compactMode = true;
   if (prefs.pathMode) pathMode = true;
+  if (!BRANCH_FILTER_ENABLED) branchFilterValue = "all";
+  if (!GENERATION_FILTER_ENABLED) hiddenGenerations.clear();
 
   buildLayout();
+  if (nodesList.length === 0) {
+    forceFreshData = true;
+  }
   if (branchFilterValue !== "all") {
     const maxBranch = layoutRoot?.children?.length || 0;
     if (Number(branchFilterValue) >= maxBranch) {
@@ -366,8 +393,54 @@ function initFromData(data) {
   applyViewMode();
   renderScene();
   applyZoom();
+  treeWrap.scrollTo({ left: 0, top: 0 });
   restoreFromUrl();
   if (pathMode) applyLineageHighlight();
+  if (treeCanvas && treeCanvas.children.length === 0) {
+    recoverEmptyView();
+    recoverEmptyViewAsync();
+  }
+  return treeCanvas && treeCanvas.children.length > 0;
+}
+
+function recoverEmptyView() {
+  hiddenGenerations.clear();
+  branchFilterValue = "all";
+  viewMode = "tree";
+  scale = 1;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(DATA_KEY);
+  } catch {
+    // ignore storage errors
+  }
+  applyViewMode();
+  renderScene();
+  applyZoom();
+  if (treeCanvas && treeCanvas.children.length === 0) {
+    const t = i18n[lang] || i18n.ms;
+    treeCanvas.textContent = t.loadFail;
+  }
+}
+
+async function recoverEmptyViewAsync() {
+  if (recoveryAttempted) return;
+  recoveryAttempted = true;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(DATA_KEY);
+  } catch {
+    // ignore storage errors
+  }
+  try {
+    const res = await fetch(`data.json?ts=${Date.now()}`);
+    const data = await res.json();
+    treeData = data;
+    storeData();
+    initFromData(data);
+  } catch {
+    // ignore fetch errors
+  }
 }
 
 let stored = loadStoredData();
@@ -381,7 +454,16 @@ if (FORCE_RESET) {
 if (stored) {
   const errors = validateTreeData(stored);
   if (errors.length === 0 && stored.people.length > 0) {
-    initFromData(stored);
+    const ok = initFromData(stored);
+    if (forceFreshData) {
+      localStorage.removeItem(DATA_KEY);
+      stored = null;
+      forceFreshData = false;
+    }
+    if (!ok) {
+      localStorage.removeItem(DATA_KEY);
+      stored = null;
+    }
   } else {
     stored = null;
   }
@@ -395,6 +477,11 @@ fetch("data.json")
       treeData = data;
       storeData();
       stored = data;
+      initFromData(data);
+    }
+    if (!treeCanvas.children.length) {
+      treeData = data;
+      storeData();
       initFromData(data);
       return;
     }
@@ -588,6 +675,7 @@ function buildLayout() {
 }
 
 function buildGenerationControls() {
+  if (!generationControls || !GENERATION_FILTER_ENABLED) return;
   const t = i18n[lang] || i18n.ms;
   generationControls.innerHTML = "";
   for (let depth = 1; depth <= maxDepth; depth += 1) {
@@ -630,6 +718,7 @@ function buildGenerationControls() {
 }
 
 function buildBranchFilter() {
+  if (!branchFilter || !BRANCH_FILTER_ENABLED) return;
   const t = i18n[lang] || i18n.ms;
   branchFilter.innerHTML = "";
   const optionAll = document.createElement("option");
@@ -833,6 +922,10 @@ function fileToDataUrl(file) {
 
 function rebuildFromData() {
   peopleById = new Map(treeData.people.map((p) => [p.id, p]));
+  softPeachPeople = computeBranchPeople(SOFT_PEACH_ROOT_ID);
+  babyBluePeople = computeBranchPeople(BABY_BLUE_ROOT_ID);
+  mintGreenPeople = computeBranchPeople(MINT_GREEN_ROOT_ID);
+  lavenderPeople = computeBranchPeople(LAVENDER_ROOT_ID);
   buildLayout();
   buildGenerationControls();
   buildBranchFilter();
@@ -840,6 +933,34 @@ function rebuildFromData() {
   refreshEditorLists();
   applyLanguage();
   if (pathMode) applyLineageHighlight();
+}
+
+function computeBranchPeople(rootId) {
+  if (!treeData?.unions || !treeData?.people) return new Set();
+  if (!treeData.people.some((p) => p.id === rootId)) return new Set();
+  const unionsByPartner = new Map();
+  treeData.unions.forEach((union) => {
+    [union.partner1, union.partner2].forEach((pid) => {
+      if (!pid) return;
+      if (!unionsByPartner.has(pid)) unionsByPartner.set(pid, []);
+      unionsByPartner.get(pid).push(union);
+    });
+  });
+
+  const result = new Set();
+  const queue = [rootId];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current || result.has(current)) continue;
+    result.add(current);
+    const unions = unionsByPartner.get(current) || [];
+    unions.forEach((union) => {
+      if (union.partner1) queue.push(union.partner1);
+      if (union.partner2) queue.push(union.partner2);
+      (union.children || []).forEach((childId) => queue.push(childId));
+    });
+  }
+  return result;
 }
 
 function generateId() {
@@ -905,7 +1026,29 @@ function renderScene() {
 
   renderGenerationLabels();
 
-  const visibleNodes = getVisibleNodes();
+  let visibleNodes = getVisibleNodes();
+  if (visibleNodes.length === 0) {
+    let changed = false;
+    if (hiddenGenerations.size > 0) {
+      hiddenGenerations.clear();
+      changed = true;
+    }
+    if (branchFilterValue !== "all") {
+      branchFilterValue = "all";
+      changed = true;
+    }
+    if (changed) {
+      savePrefs();
+      visibleNodes = getVisibleNodes();
+    }
+    if (visibleNodes.length === 0 && treeData?.people?.length) {
+      hiddenGenerations.clear();
+      branchFilterValue = "all";
+      viewMode = "tree";
+      localStorage.removeItem(STORAGE_KEY);
+      visibleNodes = getVisibleNodes();
+    }
+  }
   visibleNodes.forEach((node) => renderNode(node));
 
   drawLines(layoutRoot, visibleNodes);
@@ -971,6 +1114,23 @@ function renderNode(node) {
     group.dataset.depth = node.depth;
     group.style.setProperty("--branch-color", branchPalette[node.branchId]);
     const card = createPersonCard(person, node.depth);
+    const isMenantu = (person?.relation || "").toLowerCase().includes("menantu");
+    if (!isMenantu && node.depth >= 2 && node.depth <= 4 && softPeachPeople.has(node.personId)) {
+      card.classList.add("soft-peach");
+      card.style.setProperty("--card-fill", SOFT_PEACH_COLOR);
+    }
+    if (!isMenantu && node.depth >= 2 && node.depth <= 4 && babyBluePeople.has(node.personId)) {
+      card.classList.add("baby-blue");
+      card.style.setProperty("--card-fill", BABY_BLUE_COLOR);
+    }
+    if (!isMenantu && node.depth >= 2 && node.depth <= 4 && mintGreenPeople.has(node.personId)) {
+      card.classList.add("mint-green");
+      card.style.setProperty("--card-fill", MINT_GREEN_COLOR);
+    }
+    if (!isMenantu && node.depth >= 2 && node.depth <= 4 && lavenderPeople.has(node.personId)) {
+      card.classList.add("lavender");
+      card.style.setProperty("--card-fill", LAVENDER_COLOR);
+    }
     group.appendChild(card);
     treeCanvas.appendChild(group);
     elementByPersonId.set(person.id, group);
@@ -991,6 +1151,23 @@ function renderNode(node) {
     if (partner1) {
       const card1 = createPersonCard(partner1, node.depth);
       card1.dataset.partner = "left";
+      const isMenantu1 = (partner1?.relation || "").toLowerCase().includes("menantu");
+      if (!isMenantu1 && node.depth >= 2 && node.depth <= 4 && softPeachPeople.has(node.partner1)) {
+        card1.classList.add("soft-peach");
+        card1.style.setProperty("--card-fill", SOFT_PEACH_COLOR);
+      }
+      if (!isMenantu1 && node.depth >= 2 && node.depth <= 4 && babyBluePeople.has(node.partner1)) {
+        card1.classList.add("baby-blue");
+        card1.style.setProperty("--card-fill", BABY_BLUE_COLOR);
+      }
+      if (!isMenantu1 && node.depth >= 2 && node.depth <= 4 && mintGreenPeople.has(node.partner1)) {
+        card1.classList.add("mint-green");
+        card1.style.setProperty("--card-fill", MINT_GREEN_COLOR);
+      }
+      if (!isMenantu1 && node.depth >= 2 && node.depth <= 4 && lavenderPeople.has(node.partner1)) {
+        card1.classList.add("lavender");
+        card1.style.setProperty("--card-fill", LAVENDER_COLOR);
+      }
       group.appendChild(card1);
       elementByPersonId.set(partner1.id, group);
       nodeByPersonId.set(partner1.id, node);
@@ -998,6 +1175,23 @@ function renderNode(node) {
     if (partner2) {
       const card2 = createPersonCard(partner2, node.depth);
       card2.dataset.partner = "right";
+      const isMenantu2 = (partner2?.relation || "").toLowerCase().includes("menantu");
+      if (!isMenantu2 && node.depth >= 2 && node.depth <= 4 && softPeachPeople.has(node.partner2)) {
+        card2.classList.add("soft-peach");
+        card2.style.setProperty("--card-fill", SOFT_PEACH_COLOR);
+      }
+      if (!isMenantu2 && node.depth >= 2 && node.depth <= 4 && babyBluePeople.has(node.partner2)) {
+        card2.classList.add("baby-blue");
+        card2.style.setProperty("--card-fill", BABY_BLUE_COLOR);
+      }
+      if (!isMenantu2 && node.depth >= 2 && node.depth <= 4 && mintGreenPeople.has(node.partner2)) {
+        card2.classList.add("mint-green");
+        card2.style.setProperty("--card-fill", MINT_GREEN_COLOR);
+      }
+      if (!isMenantu2 && node.depth >= 2 && node.depth <= 4 && lavenderPeople.has(node.partner2)) {
+        card2.classList.add("lavender");
+        card2.style.setProperty("--card-fill", LAVENDER_COLOR);
+      }
       group.appendChild(card2);
       elementByPersonId.set(partner2.id, group);
       nodeByPersonId.set(partner2.id, node);
@@ -1014,6 +1208,9 @@ function createPersonCard(person, depth) {
   card.dataset.depth = depth;
   card.style.setProperty("--enter-delay", `${Math.min(420, depth * 55)}ms`);
   card.tabIndex = 0;
+  if ((person.relation || "").toLowerCase().includes("menantu")) {
+    card.classList.add("is-menantu");
+  }
 
   if (person.death) card.classList.add("deceased");
 
@@ -1307,6 +1504,7 @@ function formatDates(birth, death) {
 function openModal(person) {
   const t = i18n[lang] || i18n.ms;
   if (!storyContent) return;
+  if (storyPanel) storyPanel.hidden = false;
   const birthDate = parseDateValue(person.birth);
   const age = !person.death ? calcAge(birthDate) : null;
   const ageText = age !== null ? ` (${t.ageLabel}: ${age})` : "";
@@ -1367,7 +1565,16 @@ function openModal(person) {
 
   if (panelEditBtn) {
     panelEditBtn.onclick = () => {
+      const pw = window.prompt("Masukkan kata laluan:");
+      if (pw !== "1234") return;
       if (panelEditForm) panelEditForm.hidden = false;
+    };
+  }
+
+  if (panelCloseBtn) {
+    panelCloseBtn.onclick = () => {
+      if (panelEditForm) panelEditForm.hidden = true;
+      if (storyPanel) storyPanel.hidden = true;
     };
   }
 
@@ -1586,37 +1793,78 @@ validateDataBtn.addEventListener("click", () => {
 
 let isPanning = false;
 let panStart = { x: 0, y: 0, scrollLeft: 0, scrollTop: 0 };
+let mousePanning = false;
 
-treeWrap.addEventListener("mousedown", (event) => {
+treeWrap.addEventListener("pointerdown", (event) => {
   if (event.target.closest(".person-card")) return;
   isPanning = true;
+  treeWrap.setPointerCapture(event.pointerId);
+  treeWrap.classList.add("is-dragging");
   panStart = {
     x: event.clientX,
     y: event.clientY,
     scrollLeft: treeWrap.scrollLeft,
     scrollTop: treeWrap.scrollTop
   };
+  event.preventDefault();
 });
 
-treeWrap.addEventListener("mousemove", (event) => {
+treeWrap.addEventListener("pointermove", (event) => {
   if (!isPanning) return;
+  if (!treeWrap.hasPointerCapture(event.pointerId)) return;
+  const dx = event.clientX - panStart.x;
+  const dy = event.clientY - panStart.y;
+  treeWrap.scrollLeft = panStart.scrollLeft - dx;
+  treeWrap.scrollTop = panStart.scrollTop - dy;
+  event.preventDefault();
+});
+
+const stopPointerPan = (event) => {
+  if (event && treeWrap.hasPointerCapture(event.pointerId)) {
+    treeWrap.releasePointerCapture(event.pointerId);
+  }
+  isPanning = false;
+  treeWrap.classList.remove("is-dragging");
+};
+
+treeWrap.addEventListener("pointerup", stopPointerPan);
+treeWrap.addEventListener("pointercancel", stopPointerPan);
+
+treeWrap.addEventListener("mousedown", (event) => {
+  if (event.button !== 0) return;
+  if (event.target.closest(".person-card")) return;
+  mousePanning = true;
+  treeWrap.classList.add("is-dragging");
+  panStart = {
+    x: event.clientX,
+    y: event.clientY,
+    scrollLeft: treeWrap.scrollLeft,
+    scrollTop: treeWrap.scrollTop
+  };
+  event.preventDefault();
+});
+
+window.addEventListener("mousemove", (event) => {
+  if (!mousePanning) return;
   const dx = event.clientX - panStart.x;
   const dy = event.clientY - panStart.y;
   treeWrap.scrollLeft = panStart.scrollLeft - dx;
   treeWrap.scrollTop = panStart.scrollTop - dy;
 });
 
-treeWrap.addEventListener("mouseup", () => {
-  isPanning = false;
+window.addEventListener("mouseup", () => {
+  if (!mousePanning) return;
+  mousePanning = false;
+  treeWrap.classList.remove("is-dragging");
 });
 
-treeWrap.addEventListener("mouseleave", () => {
-  isPanning = false;
-});
-
+let scrollStopTimer = null;
 treeWrap.addEventListener("scroll", () => {
-  scheduleRender();
   updateMinimap();
+  if (scrollStopTimer) clearTimeout(scrollStopTimer);
+  scrollStopTimer = setTimeout(() => {
+    scheduleRender();
+  }, 80);
 });
 
 window.addEventListener("resize", () => {
@@ -2038,6 +2286,7 @@ if (minimap) {
   };
   let dragging = false;
   let hideTimer = null;
+  let autoHideInterval = null;
 
   const scheduleHide = () => {
     if (!minimapWrap) return;
@@ -2054,6 +2303,7 @@ if (minimap) {
   };
 
   if (minimapWrap) {
+    minimapWrap.classList.add("is-collapsed");
     minimapWrap.addEventListener("mouseenter", showMinimap);
     minimapWrap.addEventListener("focusin", showMinimap);
   }
@@ -2096,9 +2346,15 @@ if (minimap) {
   minimap.addEventListener("mouseup", deactivate);
 
   scheduleHide();
+  if (minimapWrap && !autoHideInterval) {
+    autoHideInterval = setInterval(() => {
+      if (!dragging) minimapWrap.classList.add("is-collapsed");
+    }, 3500);
+  }
 }
 
 function restoreFromUrl() {
+  if (!GENERATION_FILTER_ENABLED) return;
   const params = new URLSearchParams(window.location.search);
   const focusId = params.get("focus");
   const genParam = params.get("gen");
