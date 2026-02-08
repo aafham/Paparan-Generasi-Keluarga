@@ -2246,6 +2246,7 @@ if (treeWrap) {
     const dx = t2.clientX - t1.clientX;
     const dy = t2.clientY - t1.clientY;
     pinchZooming = true;
+    treeWrap.classList.add("pinch-zooming");
     pinchStartDistance = Math.hypot(dx, dy) || 1;
     pinchStartScale = scale;
     isPanning = false;
@@ -2273,6 +2274,7 @@ if (treeWrap) {
     if (!pinchZooming) return;
     if (event.touches.length < 2) {
       pinchZooming = false;
+      treeWrap.classList.remove("pinch-zooming");
       savePrefs();
     }
   });
@@ -2280,11 +2282,13 @@ if (treeWrap) {
   treeWrap.addEventListener("touchcancel", () => {
     if (!pinchZooming) return;
     pinchZooming = false;
+    treeWrap.classList.remove("pinch-zooming");
   });
 
   treeWrap.addEventListener("gesturestart", (event) => {
     if (!isMobileView()) return;
     pinchZooming = true;
+    treeWrap.classList.add("pinch-zooming");
     pinchStartScale = scale;
     event.preventDefault();
   });
@@ -2303,6 +2307,7 @@ if (treeWrap) {
   treeWrap.addEventListener("gestureend", () => {
     if (!pinchZooming) return;
     pinchZooming = false;
+    treeWrap.classList.remove("pinch-zooming");
     savePrefs();
   });
 

@@ -853,6 +853,10 @@ input[type="file"].input {
   touch-action: pan-x pan-y;
 }
 
+.tree-wrap.pinch-zooming {
+  touch-action: none;
+}
+
 .tree-wrap::after {
   content: "";
   position: absolute;
@@ -1651,10 +1655,6 @@ body.hide-tags .person-tags {
   }
   body {
     padding-top: 56px;
-  }
-
-  .tree-wrap {
-    touch-action: none;
   }
 
   .topbar {
