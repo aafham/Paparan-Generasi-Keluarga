@@ -1201,6 +1201,33 @@ input[type="file"].input {
   border-left: 6px solid var(--lavender);
 }
 
+[data-theme="dark"] .timeline-item {
+  background: color-mix(in srgb, var(--card) 85%, #000);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .timeline-item.timeline-branch {
+  background: color-mix(in srgb, var(--branch-color, var(--primary)) 22%, #0b0f0d);
+  border-color: color-mix(in srgb, var(--branch-color, var(--primary)) 60%, #0b0f0d);
+}
+
+[data-theme="dark"] .timeline-item.branch-soft-peach,
+[data-theme="dark"] .timeline-item.branch-baby-blue,
+[data-theme="dark"] .timeline-item.branch-mint-green,
+[data-theme="dark"] .timeline-item.branch-lavender {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .timeline-item .timeline-name {
+  color: var(--ink);
+}
+
+[data-theme="dark"] .timeline-item .timeline-meta,
+[data-theme="dark"] .timeline-item .timeline-age,
+[data-theme="dark"] .timeline-item .timeline-relation {
+  color: rgba(244, 245, 242, 0.82);
+}
+
 .timeline-meta,
 .timeline-age,
 .timeline-relation {
