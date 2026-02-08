@@ -1653,6 +1653,10 @@ body.hide-tags .person-tags {
     padding-top: 56px;
   }
 
+  .tree-wrap {
+    touch-action: none;
+  }
+
   .topbar {
     padding: 18px 16px;
     gap: 14px;

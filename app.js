@@ -2282,6 +2282,30 @@ if (treeWrap) {
     pinchZooming = false;
   });
 
+  treeWrap.addEventListener("gesturestart", (event) => {
+    if (!isMobileView()) return;
+    pinchZooming = true;
+    pinchStartScale = scale;
+    event.preventDefault();
+  });
+
+  treeWrap.addEventListener("gesturechange", (event) => {
+    if (!pinchZooming) return;
+    const next = Math.max(0.6, Math.min(2.2, pinchStartScale * event.scale));
+    if (next !== scale) {
+      scale = next;
+      applyZoom();
+      scheduleRender();
+    }
+    event.preventDefault();
+  });
+
+  treeWrap.addEventListener("gestureend", () => {
+    if (!pinchZooming) return;
+    pinchZooming = false;
+    savePrefs();
+  });
+
   treeWrap.addEventListener("pointerdown", (event) => {
     if (!dragToPan) return;
     if (event.target.closest(".person-card")) return;
