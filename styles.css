@@ -1143,6 +1143,12 @@ input[type="file"].input {
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
+.timeline-item.timeline-branch {
+  background: color-mix(in srgb, var(--branch-color, var(--primary)) 22%, #fff);
+  border-color: color-mix(in srgb, var(--branch-color, var(--primary)) 60%, #fff);
+  border-left: 6px solid var(--branch-color, var(--primary));
+}
+
 .timeline-item.branch-soft-peach {
   background: color-mix(in srgb, var(--soft-peach) 28%, #fff);
   border-color: color-mix(in srgb, var(--soft-peach) 60%, #fff);

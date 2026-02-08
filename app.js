@@ -1825,10 +1825,16 @@ function renderTimeline() {
     const item = document.createElement("div");
     item.className = "timeline-item";
     if (person.death) item.classList.add("deceased");
-    if (softPeachPeople.has(person.id)) item.classList.add("branch-soft-peach");
-    if (babyBluePeople.has(person.id)) item.classList.add("branch-baby-blue");
-    if (mintGreenPeople.has(person.id)) item.classList.add("branch-mint-green");
-    if (lavenderPeople.has(person.id)) item.classList.add("branch-lavender");
+    const node = nodeByPersonId.get(person.id);
+    if (node && Number.isFinite(node.branchId)) {
+      item.classList.add("timeline-branch");
+      item.style.setProperty("--branch-color", branchPalette[node.branchId] || "var(--primary)");
+    } else {
+      if (softPeachPeople.has(person.id)) item.classList.add("branch-soft-peach");
+      if (babyBluePeople.has(person.id)) item.classList.add("branch-baby-blue");
+      if (mintGreenPeople.has(person.id)) item.classList.add("branch-mint-green");
+      if (lavenderPeople.has(person.id)) item.classList.add("branch-lavender");
+    }
     const birthDate = parseDateValue(person.birth);
     const age = !person.death ? calcAge(birthDate) : null;
     const hasBirth = Boolean(person.birth);
