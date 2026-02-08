@@ -78,6 +78,17 @@ const mobileActionGo = document.getElementById("mobile-action-go");
 const mobileQuickZoomIn = document.getElementById("m-zoom-in");
 const mobileQuickZoomOut = document.getElementById("m-zoom-out");
 const mobileQuickZoomFit = document.getElementById("m-zoom-fit");
+const helpBtn = document.getElementById("help-btn");
+const onboarding = document.getElementById("onboarding");
+const onboardingTitle = document.getElementById("onboarding-title");
+const onboardingList = document.getElementById("onboarding-list");
+const onboardingStep = document.getElementById("onboarding-step");
+const onboardingSkip = document.getElementById("onboarding-skip");
+const onboardingBack = document.getElementById("onboarding-back");
+const onboardingNext = document.getElementById("onboarding-next");
+const onboardingDone = document.getElementById("onboarding-done");
+
+const ONBOARDING_KEY = "ft_onboarding_done";
 
 function on(el, event, handler, options) {
   if (!el) return;
@@ -387,6 +398,197 @@ async function clearSiteCache() {
     // ignore storage errors
   }
   window.location.reload();
+}
+
+let onboardingIndex = 0;
+let onboardingHighlightEl = null;
+
+function hasOnboardingDone() {
+  try {
+    return localStorage.getItem(ONBOARDING_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setOnboardingDone() {
+  try {
+    localStorage.setItem(ONBOARDING_KEY, "1");
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function getOnboardingSteps() {
+  if (lang === "en") {
+    return [
+      {
+        title: "Welcome",
+        bullets: [
+          "This is a family tree viewer.",
+          "Use it to explore generations and relationships.",
+          "View-only mode by default."
+        ],
+        targetSelector: "#tree-wrap"
+      },
+      {
+        title: "Navigation",
+        bullets: [
+          "Scroll to zoom in/out.",
+          "Drag to pan the canvas.",
+          "Pinch to zoom on mobile."
+        ],
+        targetSelector: "#tree-wrap"
+      },
+      {
+        title: "Search",
+        bullets: [
+          "Type a name in the search box.",
+          "Click a result to jump to the person.",
+          "Use 'Search & Focus' for the top match."
+        ],
+        targetSelector: "#search"
+      },
+      {
+        title: "View Mode",
+        bullets: [
+          "This site is view-only.",
+          "Data comes from data.json.",
+          "Use export to share."
+        ],
+        targetSelector: "#app"
+      },
+      {
+        title: "Export",
+        bullets: [
+          "Export PNG or PDF from the buttons.",
+          "Use PNG for images, PDF for printing."
+        ],
+        targetSelector: "#export-png"
+      },
+      {
+        title: "Reset",
+        bullets: [
+          "Clear Cache resets preferences.",
+          "It reloads the page fresh."
+        ],
+        targetSelector: "#clear-cache"
+      }
+    ];
+  }
+
+  return [
+    {
+      title: "Pengenalan",
+      bullets: [
+        "Ini paparan salasilah keluarga.",
+        "Semak generasi dan hubungan ahli.",
+        "Mod paparan sahaja."
+      ],
+      targetSelector: "#tree-wrap"
+    },
+    {
+      title: "Navigasi",
+      bullets: [
+        "Scroll untuk zoom in/out.",
+        "Drag untuk gerakkan paparan.",
+        "Pinch untuk zoom di telefon."
+      ],
+      targetSelector: "#tree-wrap"
+    },
+    {
+      title: "Carian",
+      bullets: [
+        "Taip nama pada kotak carian.",
+        "Klik hasil untuk lompat ke ahli.",
+        "Guna 'Cari & Fokus' untuk hasil teratas."
+      ],
+      targetSelector: "#search"
+    },
+    {
+      title: "Mod Paparan",
+      bullets: [
+        "Laman ini untuk lihat sahaja.",
+        "Data diambil daripada data.json.",
+        "Guna export untuk kongsi."
+      ],
+      targetSelector: "#app"
+    },
+    {
+      title: "Eksport",
+      bullets: [
+        "Eksport PNG atau PDF melalui butang.",
+        "PNG untuk imej, PDF untuk cetak."
+      ],
+      targetSelector: "#export-png"
+    },
+    {
+      title: "Reset",
+      bullets: [
+        "Clear Cache reset tetapan anda.",
+        "Halaman akan dimuat semula."
+      ],
+      targetSelector: "#clear-cache"
+    }
+  ];
+}
+
+function clearOnboardingHighlight() {
+  if (!onboardingHighlightEl) return;
+  onboardingHighlightEl.classList.remove("onboarding-highlight");
+  onboardingHighlightEl = null;
+}
+
+function applyOnboardingHighlight(selector) {
+  clearOnboardingHighlight();
+  if (!selector) return;
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.classList.add("onboarding-highlight");
+  onboardingHighlightEl = el;
+}
+
+function renderOnboardingStep() {
+  if (!onboarding || !onboardingTitle || !onboardingList || !onboardingStep) return;
+  const steps = getOnboardingSteps();
+  onboardingIndex = Math.max(0, Math.min(onboardingIndex, steps.length - 1));
+  const step = steps[onboardingIndex];
+
+  onboardingTitle.textContent = step.title;
+  onboardingStep.textContent = `${onboardingIndex + 1}/${steps.length}`;
+  onboardingList.innerHTML = "";
+  step.bullets.forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    onboardingList.appendChild(li);
+  });
+
+  if (onboardingBack) onboardingBack.disabled = onboardingIndex === 0;
+  if (onboardingNext) onboardingNext.style.display = onboardingIndex === steps.length - 1 ? "none" : "inline-flex";
+  if (onboardingDone) onboardingDone.style.display = onboardingIndex === steps.length - 1 ? "inline-flex" : "none";
+
+  applyOnboardingHighlight(step.targetSelector);
+}
+
+function openOnboarding() {
+  if (!onboarding) return;
+  onboardingIndex = 0;
+  renderOnboardingStep();
+  onboarding.classList.add("is-open");
+  onboarding.setAttribute("aria-hidden", "false");
+}
+
+function closeOnboarding(markDone = true) {
+  if (!onboarding) return;
+  onboarding.classList.remove("is-open");
+  onboarding.setAttribute("aria-hidden", "true");
+  clearOnboardingHighlight();
+  if (markDone) setOnboardingDone();
+}
+
+function checkOnboardingOnLoad() {
+  if (hasOnboardingDone()) return;
+  openOnboarding();
 }
 
 function initFromData(data) {
@@ -1936,6 +2138,7 @@ const stopPointerPan = (event) => {
   }
   isPanning = false;
   treeWrap.classList.remove("is-dragging");
+  if (virtualizationEnabled) scheduleRender();
 };
 
 if (treeWrap) {
@@ -1997,6 +2200,7 @@ window.addEventListener("mouseup", () => {
   if (!mousePanning || !treeWrap) return;
   mousePanning = false;
   treeWrap.classList.remove("is-dragging");
+  if (virtualizationEnabled) scheduleRender();
 });
 
 let scrollStopTimer = null;
@@ -2004,6 +2208,8 @@ if (treeWrap) {
   treeWrap.addEventListener("scroll", () => {
     updateMinimap();
     if (scrollStopTimer) clearTimeout(scrollStopTimer);
+    if (isPanning || mousePanning) return;
+    if (!virtualizationEnabled) return;
     scrollStopTimer = setTimeout(() => {
       scheduleRender();
     }, 80);
@@ -2166,6 +2372,56 @@ if (exportPdfBtn) {
     pdf.save("salasilah-keluarga.pdf");
   });
 }
+
+if (helpBtn) {
+  helpBtn.addEventListener("click", () => {
+    openOnboarding();
+  });
+}
+
+if (onboardingNext) {
+  onboardingNext.addEventListener("click", () => {
+    onboardingIndex += 1;
+    renderOnboardingStep();
+  });
+}
+
+if (onboardingBack) {
+  onboardingBack.addEventListener("click", () => {
+    onboardingIndex = Math.max(0, onboardingIndex - 1);
+    renderOnboardingStep();
+  });
+}
+
+if (onboardingSkip) {
+  onboardingSkip.addEventListener("click", () => {
+    closeOnboarding(true);
+  });
+}
+
+if (onboardingDone) {
+  onboardingDone.addEventListener("click", () => {
+    closeOnboarding(true);
+  });
+}
+
+if (onboarding) {
+  onboarding.addEventListener("click", (event) => {
+    if (!event.target.dataset.onboardingClose) return;
+    closeOnboarding(true);
+  });
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (onboarding && onboarding.classList.contains("is-open")) {
+    closeOnboarding(true);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkOnboardingOnLoad();
+});
 
 window.addEventListener("load", () => {
   if (treeData) {
@@ -2375,6 +2631,11 @@ function applyLanguage() {
   if (controlsToggleBtn) {
     controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
   }
+  if (helpBtn) helpBtn.textContent = lang === "en" ? "Help" : "Cara Guna";
+  if (onboardingSkip) onboardingSkip.textContent = lang === "en" ? "Skip" : "Langkau";
+  if (onboardingBack) onboardingBack.textContent = lang === "en" ? "Back" : "Kembali";
+  if (onboardingNext) onboardingNext.textContent = lang === "en" ? "Next" : "Seterusnya";
+  if (onboardingDone) onboardingDone.textContent = lang === "en" ? "Done" : "Selesai";
 
   const branchOptions = branchFilter?.options || [];
   if (branchOptions.length > 0) {
@@ -2404,6 +2665,9 @@ function applyLanguage() {
 
   syncMobileLabels();
   if (minimapHandle) minimapHandle.textContent = t.minimapShow;
+  if (onboarding && onboarding.classList.contains("is-open")) {
+    renderOnboardingStep();
+  }
 }
 
 function minimapScrollTo(clientX, clientY) {

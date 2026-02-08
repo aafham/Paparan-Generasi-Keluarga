@@ -37,6 +37,9 @@
           <span class="toggle-track"></span>
           <span class="toggle-label" data-i18n="langToggle">BM / EN</span>
         </label>
+        <button id="help-btn" class="btn ghost small" type="button">
+          Cara Guna
+        </button>
         <button id="clear-cache" class="btn danger small" type="button" data-i18n-title="clearCache" data-i18n-aria="clearCache">
           <span class="btn-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" role="img" focusable="false">
@@ -199,6 +202,24 @@
     <div class="modal-card" role="dialog" aria-modal="true">
       <button class="modal-close" data-close="true" data-i18n="modalClose">Tutup</button>
       <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="onboarding" id="onboarding" aria-hidden="true">
+    <div class="onboarding-backdrop" data-onboarding-close="true"></div>
+    <div class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <button class="onboarding-close" type="button" aria-label="Tutup" data-onboarding-close="true">×</button>
+      <div class="onboarding-header">
+        <div class="onboarding-step" id="onboarding-step">1/6</div>
+        <h2 id="onboarding-title">Cara Guna</h2>
+      </div>
+      <ul class="onboarding-list" id="onboarding-list"></ul>
+      <div class="onboarding-actions">
+        <button class="btn ghost small" type="button" id="onboarding-skip">Skip</button>
+        <button class="btn ghost small" type="button" id="onboarding-back">Back</button>
+        <button class="btn small" type="button" id="onboarding-next">Next</button>
+        <button class="btn small" type="button" id="onboarding-done">Done</button>
+      </div>
     </div>
   </div>
 
