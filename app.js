@@ -2081,10 +2081,29 @@ exportPdfBtn.addEventListener("click", async () => {
 });
 
 if ("serviceWorker" in navigator) {
+  let swReloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (swReloaded) return;
+    swReloaded = true;
+    window.location.reload();
+  });
+
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("service-worker.js")
-      .then((reg) => reg.update())
+      .register("service-worker.js?v=20260208", { updateViaCache: "none" })
+      .then((reg) => {
+        reg.update();
+        if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
+        reg.addEventListener("updatefound", () => {
+          const worker = reg.installing;
+          if (!worker) return;
+          worker.addEventListener("statechange", () => {
+            if (worker.state === "installed" && navigator.serviceWorker.controller) {
+              if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
+            }
+          });
+        });
+      })
       .catch(() => {});
   });
 }
