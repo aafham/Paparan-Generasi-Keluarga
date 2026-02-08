@@ -14,6 +14,8 @@ const resetViewBtn = document.getElementById("reset-view");
 const toggleThemeBtn = document.getElementById("toggle-theme");
 const exportPngBtn = document.getElementById("export-png");
 const exportPdfBtn = document.getElementById("export-pdf");
+const exportMenuBtn = document.getElementById("export-menu-btn");
+const exportMenu = document.getElementById("export-menu");
 const exportJsonBtn = document.getElementById("export-json");
 const importJsonBtn = document.getElementById("import-json");
 const importJsonFile = document.getElementById("import-json-file");
@@ -78,6 +80,29 @@ const mobileActionGo = document.getElementById("mobile-action-go");
 const mobileQuickZoomIn = document.getElementById("m-zoom-in");
 const mobileQuickZoomOut = document.getElementById("m-zoom-out");
 const mobileQuickZoomFit = document.getElementById("m-zoom-fit");
+const mobileSettingsBtn = document.getElementById("mobile-settings-btn");
+const mobileHelpBtn = document.getElementById("mobile-help-btn");
+const mobileSearchBtn = document.getElementById("mobile-search-btn");
+const bottomSheetHandle = document.getElementById("sheet-handle");
+const miniToolbar = document.getElementById("mini-toolbar");
+const miniSearchBtn = document.getElementById("mini-search");
+const miniZoomInBtn = document.getElementById("mini-zoom-in");
+const miniZoomOutBtn = document.getElementById("mini-zoom-out");
+const miniZoomFitBtn = document.getElementById("mini-zoom-fit");
+const settingsBtn = document.getElementById("settings-btn");
+const settingsModal = document.getElementById("settings-modal");
+const settingsCompact = document.getElementById("settings-compact");
+const settingsLines = document.getElementById("settings-lines");
+const settingsCardScale = document.getElementById("setting-card-scale");
+const settingsMinimap = document.getElementById("settings-minimap");
+const settingsDrag = document.getElementById("settings-drag");
+const settingsDefaultView = document.getElementById("settings-default-view");
+const settingsShowTutorial = document.getElementById("setting-show-tutorial");
+const settingsReset = document.getElementById("setting-reset-settings");
+const settingsShowBirthdate = document.getElementById("setting-show-birthdate");
+const settingsShowAge = document.getElementById("setting-show-age");
+const settingsShowTags = document.getElementById("setting-show-tags");
+const settingsDataVersion = document.getElementById("settings-data-version");
 const helpBtn = document.getElementById("help-btn");
 const onboarding = document.getElementById("onboarding");
 const onboardingTitle = document.getElementById("onboarding-title");
@@ -87,6 +112,16 @@ const onboardingSkip = document.getElementById("onboarding-skip");
 const onboardingBack = document.getElementById("onboarding-back");
 const onboardingNext = document.getElementById("onboarding-next");
 const onboardingDone = document.getElementById("onboarding-done");
+const statPeople = document.getElementById("stat-people");
+const statCouples = document.getElementById("stat-couples");
+const statGenerations = document.getElementById("stat-generations");
+const statBranches = document.getElementById("stat-branches");
+const themePresetSelect = document.getElementById("theme-preset");
+const timelineGenSelect = document.getElementById("timeline-gen");
+const timelineMonthSelect = document.getElementById("timeline-month");
+const timelineYearFrom = document.getElementById("timeline-year-from");
+const timelineYearTo = document.getElementById("timeline-year-to");
+const timelineClearBtn = document.getElementById("timeline-clear");
 
 const ONBOARDING_KEY = "ft_onboarding_done";
 
@@ -148,6 +183,21 @@ let lang = "ms";
 let compactMode = false;
 let pathMode = false;
 let controlsCollapsed = false;
+let themePreset = "default";
+let showLines = true;
+let cardScale = 1;
+let minimapEnabled = true;
+let dragToPan = true;
+let defaultView = "tree";
+let showBirthdate = true;
+let showAge = true;
+let showTags = true;
+let timelineFilters = {
+  generation: "all",
+  month: "all",
+  yearFrom: "",
+  yearTo: ""
+};
 
 const prefs = loadPrefs();
 const i18n = {
@@ -259,7 +309,46 @@ const i18n = {
     mobilePick: "Pilih aksi...",
     validateOk: "Data sah. Tiada ralat ditemui.",
     validateErr: "Ralat data ditemui:",
-    searchPlaceholder: "Cari nama ahli keluarga..."
+    searchPlaceholder: "Cari nama ahli keluarga...",
+    statsPeople: "Jumlah Ahli",
+    statsCouples: "Jumlah Pasangan",
+    statsGenerations: "Generasi",
+    statsBranches: "Cabang",
+    timelineGenLabel: "Generasi",
+    timelineMonth: "Bulan Lahir",
+    timelineYearFrom: "Dari Tahun",
+    timelineYearTo: "Hingga Tahun",
+    timelineClear: "Reset",
+    themePreset: "Tema",
+    themeDefault: "Default",
+    themeHeritage: "Heritage",
+    themeOcean: "Ocean",
+    themeSunset: "Sunset",
+    exportMenu: "Export",
+    settingsTitle: "Tetapan",
+    settingsDisplay: "Paparan",
+    settingsNav: "Navigasi",
+    settingsTools: "Alat",
+    settingsAbout: "Tentang",
+    settingsCompact: "Compact Mode",
+    settingsLines: "Tunjuk Garisan",
+    settingsCardSize: "Saiz Kad",
+    settingsSizeSmall: "Kecil",
+    settingsSizeNormal: "Normal",
+    settingsSizeLarge: "Besar",
+    settingsMinimap: "Minimap",
+    settingsDrag: "Drag untuk Pan",
+    settingsDefaultView: "Paparan Lalai",
+    settingsViewTree: "Tree",
+    settingsViewTimeline: "Timeline",
+    settingsShowTutorial: "Tunjuk tutorial semula",
+    settingsReset: "Reset tetapan",
+    settingsShowBirthdate: "Tarikh Lahir",
+    settingsShowAge: "Umur",
+    settingsShowTags: "Tag/Nota",
+    settingsClearData: "Padam semua data",
+    settingsDataVersion: "Versi data",
+    settingsClose: "Tutup"
   },
   en: {
     appKicker: "Family Lineage",
@@ -369,7 +458,46 @@ const i18n = {
     mobilePick: "Select action...",
     validateOk: "Data is valid. No issues found.",
     validateErr: "Data issues found:",
-    searchPlaceholder: "Search family member..."
+    searchPlaceholder: "Search family member...",
+    statsPeople: "Total People",
+    statsCouples: "Couples",
+    statsGenerations: "Generations",
+    statsBranches: "Branches",
+    timelineGenLabel: "Generation",
+    timelineMonth: "Birth Month",
+    timelineYearFrom: "From Year",
+    timelineYearTo: "To Year",
+    timelineClear: "Reset",
+    themePreset: "Theme",
+    themeDefault: "Default",
+    themeHeritage: "Heritage",
+    themeOcean: "Ocean",
+    themeSunset: "Sunset",
+    exportMenu: "Export",
+    settingsTitle: "Settings",
+    settingsDisplay: "Display",
+    settingsNav: "Navigation",
+    settingsTools: "Tools",
+    settingsAbout: "About",
+    settingsCompact: "Compact Mode",
+    settingsLines: "Show Lines",
+    settingsCardSize: "Card Size",
+    settingsSizeSmall: "Small",
+    settingsSizeNormal: "Normal",
+    settingsSizeLarge: "Large",
+    settingsMinimap: "Minimap",
+    settingsDrag: "Drag to Pan",
+    settingsDefaultView: "Default View",
+    settingsViewTree: "Tree",
+    settingsViewTimeline: "Timeline",
+    settingsShowTutorial: "Show tutorial again",
+    settingsReset: "Reset settings",
+    settingsShowBirthdate: "Show Birthdate",
+    settingsShowAge: "Show Age",
+    settingsShowTags: "Show Tags",
+    settingsClearData: "Clear all data",
+    settingsDataVersion: "Data version",
+    settingsClose: "Close"
   }
 };
 
@@ -402,6 +530,181 @@ async function clearSiteCache() {
 
 let onboardingIndex = 0;
 let onboardingHighlightEl = null;
+
+function applyThemePreset() {
+  if (!document.body || !app) return;
+  if (!themePreset || themePreset === "default") {
+    document.body.removeAttribute("data-preset");
+    app.removeAttribute("data-preset");
+    return;
+  }
+  document.body.dataset.preset = themePreset;
+  app.dataset.preset = themePreset;
+}
+
+function applyCardScale() {
+  const next = Math.min(1.15, Math.max(0.85, Number(cardScale) || 1));
+  cardScale = next;
+  document.body.style.setProperty("--card-scale", String(next));
+  layoutConfig.cardWidth = Math.round(220 * next);
+  layoutConfig.cardGap = Math.round(16 * next);
+  if (app) {
+    app.style.setProperty("--card-width", `${layoutConfig.cardWidth}px`);
+    app.style.setProperty("--card-gap", `${layoutConfig.cardGap}px`);
+  }
+}
+
+function applyMinimapState() {
+  if (!document.body) return;
+  document.body.classList.toggle("minimap-disabled", !minimapEnabled);
+  if (!minimapEnabled) return;
+  updateMinimap();
+}
+
+function applyDragToPanState() {
+  if (!treeWrap) return;
+  treeWrap.classList.toggle("drag-disabled", !dragToPan);
+}
+
+function applyLinesState() {
+  if (!showLines) {
+    if (treeLines) treeLines.innerHTML = "";
+    return;
+  }
+  scheduleRender();
+}
+
+function applyDetailsVisibility() {
+  document.body.classList.toggle("hide-birthdate", !showBirthdate);
+  document.body.classList.toggle("hide-age", !showAge);
+  document.body.classList.toggle("hide-tags", !showTags);
+}
+
+function ensureTreeVisible() {
+  if (!treeCanvas || !treeData?.people?.length) return;
+  if (treeCanvas.children.length > 0) return;
+  scale = 1;
+  hiddenGenerations.clear();
+  branchFilterValue = "all";
+  viewMode = "tree";
+  buildLayout();
+  applyViewMode();
+  renderScene();
+  applyZoom();
+  if (treeWrap) treeWrap.scrollTo({ left: 0, top: 0 });
+  setTreeStatus("");
+}
+
+function updateStats() {
+  if (!treeData) return;
+  const peopleCount = treeData.people.length;
+  const couplesCount = treeData.unions.length;
+  const generationsCount = maxDepth || 0;
+  const branchesCount = layoutRoot?.children?.length || 0;
+  if (statPeople) statPeople.textContent = String(peopleCount);
+  if (statCouples) statCouples.textContent = String(couplesCount);
+  if (statGenerations) statGenerations.textContent = String(generationsCount);
+  if (statBranches) statBranches.textContent = String(branchesCount);
+}
+
+function populateTimelineFilters() {
+  if (!timelineGenSelect) return;
+  const t = i18n[lang] || i18n.ms;
+  const current = timelineFilters.generation;
+  timelineGenSelect.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "all";
+  optAll.textContent = t.genAll;
+  timelineGenSelect.appendChild(optAll);
+  for (let i = 1; i <= maxDepth; i += 1) {
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = `G${i}`;
+    timelineGenSelect.appendChild(opt);
+  }
+  timelineGenSelect.value = current && (current === "all" || Number(current) <= maxDepth) ? current : "all";
+  populateTimelineMonths();
+}
+
+function populateTimelineMonths() {
+  if (!timelineMonthSelect) return;
+  const monthsMs = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"];
+  const monthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthLabels = lang === "en" ? monthsEn : monthsMs;
+  timelineMonthSelect.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "all";
+  optAll.textContent = lang === "en" ? "All months" : "Semua bulan";
+  timelineMonthSelect.appendChild(optAll);
+  monthLabels.forEach((label, idx) => {
+    const opt = document.createElement("option");
+    opt.value = String(idx + 1);
+    opt.textContent = label;
+    timelineMonthSelect.appendChild(opt);
+  });
+  timelineMonthSelect.value = timelineFilters.month || "all";
+}
+
+function getPersonDepthMap() {
+  const map = new Map();
+  nodesList.forEach((node) => {
+    if (node.type === "person") map.set(node.personId, node.depth);
+    if (node.type === "union") {
+      if (node.partner1) map.set(node.partner1, node.depth);
+      if (node.partner2) map.set(node.partner2, node.depth);
+    }
+  });
+  return map;
+}
+
+function clearSelectionHighlight() {
+  document.querySelectorAll(".person-card.is-selected, .person-card.is-parent, .person-card.is-child, .person-card.is-partner")
+    .forEach((el) => el.classList.remove("is-selected", "is-parent", "is-child", "is-partner"));
+}
+
+function applySelectionHighlight(personId) {
+  if (!personId) {
+    clearSelectionHighlight();
+    return;
+  }
+  clearSelectionHighlight();
+  const parents = new Set();
+  const partners = new Set();
+  const children = new Set();
+
+  const parentUnion = treeData.unions.find((u) => (u.children || []).includes(personId));
+  if (parentUnion) {
+    if (parentUnion.partner1) parents.add(parentUnion.partner1);
+    if (parentUnion.partner2) parents.add(parentUnion.partner2);
+  }
+
+  treeData.unions.forEach((u) => {
+    if (u.partner1 === personId || u.partner2 === personId) {
+      if (u.partner1 && u.partner1 !== personId) partners.add(u.partner1);
+      if (u.partner2 && u.partner2 !== personId) partners.add(u.partner2);
+      (u.children || []).forEach((cid) => children.add(cid));
+    }
+  });
+
+  const selectedGroup = elementByPersonId.get(personId);
+  if (selectedGroup) {
+    const selectedCard = selectedGroup.querySelector(`.person-card[data-person-id="${personId}"]`);
+    if (selectedCard) selectedCard.classList.add("is-selected");
+  }
+
+  const applyClass = (ids, className) => {
+    ids.forEach((id) => {
+      const group = elementByPersonId.get(id);
+      if (!group) return;
+      const card = group.querySelector(`.person-card[data-person-id="${id}"]`);
+      if (card) card.classList.add(className);
+    });
+  };
+
+  applyClass(parents, "is-parent");
+  applyClass(children, "is-child");
+  applyClass(partners, "is-partner");
+}
 
 function hasOnboardingDone() {
   try {
@@ -608,17 +911,34 @@ function initFromData(data) {
   }
 
   if (prefs.scale) scale = prefs.scale;
-  if (prefs.hiddenGenerations) hiddenGenerations = new Set(prefs.hiddenGenerations);
+  hiddenGenerations.clear();
   if (prefs.viewMode) viewMode = prefs.viewMode;
   if (prefs.branchFilter) branchFilterValue = prefs.branchFilter;
   if (prefs.lang) lang = prefs.lang;
   if (prefs.compactMode) compactMode = true;
   if (prefs.pathMode) pathMode = true;
-  if (prefs.controlsCollapsed) controlsCollapsed = true;
+  const hasControlsPref = Object.prototype.hasOwnProperty.call(prefs, "controlsCollapsed");
+  if (hasControlsPref) {
+    controlsCollapsed = Boolean(prefs.controlsCollapsed);
+  } else if (window.matchMedia("(max-width: 720px)").matches) {
+    controlsCollapsed = true;
+  }
+  if (prefs.themePreset) themePreset = prefs.themePreset;
+  if (prefs.showLines !== undefined) showLines = Boolean(prefs.showLines);
+  if (prefs.cardScale) cardScale = Number(prefs.cardScale) || 1;
+  if (prefs.minimapEnabled !== undefined) minimapEnabled = Boolean(prefs.minimapEnabled);
+  if (prefs.dragToPan !== undefined) dragToPan = Boolean(prefs.dragToPan);
+  if (prefs.showBirthdate !== undefined) showBirthdate = Boolean(prefs.showBirthdate);
+  if (prefs.showAge !== undefined) showAge = Boolean(prefs.showAge);
+  if (prefs.showTags !== undefined) showTags = Boolean(prefs.showTags);
+  if (prefs.defaultView) defaultView = prefs.defaultView;
   if (!BRANCH_FILTER_ENABLED) branchFilterValue = "all";
   if (!GENERATION_FILTER_ENABLED) hiddenGenerations.clear();
 
+  applyCardScale();
   buildLayout();
+  updateStats();
+  populateTimelineFilters();
   if (nodesList.length === 0) {
     forceFreshData = true;
   }
@@ -636,7 +956,24 @@ function initFromData(data) {
   buildGenerationControls();
   buildBranchFilter();
   initEditor();
+  if (defaultView) viewMode = defaultView;
   applyLanguage();
+  applyThemePreset();
+  applyMinimapState();
+  applyDragToPanState();
+  applyLinesState();
+  applyDetailsVisibility();
+  if (themePresetSelect) themePresetSelect.value = themePreset;
+  if (settingsCardScale) settingsCardScale.value = String(cardScale);
+  if (settingsCompact) settingsCompact.checked = compactMode;
+  if (settingsLines) settingsLines.checked = showLines;
+  if (settingsMinimap) settingsMinimap.checked = minimapEnabled;
+  if (settingsDrag) settingsDrag.checked = dragToPan;
+  if (settingsShowBirthdate) settingsShowBirthdate.checked = showBirthdate;
+  if (settingsShowAge) settingsShowAge.checked = showAge;
+  if (settingsShowTags) settingsShowTags.checked = showTags;
+  if (settingsDefaultView) settingsDefaultView.value = viewMode;
+  if (settingsDataVersion) settingsDataVersion.textContent = treeData?.dataVersion || "-";
   document.body.classList.toggle("compact", compactMode);
   document.body.classList.toggle("controls-collapsed", controlsCollapsed);
   if (!timelineSection) viewMode = "tree";
@@ -645,6 +982,7 @@ function initFromData(data) {
   applyZoom();
   treeWrap.scrollTo({ left: 0, top: 0 });
   setTreeStatus("");
+  ensureTreeVisible();
   restoreFromUrl();
   if (pathMode) applyLineageHighlight();
   if (treeCanvas && treeCanvas.children.length === 0) {
@@ -722,8 +1060,7 @@ if (stored) {
 }
 
 if (!treeCanvas || !treeCanvas.children.length) {
-  const t = i18n[lang] || i18n.ms;
-  setTreeStatus(t.loading);
+  setTreeStatus("");
 }
 
 fetch(`data.json?v=${Date.now()}`, { cache: "no-store" })
@@ -736,6 +1073,7 @@ fetch(`data.json?v=${Date.now()}`, { cache: "no-store" })
       stored = data;
       initFromData(data);
     }
+    ensureTreeVisible();
     if (!treeCanvas.children.length) {
       treeData = data;
       storeData();
@@ -771,13 +1109,21 @@ function savePrefs() {
   const payload = {
     theme: app.dataset.theme,
     scale,
-    hiddenGenerations: Array.from(hiddenGenerations),
     viewMode,
     branchFilter: branchFilterValue,
     lang,
     compactMode,
     pathMode,
-    controlsCollapsed
+    controlsCollapsed,
+    themePreset,
+    showLines,
+    cardScale,
+    minimapEnabled,
+    dragToPan,
+    showBirthdate,
+    showAge,
+    showTags,
+    defaultView
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
@@ -1183,7 +1529,10 @@ function rebuildFromData() {
   babyBluePeople = computeBranchPeople(BABY_BLUE_ROOT_ID);
   mintGreenPeople = computeBranchPeople(MINT_GREEN_ROOT_ID);
   lavenderPeople = computeBranchPeople(LAVENDER_ROOT_ID);
+  applyCardScale();
   buildLayout();
+  updateStats();
+  populateTimelineFilters();
   buildGenerationControls();
   buildBranchFilter();
   renderScene();
@@ -1322,6 +1671,10 @@ function renderScene() {
   applyZoom();
   updateMinimap();
   if (pathMode) applyLineageHighlight();
+  if (selectedPersonId) applySelectionHighlight(selectedPersonId);
+  if (treeCanvas && treeCanvas.children.length > 0) {
+    setTreeStatus("");
+  }
 }
 
 function renderGenerationLabels() {
@@ -1506,11 +1859,17 @@ function createPersonCard(person, depth) {
   const meta = document.createElement("div");
   meta.className = "person-meta";
   const birthLine = document.createElement("div");
+  birthLine.className = "person-birth";
   if (person.birth) {
     const birthDate = parseDateValue(person.birth);
     const age = !person.death ? calcAge(birthDate) : null;
-    const ageText = age !== null ? ` (${i18n[lang].ageLabel}: ${age})` : "";
-    birthLine.textContent = `${i18n[lang].bornPrefix}${person.birth}${ageText}`;
+    birthLine.textContent = `${i18n[lang].bornPrefix}${person.birth}`;
+    if (age !== null) {
+      const ageSpan = document.createElement("span");
+      ageSpan.className = "person-age";
+      ageSpan.textContent = ` (${i18n[lang].ageLabel}: ${age})`;
+      birthLine.appendChild(ageSpan);
+    }
   } else {
     birthLine.textContent = "";
   }
@@ -1550,6 +1909,7 @@ function createPersonCard(person, depth) {
     openModal(person);
     updateStoryPanel(person);
     selectedPersonId = person.id;
+    applySelectionHighlight(person.id);
     updateUrlState();
   });
 
@@ -1557,6 +1917,10 @@ function createPersonCard(person, depth) {
 }
 
 function drawLines(root, visibleNodes) {
+  if (!showLines) {
+    treeLines.innerHTML = "";
+    return;
+  }
   const visibleSet = new Set(visibleNodes.map((node) => node.id));
   treeLines.innerHTML = "";
 
@@ -1663,16 +2027,33 @@ function drawLines(root, visibleNodes) {
 function renderTimeline() {
   if (!timelineSection) return;
   timelineList.innerHTML = "";
+  const depthMap = getPersonDepthMap();
+  const yearFrom = timelineFilters.yearFrom ? Number(timelineFilters.yearFrom) : null;
+  const yearTo = timelineFilters.yearTo ? Number(timelineFilters.yearTo) : null;
   const entries = treeData.people.map((person) => {
     const birth = parseYear(person.birth);
-    const death = parseYear(person.death);
-    const order = birth || death || 9999;
-    return { person, order };
+    const birthDate = parseDateValue(person.birth);
+    const birthMonth = birthDate ? birthDate.getMonth() + 1 : null;
+    const order = birth || 9999;
+    return { person, birth, birthMonth, order };
   });
 
-  entries.sort((a, b) => a.order - b.order);
+  const filtered = entries.filter(({ person, birth, birthMonth }) => {
+    if (timelineFilters.generation !== "all") {
+      const depth = depthMap.get(person.id);
+      if (!depth || String(depth) !== String(timelineFilters.generation)) return false;
+    }
+    if (timelineFilters.month !== "all") {
+      if (!birthMonth || String(birthMonth) !== String(timelineFilters.month)) return false;
+    }
+    if (yearFrom && (!birth || birth < yearFrom)) return false;
+    if (yearTo && (!birth || birth > yearTo)) return false;
+    return true;
+  });
 
-  entries.forEach(({ person }) => {
+  filtered.sort((a, b) => a.order - b.order);
+
+  filtered.forEach(({ person }) => {
     const item = document.createElement("div");
     item.className = "timeline-item";
     if (person.death) item.classList.add("deceased");
@@ -1685,6 +2066,7 @@ function renderTimeline() {
       openModal(person);
       updateStoryPanel(person);
       selectedPersonId = person.id;
+      applySelectionHighlight(person.id);
       updateUrlState();
     });
     timelineList.appendChild(item);
@@ -1920,6 +2302,9 @@ on(modal, "click", (event) => {
 
 function applyZoom() {
   if (!treeCanvas || !treeLines || !treeZoom) return;
+  if (!Number.isFinite(scale) || scale <= 0) {
+    scale = 1;
+  }
   treeCanvas.style.transform = `scale(${scale})`;
   treeLines.style.transform = `scale(${scale})`;
   treeZoom.style.width = `${baseSize.width * scale}px`;
@@ -2051,12 +2436,47 @@ if (langToggleBtn) {
   });
 }
 
+if (themePresetSelect) {
+  themePresetSelect.addEventListener("change", () => {
+    themePreset = themePresetSelect.value || "default";
+    applyThemePreset();
+    savePrefs();
+  });
+}
+
 if (controlsToggleBtn) {
   controlsToggleBtn.addEventListener("click", () => {
     controlsCollapsed = !controlsCollapsed;
     document.body.classList.toggle("controls-collapsed", controlsCollapsed);
     applyLanguage();
     savePrefs();
+  });
+}
+
+if (bottomSheetHandle && controlsToggleBtn) {
+  bottomSheetHandle.addEventListener("click", () => {
+    controlsToggleBtn.click();
+  });
+}
+
+if (mobileSettingsBtn && settingsBtn) {
+  mobileSettingsBtn.addEventListener("click", () => settingsBtn.click());
+}
+
+if (mobileHelpBtn && helpBtn) {
+  mobileHelpBtn.addEventListener("click", () => helpBtn.click());
+}
+
+if (mobileSearchBtn) {
+  mobileSearchBtn.addEventListener("click", () => {
+    if (controlsCollapsed && controlsToggleBtn) {
+      controlsToggleBtn.click();
+    }
+    if (searchInput) {
+      setTimeout(() => {
+        searchInput.focus();
+      }, 50);
+    }
   });
 }
 
@@ -2143,6 +2563,7 @@ const stopPointerPan = (event) => {
 
 if (treeWrap) {
   treeWrap.addEventListener("pointerdown", (event) => {
+    if (!dragToPan) return;
     if (event.target.closest(".person-card")) return;
     isPanning = true;
     treeWrap.setPointerCapture(event.pointerId);
@@ -2157,6 +2578,7 @@ if (treeWrap) {
   });
 
   treeWrap.addEventListener("pointermove", (event) => {
+    if (!dragToPan) return;
     if (!isPanning) return;
     if (!treeWrap.hasPointerCapture(event.pointerId)) return;
     const dx = event.clientX - panStart.x;
@@ -2170,6 +2592,7 @@ if (treeWrap) {
   treeWrap.addEventListener("pointercancel", stopPointerPan);
 
   treeWrap.addEventListener("mousedown", (event) => {
+    if (!dragToPan) return;
     if (event.button !== 0) return;
     if (event.target.closest(".person-card")) return;
     mousePanning = true;
@@ -2189,6 +2612,7 @@ if (treeWrap) {
 }
 
 window.addEventListener("mousemove", (event) => {
+  if (!dragToPan) return;
   if (!mousePanning || !treeWrap) return;
   const dx = event.clientX - panStart.x;
   const dy = event.clientY - panStart.y;
@@ -2299,6 +2723,7 @@ function focusPerson(personId, open = false) {
 
   selectedPersonId = personId;
   updateStoryPanel(person);
+  applySelectionHighlight(personId);
 
   if (open) openModal(person);
 
@@ -2326,6 +2751,166 @@ if (viewToggle) {
     applyLanguage();
     savePrefs();
     updateUrlState();
+  });
+}
+
+if (timelineGenSelect) {
+  timelineGenSelect.addEventListener("change", () => {
+    timelineFilters.generation = timelineGenSelect.value || "all";
+    renderTimeline();
+  });
+}
+
+if (timelineMonthSelect) {
+  timelineMonthSelect.addEventListener("change", () => {
+    timelineFilters.month = timelineMonthSelect.value || "all";
+    renderTimeline();
+  });
+}
+
+if (timelineYearFrom) {
+  timelineYearFrom.addEventListener("input", () => {
+    timelineFilters.yearFrom = timelineYearFrom.value;
+    renderTimeline();
+  });
+}
+
+if (timelineYearTo) {
+  timelineYearTo.addEventListener("input", () => {
+    timelineFilters.yearTo = timelineYearTo.value;
+    renderTimeline();
+  });
+}
+
+if (timelineClearBtn) {
+  timelineClearBtn.addEventListener("click", () => {
+    timelineFilters = { generation: "all", month: "all", yearFrom: "", yearTo: "" };
+    if (timelineGenSelect) timelineGenSelect.value = "all";
+    if (timelineMonthSelect) timelineMonthSelect.value = "all";
+    if (timelineYearFrom) timelineYearFrom.value = "";
+    if (timelineYearTo) timelineYearTo.value = "";
+    renderTimeline();
+  });
+}
+
+if (settingsBtn && settingsModal) {
+  settingsBtn.addEventListener("click", () => {
+    settingsModal.classList.add("is-open");
+    settingsModal.setAttribute("aria-hidden", "false");
+  });
+}
+
+if (settingsModal) {
+  settingsModal.addEventListener("click", (event) => {
+    if (!event.target.dataset.settingsClose) return;
+    settingsModal.classList.remove("is-open");
+    settingsModal.setAttribute("aria-hidden", "true");
+  });
+}
+
+if (settingsCompact) {
+  settingsCompact.addEventListener("change", () => {
+    compactMode = settingsCompact.checked;
+    document.body.classList.toggle("compact", compactMode);
+    applyLanguage();
+    savePrefs();
+  });
+}
+
+if (settingsLines) {
+  settingsLines.addEventListener("change", () => {
+    showLines = settingsLines.checked;
+    applyLinesState();
+    savePrefs();
+  });
+}
+
+if (settingsCardScale) {
+  settingsCardScale.addEventListener("input", () => {
+    cardScale = Number(settingsCardScale.value) || 1;
+    applyCardScale();
+    buildLayout();
+    updateStats();
+    populateTimelineFilters();
+    renderScene();
+    savePrefs();
+  });
+}
+
+if (settingsMinimap) {
+  settingsMinimap.addEventListener("change", () => {
+    minimapEnabled = settingsMinimap.checked;
+    applyMinimapState();
+    savePrefs();
+  });
+}
+
+if (settingsDrag) {
+  settingsDrag.addEventListener("change", () => {
+    dragToPan = settingsDrag.checked;
+    applyDragToPanState();
+    savePrefs();
+  });
+}
+
+if (settingsShowBirthdate) {
+  settingsShowBirthdate.addEventListener("change", () => {
+    showBirthdate = settingsShowBirthdate.checked;
+    applyDetailsVisibility();
+    savePrefs();
+  });
+}
+
+if (settingsShowAge) {
+  settingsShowAge.addEventListener("change", () => {
+    showAge = settingsShowAge.checked;
+    applyDetailsVisibility();
+    savePrefs();
+  });
+}
+
+if (settingsShowTags) {
+  settingsShowTags.addEventListener("change", () => {
+    showTags = settingsShowTags.checked;
+    applyDetailsVisibility();
+    savePrefs();
+  });
+}
+
+if (settingsDefaultView) {
+  settingsDefaultView.addEventListener("change", () => {
+    defaultView = settingsDefaultView.value || "tree";
+    viewMode = defaultView;
+    applyViewMode();
+    savePrefs();
+  });
+}
+
+if (settingsShowTutorial) {
+  settingsShowTutorial.addEventListener("click", () => {
+    try {
+      localStorage.removeItem(ONBOARDING_KEY);
+    } catch {
+      // ignore storage errors
+    }
+    openOnboarding();
+  });
+}
+
+if (settingsReset) {
+  settingsReset.addEventListener("click", () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore storage errors
+    }
+    window.location.reload();
+  });
+}
+
+if (settingsClearData) {
+  settingsClearData.addEventListener("click", () => {
+    clearSiteCache();
   });
 }
 
@@ -2373,6 +2958,87 @@ if (exportPdfBtn) {
   });
 }
 
+function closeExportMenu() {
+  if (!exportMenu) return;
+  exportMenu.hidden = true;
+  if (exportMenuBtn) exportMenuBtn.setAttribute("aria-expanded", "false");
+}
+
+if (exportMenuBtn) {
+  exportMenuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (!exportMenu) return;
+    const willOpen = exportMenu.hidden;
+    exportMenu.hidden = !willOpen;
+    exportMenuBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  });
+}
+
+if (exportMenu) {
+  document.addEventListener("click", (event) => {
+    if (exportMenu.hidden) return;
+    if (exportMenu.contains(event.target) || exportMenuBtn?.contains(event.target)) return;
+    closeExportMenu();
+  });
+}
+
+if (exportPngBtn) {
+  exportPngBtn.addEventListener("click", () => {
+    closeExportMenu();
+  });
+}
+
+if (exportPdfBtn) {
+  exportPdfBtn.addEventListener("click", () => {
+    closeExportMenu();
+  });
+}
+
+function updateMiniToolbarVisibility() {
+  if (!miniToolbar) return;
+  if (viewMode !== "tree") {
+    miniToolbar.classList.remove("is-visible");
+    return;
+  }
+  const controlsPanel = document.querySelector(".controls");
+  if (!controlsPanel) return;
+  const rect = controlsPanel.getBoundingClientRect();
+  const shouldShow = rect.bottom < 0;
+  miniToolbar.classList.toggle("is-visible", shouldShow);
+}
+
+if (miniSearchBtn) {
+  miniSearchBtn.addEventListener("click", () => {
+    if (searchInput) searchInput.focus();
+  });
+}
+
+if (miniZoomInBtn) {
+  miniZoomInBtn.addEventListener("click", () => {
+    if (zoomInBtn) zoomInBtn.click();
+  });
+}
+
+if (miniZoomOutBtn) {
+  miniZoomOutBtn.addEventListener("click", () => {
+    if (zoomOutBtn) zoomOutBtn.click();
+  });
+}
+
+if (miniZoomFitBtn) {
+  miniZoomFitBtn.addEventListener("click", () => {
+    if (zoomFitBtn) zoomFitBtn.click();
+  });
+}
+
+window.addEventListener("scroll", () => {
+  updateMiniToolbarVisibility();
+}, { passive: true });
+
+window.addEventListener("resize", () => {
+  updateMiniToolbarVisibility();
+});
+
 if (helpBtn) {
   helpBtn.addEventListener("click", () => {
     openOnboarding();
@@ -2417,6 +3083,10 @@ document.addEventListener("keydown", (event) => {
   if (onboarding && onboarding.classList.contains("is-open")) {
     closeOnboarding(true);
   }
+  if (settingsModal && settingsModal.classList.contains("is-open")) {
+    settingsModal.classList.remove("is-open");
+    settingsModal.setAttribute("aria-hidden", "true");
+  }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -2428,9 +3098,11 @@ window.addEventListener("load", () => {
     renderScene();
     applyZoom();
   }
+  updateMiniToolbarVisibility();
 });
 
 function updateMinimap() {
+  if (!minimapEnabled) return;
   if (!minimapCanvas || !layoutRoot || !treeWrap) return;
   const rect = minimapCanvas.getBoundingClientRect();
   const width = Math.max(1, Math.floor(rect.width));
@@ -2467,15 +3139,18 @@ function updateMinimap() {
 }
 
 function fitToScreen() {
-  if (!treeWrap) return;
+  if (!treeWrap || !treeCanvas) return;
+  if (!treeCanvas.children.length || baseSize.width <= 0 || baseSize.height <= 0) return;
   const pad = 24;
   const targetScale = Math.min(
     (treeWrap.clientWidth - pad) / baseSize.width,
     (treeWrap.clientHeight - pad) / baseSize.height
   );
-  scale = Math.max(0.5, Math.min(2.2, targetScale));
+  if (!Number.isFinite(targetScale) || targetScale <= 0) return;
+  scale = Math.max(0.6, Math.min(2.2, targetScale));
   applyZoom();
   treeWrap.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+  scheduleRender();
 }
 
 function findElderPerson() {
@@ -2603,7 +3278,7 @@ function applyLanguage() {
     if (key && t[key] !== undefined) el.setAttribute("aria-label", t[key]);
   });
 
-  if (treeCanvas) treeCanvas.dataset.emptyText = t.loading;
+  if (treeCanvas) treeCanvas.dataset.emptyText = "";
   if (searchInput) searchInput.placeholder = t.searchPlaceholder;
   if (viewToggle) viewToggle.textContent = viewMode === "timeline" ? t.viewTree : t.viewTimeline;
   if (compactToggleBtn) compactToggleBtn.textContent = compactMode ? t.compactOn : t.compactOff;
@@ -2632,10 +3307,25 @@ function applyLanguage() {
     controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
   }
   if (helpBtn) helpBtn.textContent = lang === "en" ? "Help" : "Cara Guna";
+  if (settingsBtn) settingsBtn.textContent = t.settingsTitle;
   if (onboardingSkip) onboardingSkip.textContent = lang === "en" ? "Skip" : "Langkau";
   if (onboardingBack) onboardingBack.textContent = lang === "en" ? "Back" : "Kembali";
   if (onboardingNext) onboardingNext.textContent = lang === "en" ? "Next" : "Seterusnya";
   if (onboardingDone) onboardingDone.textContent = lang === "en" ? "Done" : "Selesai";
+  if (themePresetSelect) themePresetSelect.value = themePreset;
+  if (settingsCardScale) settingsCardScale.value = String(cardScale);
+  if (settingsCompact) settingsCompact.checked = compactMode;
+  if (settingsLines) settingsLines.checked = showLines;
+  if (settingsMinimap) settingsMinimap.checked = minimapEnabled;
+  if (settingsDrag) settingsDrag.checked = dragToPan;
+  if (settingsShowBirthdate) settingsShowBirthdate.checked = showBirthdate;
+  if (settingsShowAge) settingsShowAge.checked = showAge;
+  if (settingsShowTags) settingsShowTags.checked = showTags;
+  if (settingsDefaultView) settingsDefaultView.value = viewMode;
+  if (timelineMonthSelect) timelineMonthSelect.value = timelineFilters.month;
+  if (timelineYearFrom) timelineYearFrom.value = timelineFilters.yearFrom;
+  if (timelineYearTo) timelineYearTo.value = timelineFilters.yearTo;
+  populateTimelineFilters();
 
   const branchOptions = branchFilter?.options || [];
   if (branchOptions.length > 0) {
@@ -2692,7 +3382,9 @@ if (minimapCanvas) {
 const minimap = document.getElementById("minimap");
 const minimapWrap = document.querySelector(".brand-minimap-wrap");
 const minimapHandle = document.getElementById("minimap-handle");
+const minimapCloseBtn = document.getElementById("minimap-close-btn");
 if (minimap) {
+  const isMobileView = () => window.matchMedia("(max-width: 720px)").matches;
   const activate = () => {
     minimap.classList.add("is-active");
   };
@@ -2704,6 +3396,7 @@ if (minimap) {
   let autoHideInterval = null;
 
   const scheduleHide = () => {
+    if (isMobileView()) return;
     if (!minimapWrap) return;
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
@@ -2711,8 +3404,24 @@ if (minimap) {
     }, 2500);
   };
 
+  const openMinimapMobile = () => {
+    if (!minimapWrap) return;
+    minimapWrap.classList.add("is-open");
+    minimapWrap.classList.remove("is-collapsed");
+  };
+
+  const closeMinimapMobile = () => {
+    if (!minimapWrap) return;
+    minimapWrap.classList.remove("is-open");
+    minimapWrap.classList.add("is-collapsed");
+  };
+
   const showMinimap = () => {
     if (!minimapWrap) return;
+    if (isMobileView()) {
+      openMinimapMobile();
+      return;
+    }
     minimapWrap.classList.remove("is-collapsed");
     scheduleHide();
   };
@@ -2722,12 +3431,21 @@ if (minimap) {
     minimapWrap.addEventListener("mouseenter", showMinimap);
     minimapWrap.addEventListener("focusin", showMinimap);
     minimapWrap.addEventListener("touchstart", showMinimap, { passive: true });
+    if (isMobileView()) {
+      minimapWrap.classList.remove("is-open");
+    }
     setTimeout(() => minimapWrap.classList.add("is-collapsed"), 50);
   }
 
   if (minimapHandle) {
     minimapHandle.addEventListener("click", showMinimap);
     minimapHandle.addEventListener("touchstart", showMinimap, { passive: true });
+  }
+
+  if (minimapCloseBtn) {
+    minimapCloseBtn.addEventListener("click", () => {
+      if (isMobileView()) closeMinimapMobile();
+    });
   }
 
   minimap.addEventListener("pointerdown", (event) => {
@@ -2765,11 +3483,14 @@ if (minimap) {
   scheduleHide();
   if (minimapWrap && !autoHideInterval) {
     autoHideInterval = setInterval(() => {
-      if (!dragging) minimapWrap.classList.add("is-collapsed");
+      if (!dragging && !isMobileView()) minimapWrap.classList.add("is-collapsed");
     }, 3500);
   }
   window.addEventListener("scroll", scheduleHide, true);
   window.addEventListener("touchend", scheduleHide, { passive: true });
+  window.addEventListener("resize", () => {
+    if (isMobileView()) closeMinimapMobile();
+  });
 }
 
 function restoreFromUrl() {
@@ -2777,14 +3498,9 @@ function restoreFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const focusId = params.get("focus");
   const genParam = params.get("gen");
-
   if (genParam) {
-    const visible = genParam.split(",").map((v) => Number(v.trim())).filter(Boolean);
-    hiddenGenerations.clear();
-    for (let depth = 1; depth <= maxDepth; depth += 1) {
-      if (!visible.includes(depth)) hiddenGenerations.add(depth);
-    }
-    buildGenerationControls();
+    params.delete("gen");
+    history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
   }
 
   if (focusId && peopleById.has(focusId)) {

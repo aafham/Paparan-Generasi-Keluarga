@@ -13,6 +13,11 @@
 <body>
   <div class="app" id="app" data-theme="light">
     <header class="topbar">
+      <div id="mobile-topbar" class="mobile-topbar" aria-label="Mobile top bar">
+        <button id="mobile-settings-btn" class="btn ghost icon" type="button" aria-label="Settings">⚙️</button>
+        <button id="mobile-help-btn" class="btn ghost icon" type="button" aria-label="Help">?</button>
+        <button id="mobile-search-btn" class="btn ghost icon" type="button" aria-label="Search">🔎</button>
+      </div>
       <div class="brand">
         <p class="kicker" data-i18n="appKicker">Salasilah Keluarga</p>
         <h1 data-i18n="appTitle">Paparan Generasi Keluarga</h1>
@@ -22,35 +27,22 @@
           <div class="minimap minimap-brand" id="minimap">
             <canvas id="minimap-canvas"></canvas>
           </div>
+          <button class="minimap-close" id="minimap-close-btn" type="button" aria-label="Tutup minimap">×</button>
           <p class="minimap-hint" data-i18n="minimapHint">Klik pada kotak kecil untuk lompat lokasi. Kotak putih menunjukkan kawasan semasa.</p>
           <button class="minimap-handle" id="minimap-handle" type="button" data-i18n="minimapShow">Buka Minimap</button>
         </div>
       </div>
       <div class="top-actions" aria-label="Quick actions">
-        <label class="toggle">
-          <input id="toggle-theme" type="checkbox" />
-          <span class="toggle-track"></span>
-          <span class="toggle-label" data-i18n="themeToggle">Light / Dark</span>
-        </label>
-        <label class="toggle">
-          <input id="lang-toggle" type="checkbox" />
-          <span class="toggle-track"></span>
-          <span class="toggle-label" data-i18n="langToggle">BM / EN</span>
-        </label>
+        <button id="settings-btn" class="btn ghost small" type="button" data-i18n="settingsTitle">
+          Settings
+        </button>
         <button id="help-btn" class="btn ghost small" type="button">
           Cara Guna
         </button>
-        <button id="clear-cache" class="btn danger small" type="button" data-i18n-title="clearCache" data-i18n-aria="clearCache">
-          <span class="btn-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img" focusable="false">
-              <path d="M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 11a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <span class="btn-text" data-i18n="clearCache">Clear Cache</span>
-        </button>
       </div>
-      <div class="controls">
+      <div id="bottom-sheet" class="bottom-sheet">
+        <div id="sheet-handle" class="sheet-handle" role="button" aria-label="Toggle panel"></div>
+        <div class="controls">
         <button id="controls-toggle" class="controls-toggle" type="button">Tutup Panel</button>
         <div class="control-group">
           <label for="search" class="label" data-i18n="searchLabel">Carian nama</label>
@@ -63,6 +55,15 @@
         <div class="control-group" hidden>
           <label for="branch-filter" class="label" data-i18n="branchLabel">Tapis cabang</label>
           <select id="branch-filter" class="select"></select>
+        </div>
+        <div class="control-group">
+          <label for="theme-preset" class="label" data-i18n="themePreset">Tema</label>
+          <select id="theme-preset" class="select">
+            <option value="default" data-i18n="themeDefault">Default</option>
+            <option value="heritage" data-i18n="themeHeritage">Heritage</option>
+            <option value="ocean" data-i18n="themeOcean">Ocean</option>
+            <option value="sunset" data-i18n="themeSunset">Sunset</option>
+          </select>
         </div>
         <div class="mobile-actions" aria-label="Aksi mudah alih">
           <div class="control-row mobile-quick">
@@ -88,6 +89,7 @@
           <button id="zoom-reset" class="btn ghost" data-i18n="zoomReset">Reset</button>
           <button id="zoom-fit" class="btn ghost" data-i18n="fit">Fit Skrin</button>
           <button id="reset-view" class="btn ghost" data-i18n="resetView">Reset View</button>
+          <button id="view-toggle" class="btn ghost" data-i18n="viewTimeline">Lihat Timeline</button>
         </div>
         <div id="validate-output" class="validate-output" aria-live="polite"></div>
         <div class="control-group generation-row">
@@ -96,29 +98,13 @@
             <div id="generation-controls" class="generation-controls"></div>
           </div>
           <div class="export-actions">
-          <button id="export-png" class="btn ghost" data-i18n-title="exportPng" data-i18n-aria="exportPng" title="Export PNG" aria-label="Export PNG">
-              <span class="btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false">
-                  <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                  <path d="M15 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                  <path d="M7.5 17.5l3-3 2 2 2.5-2.5 2.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="9" cy="11" r="1.5" fill="currentColor"/>
-                </svg>
-              </span>
-              <span class="sr-only" data-i18n="exportPng">Export PNG</span>
-            </button>
-          <button id="export-pdf" class="btn ghost" data-i18n-title="exportPdf" data-i18n-aria="exportPdf" title="Export PDF" aria-label="Export PDF">
-              <span class="btn-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img" focusable="false">
-                  <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                  <path d="M15 3v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/>
-                  <path d="M8 16h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                  <path d="M8 13h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <span class="sr-only" data-i18n="exportPdf">Export PDF</span>
-            </button>
+            <button id="export-menu-btn" class="btn ghost" type="button" data-i18n="exportMenu">Export</button>
+            <div id="export-menu" class="export-menu" hidden>
+              <button id="export-png" class="btn ghost small" type="button" data-i18n="exportPng">Export PNG</button>
+              <button id="export-pdf" class="btn ghost small" type="button" data-i18n="exportPdf">Export PDF</button>
+            </div>
           </div>
+        </div>
         </div>
       </div>
     </header>
@@ -134,7 +120,32 @@
       </div>
     </section>
 
+    <section class="stats" id="stats">
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="statsPeople">Jumlah Ahli</div>
+        <div class="stat-value" id="stat-people">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="statsCouples">Jumlah Pasangan</div>
+        <div class="stat-value" id="stat-couples">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="statsGenerations">Generasi</div>
+        <div class="stat-value" id="stat-generations">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="statsBranches">Cabang</div>
+        <div class="stat-value" id="stat-branches">0</div>
+      </div>
+    </section>
+
     <main class="tree-section">
+      <div id="mini-toolbar" class="mini-toolbar" aria-label="Quick nav">
+        <button id="mini-search" class="btn ghost small" type="button" data-i18n="searchGo">Cari & Fokus</button>
+        <button id="mini-zoom-in" class="btn small" type="button">+</button>
+        <button id="mini-zoom-out" class="btn small" type="button">−</button>
+        <button id="mini-zoom-fit" class="btn ghost small" type="button" data-i18n="fit">Fit Skrin</button>
+      </div>
       <div class="content-grid">
         <div class="tree-wrap" id="tree-wrap">
           <div class="tree-zoom" id="tree-zoom">
@@ -194,6 +205,31 @@
           </form>
         </aside>
       </div>
+      <section class="timeline-section" id="timeline-section" hidden>
+        <div class="timeline-head">
+          <h2 data-i18n="timelineTitle">Timeline Keluarga</h2>
+        </div>
+        <div class="timeline-filters">
+          <label class="timeline-filter">
+            <span data-i18n="timelineGenLabel">Generasi</span>
+            <select id="timeline-gen" class="select"></select>
+          </label>
+          <label class="timeline-filter">
+            <span data-i18n="timelineMonth">Bulan Lahir</span>
+            <select id="timeline-month" class="select"></select>
+          </label>
+          <label class="timeline-filter">
+            <span data-i18n="timelineYearFrom">Dari Tahun</span>
+            <input id="timeline-year-from" class="input" type="number" inputmode="numeric" placeholder="1900" />
+          </label>
+          <label class="timeline-filter">
+            <span data-i18n="timelineYearTo">Hingga Tahun</span>
+            <input id="timeline-year-to" class="input" type="number" inputmode="numeric" placeholder="2026" />
+          </label>
+          <button id="timeline-clear" class="btn ghost small" type="button" data-i18n="timelineClear">Reset</button>
+        </div>
+        <div class="timeline-list" id="timeline-list"></div>
+      </section>
     </main>
   </div>
 
@@ -202,6 +238,101 @@
     <div class="modal-card" role="dialog" aria-modal="true">
       <button class="modal-close" data-close="true" data-i18n="modalClose">Tutup</button>
       <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="settings-modal" id="settings-modal" aria-hidden="true">
+    <div class="settings-backdrop" data-settings-close="true"></div>
+    <div class="settings-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <button class="settings-close" type="button" aria-label="Tutup" data-settings-close="true">×</button>
+      <h2 id="settings-title" data-i18n="settingsTitle">Settings</h2>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsDisplay">Paparan</h3>
+        <div class="settings-grid">
+          <div class="settings-slider">
+            <label for="setting-card-scale" class="label" data-i18n="settingsCardSize">Saiz Kad</label>
+            <input id="setting-card-scale" type="range" min="0.85" max="1.15" step="0.05" />
+            <div class="settings-scale-labels">
+              <span data-i18n="settingsSizeSmall">Kecil</span>
+              <span data-i18n="settingsSizeNormal">Normal</span>
+              <span data-i18n="settingsSizeLarge">Besar</span>
+            </div>
+          </div>
+          <label class="toggle">
+            <input id="toggle-theme" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="themeToggle">Light / Dark</span>
+          </label>
+          <label class="toggle">
+            <input id="lang-toggle" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="langToggle">BM / EN</span>
+          </label>
+          <label class="toggle">
+            <input id="settings-compact" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsCompact">Compact Mode</span>
+          </label>
+          <label class="toggle">
+            <input id="setting-show-birthdate" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsShowBirthdate">Show Birthdate</span>
+          </label>
+          <label class="toggle">
+            <input id="setting-show-age" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsShowAge">Show Age</span>
+          </label>
+          <label class="toggle">
+            <input id="setting-show-tags" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsShowTags">Show Tags</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsNav">Navigation</h3>
+        <div class="settings-grid">
+          <label class="toggle">
+            <input id="settings-minimap" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsMinimap">Minimap</span>
+          </label>
+          <label class="toggle">
+            <input id="settings-drag" type="checkbox" />
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="settingsDrag">Drag to Pan</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsTools">Tools</h3>
+        <div class="settings-grid">
+          <button id="setting-show-tutorial" class="btn ghost small" type="button" data-i18n="settingsShowTutorial">
+            Show tutorial again
+          </button>
+          <button id="setting-reset-settings" class="btn ghost small" type="button" data-i18n="settingsReset">
+            Reset settings
+          </button>
+          <button id="clear-cache" class="btn danger small" type="button" data-i18n="clearCache">
+            Clear Cache
+          </button>
+          <button class="btn ghost small" type="button" data-settings-close="true" data-i18n="settingsClose">
+            Close
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsAbout">About</h3>
+        <div class="settings-about">
+          <span data-i18n="settingsDataVersion">Data version</span>
+          <strong id="settings-data-version">-</strong>
+        </div>
+      </div>
     </div>
   </div>
 
