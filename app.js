@@ -1810,7 +1810,7 @@ treeWrap.addEventListener("pointerdown", (event) => {
     scrollLeft: treeWrap.scrollLeft,
     scrollTop: treeWrap.scrollTop
   };
-  if (event.pointerType === "touch") event.preventDefault();
+  event.preventDefault();
 });
 
 treeWrap.addEventListener("pointermove", (event) => {
@@ -1820,7 +1820,7 @@ treeWrap.addEventListener("pointermove", (event) => {
   const dy = event.clientY - panStart.y;
   treeWrap.scrollLeft = panStart.scrollLeft - dx;
   treeWrap.scrollTop = panStart.scrollTop - dy;
-  if (event.pointerType === "touch") event.preventDefault();
+  event.preventDefault();
 });
 
 const stopPointerPan = (event) => {
@@ -1845,6 +1845,10 @@ treeWrap.addEventListener("mousedown", (event) => {
     scrollLeft: treeWrap.scrollLeft,
     scrollTop: treeWrap.scrollTop
   };
+  event.preventDefault();
+});
+
+treeWrap.addEventListener("dragstart", (event) => {
   event.preventDefault();
 });
 
@@ -2311,6 +2315,7 @@ if (minimap) {
     minimapWrap.addEventListener("mouseenter", showMinimap);
     minimapWrap.addEventListener("focusin", showMinimap);
     minimapWrap.addEventListener("touchstart", showMinimap, { passive: true });
+    setTimeout(() => minimapWrap.classList.add("is-collapsed"), 50);
   }
 
   if (minimapHandle) {
@@ -2356,6 +2361,8 @@ if (minimap) {
       if (!dragging) minimapWrap.classList.add("is-collapsed");
     }, 3500);
   }
+  window.addEventListener("scroll", scheduleHide, true);
+  window.addEventListener("touchend", scheduleHide, { passive: true });
 }
 
 function restoreFromUrl() {
