@@ -2064,7 +2064,9 @@ const sheetControls = document.querySelector("#bottom-sheet .controls");
 const sheetDragState = {
   active: false,
   startY: 0,
-  deltaY: 0
+  startX: 0,
+  deltaY: 0,
+  deltaX: 0
 };
 
 const setSheetOffset = (offset) => {
@@ -2078,6 +2080,7 @@ const resetSheetOffset = () => {
   bottomSheet.classList.remove("is-dragging");
   sheetDragState.active = false;
   sheetDragState.deltaY = 0;
+  sheetDragState.deltaX = 0;
 };
 
 if (bottomSheet) {
@@ -2090,7 +2093,9 @@ if (bottomSheet) {
     const touch = event.touches[0];
     sheetDragState.active = true;
     sheetDragState.startY = touch.clientY;
+    sheetDragState.startX = touch.clientX;
     sheetDragState.deltaY = 0;
+    sheetDragState.deltaX = 0;
     bottomSheet.classList.add("is-dragging");
   }, { passive: true });
 
@@ -2098,7 +2103,10 @@ if (bottomSheet) {
     if (!sheetDragState.active || !isMobileView()) return;
     const touch = event.touches[0];
     const dy = touch.clientY - sheetDragState.startY;
+    const dx = touch.clientX - sheetDragState.startX;
     sheetDragState.deltaY = dy;
+    sheetDragState.deltaX = dx;
+    if (Math.abs(dx) > Math.abs(dy)) return;
     if (controlsCollapsed) {
       const offset = Math.min(0, dy);
       setSheetOffset(offset);
@@ -2112,9 +2120,9 @@ if (bottomSheet) {
   bottomSheet.addEventListener("touchend", () => {
     if (!sheetDragState.active) return;
     const dy = sheetDragState.deltaY;
-    if (!controlsCollapsed && dy > 80) {
+    if (!controlsCollapsed && dy > 60) {
       toggleControlsCollapsed(true);
-    } else if (controlsCollapsed && dy < -60) {
+    } else if (controlsCollapsed && dy < -40) {
       toggleControlsCollapsed(false);
     }
     resetSheetOffset();
