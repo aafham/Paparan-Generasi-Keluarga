@@ -524,7 +524,7 @@ if (!treeCanvas || !treeCanvas.children.length) {
   setTreeStatus(t.loading);
 }
 
-fetch("data.json")
+fetch(`data.json?v=${Date.now()}`, { cache: "no-store" })
   .then((res) => res.json())
   .then((data) => {
     treeCanvas.textContent = "";
@@ -581,16 +581,11 @@ function savePrefs() {
 }
 
 function loadStoredData() {
-  try {
-    const raw = localStorage.getItem(DATA_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (err) {
-    return null;
-  }
+  return null;
 }
 
 function storeData() {
-  localStorage.setItem(DATA_KEY, JSON.stringify(treeData));
+  // no-op: view-only mode, always use data.json
 }
 
 function buildLayout() {
