@@ -2224,6 +2224,9 @@ if (validateDataBtn) {
 let isPanning = false;
 let panStart = { x: 0, y: 0, scrollLeft: 0, scrollTop: 0 };
 let mousePanning = false;
+let pinchZooming = false;
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
 
 const stopPointerPan = (event) => {
   if (!treeWrap) return;
@@ -2236,6 +2239,49 @@ const stopPointerPan = (event) => {
 };
 
 if (treeWrap) {
+  treeWrap.addEventListener("touchstart", (event) => {
+    if (!isMobileView()) return;
+    if (event.touches.length !== 2) return;
+    const [t1, t2] = event.touches;
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
+    pinchZooming = true;
+    pinchStartDistance = Math.hypot(dx, dy) || 1;
+    pinchStartScale = scale;
+    isPanning = false;
+    treeWrap.classList.remove("is-dragging");
+  }, { passive: true });
+
+  treeWrap.addEventListener("touchmove", (event) => {
+    if (!pinchZooming) return;
+    if (event.touches.length !== 2) return;
+    const [t1, t2] = event.touches;
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
+    const distance = Math.hypot(dx, dy) || 1;
+    const ratio = distance / pinchStartDistance;
+    const next = Math.max(0.6, Math.min(2.2, pinchStartScale * ratio));
+    if (next !== scale) {
+      scale = next;
+      applyZoom();
+      scheduleRender();
+    }
+    event.preventDefault();
+  }, { passive: false });
+
+  treeWrap.addEventListener("touchend", (event) => {
+    if (!pinchZooming) return;
+    if (event.touches.length < 2) {
+      pinchZooming = false;
+      savePrefs();
+    }
+  });
+
+  treeWrap.addEventListener("touchcancel", () => {
+    if (!pinchZooming) return;
+    pinchZooming = false;
+  });
+
   treeWrap.addEventListener("pointerdown", (event) => {
     if (!dragToPan) return;
     if (event.target.closest(".person-card")) return;
