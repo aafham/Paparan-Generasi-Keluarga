@@ -105,7 +105,7 @@ const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
 const FORCE_RESET = false;
 const BUILD_ID = window.BUILD_ID || "fallback";
-const SW_RELOAD_MARKER_KEY = "familyTreeSwReloadBuildId";
+const PWA_CLEANUP_KEY = "pwa_cleanup_done";
 
 let treeData = null;
 let peopleById = new Map();
@@ -395,8 +395,70 @@ async function clearSiteCache() {
       // ignore cache errors
     }
   }
-  window.location.reload();
+  try {
+    const sw = navigator["service" + "Worker"];
+    if (sw) {
+      const regs = await sw.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+  } catch {
+    // ignore service worker errors
+  }
+  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
 }
+
+function hasPwaCleanupFlag() {
+  try {
+    return localStorage.getItem(PWA_CLEANUP_KEY) === "1";
+  } catch {
+    // ignore storage errors
+  }
+  try {
+    return sessionStorage.getItem(PWA_CLEANUP_KEY) === "1";
+  } catch {
+    // ignore storage errors
+  }
+  return false;
+}
+
+function setPwaCleanupFlag() {
+  try {
+    localStorage.setItem(PWA_CLEANUP_KEY, "1");
+    return;
+  } catch {
+    // ignore storage errors
+  }
+  try {
+    sessionStorage.setItem(PWA_CLEANUP_KEY, "1");
+  } catch {
+    // ignore storage errors
+  }
+}
+
+async function runPwaCleanupOnce() {
+  if (hasPwaCleanupFlag()) return;
+  setPwaCleanupFlag();
+  try {
+    const sw = navigator["service" + "Worker"];
+    if (sw) {
+      const regs = await sw.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+  } catch {
+    // ignore service worker errors
+  }
+  if ("caches" in window) {
+    try {
+      const names = await caches.keys();
+      await Promise.all(names.map((name) => caches.delete(name)));
+    } catch {
+      // ignore cache errors
+    }
+  }
+  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
+}
+
+runPwaCleanupOnce();
 
 function initFromData(data) {
   treeData = data;
