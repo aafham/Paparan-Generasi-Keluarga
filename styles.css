@@ -1730,6 +1730,10 @@ body.hide-tags .person-tags {
     display: none;
   }
 
+  .controls-toggle {
+    display: none;
+  }
+
   .bottom-sheet {
     position: fixed;
     left: 0;

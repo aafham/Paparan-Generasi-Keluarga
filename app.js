@@ -155,6 +155,9 @@ const VIRTUALIZE_THRESHOLD = 1000000;
 const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
 const FORCE_RESET = false;
+const MOBILE_CONTROLS_KEY = "ft_controls_collapsed";
+
+const isMobileView = () => window.matchMedia("(max-width: 720px)").matches;
 
 let treeData = null;
 let peopleById = new Map();
@@ -917,11 +920,17 @@ function initFromData(data) {
   if (prefs.lang) lang = prefs.lang;
   if (prefs.compactMode) compactMode = true;
   if (prefs.pathMode) pathMode = true;
-  const hasControlsPref = Object.prototype.hasOwnProperty.call(prefs, "controlsCollapsed");
-  if (hasControlsPref) {
-    controlsCollapsed = Boolean(prefs.controlsCollapsed);
-  } else if (window.matchMedia("(max-width: 720px)").matches) {
-    controlsCollapsed = true;
+  if (isMobileView()) {
+    const storedCollapse = localStorage.getItem(MOBILE_CONTROLS_KEY);
+    if (storedCollapse === null) {
+      controlsCollapsed = true;
+      localStorage.setItem(MOBILE_CONTROLS_KEY, "1");
+    } else {
+      controlsCollapsed = storedCollapse === "1";
+    }
+  } else {
+    const hasControlsPref = Object.prototype.hasOwnProperty.call(prefs, "controlsCollapsed");
+    controlsCollapsed = hasControlsPref ? Boolean(prefs.controlsCollapsed) : false;
   }
   if (prefs.themePreset) themePreset = prefs.themePreset;
   if (prefs.showLines !== undefined) showLines = Boolean(prefs.showLines);
@@ -2449,6 +2458,9 @@ if (controlsToggleBtn) {
     controlsCollapsed = !controlsCollapsed;
     document.body.classList.toggle("controls-collapsed", controlsCollapsed);
     applyLanguage();
+    if (isMobileView()) {
+      localStorage.setItem(MOBILE_CONTROLS_KEY, controlsCollapsed ? "1" : "0");
+    }
     savePrefs();
   });
 }
