@@ -1787,18 +1787,6 @@ body.hide-tags .person-tags {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .view-switch {
-    display: flex;
-    padding: 0 16px 16px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .view-switch .btn {
-    flex: 1;
-    min-height: 44px;
-    text-align: center;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1917,6 +1905,23 @@ body.hide-tags .person-tags {
 
   .brand-minimap-wrap.is-open .minimap-close {
     display: inline-flex;
+  }
+
+  .view-switch {
+    display: flex;
+    padding: 0 16px 16px;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .view-switch .btn {
+    flex: 1;
+    min-height: 44px;
+    text-align: center;
+    max-width: 240px;
   }
 
   .timeline-filters.primary {
