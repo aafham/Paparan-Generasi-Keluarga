@@ -1670,18 +1670,18 @@ function createPersonCard(person, depth) {
   if (person.birth) {
     const birthDate = parseDateValue(person.birth);
     const age = !person.death ? calcAge(birthDate) : null;
-    birthLine.textContent = `${i18n[lang].bornPrefix}${person.birth}`;
+    birthLine.textContent = `${i18n[lang].bornPrefix}${formatDateDisplay(person.birth)}`;
     if (age !== null) {
-      const ageSpan = document.createElement("span");
-      ageSpan.className = "person-age";
-      ageSpan.textContent = ` (${i18n[lang].ageLabel}: ${age})`;
-      birthLine.appendChild(ageSpan);
+      const ageLine = document.createElement("div");
+      ageLine.className = "person-age";
+      ageLine.textContent = `${i18n[lang].ageLabel}: ${age}`;
+      meta.appendChild(ageLine);
     }
   } else {
     birthLine.textContent = "";
   }
   const deathLine = document.createElement("div");
-  deathLine.textContent = person.death ? `${i18n[lang].diedPrefix}${person.death}` : "";
+  deathLine.textContent = person.death ? `${i18n[lang].diedPrefix}${formatDateDisplay(person.death)}` : "";
   if (birthLine.textContent) meta.appendChild(birthLine);
   if (deathLine.textContent) meta.appendChild(deathLine);
   nameWrap.appendChild(name);
@@ -1900,6 +1900,16 @@ function parseDateValue(value) {
   return Number.isNaN(dt.getTime()) ? null : dt;
 }
 
+function formatDateDisplay(value) {
+  if (!value) return "";
+  const str = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+    const [y, m, d] = str.split("-");
+    return `${d}/${m}/${y}`;
+  }
+  return str;
+}
+
 function splitNameByBin(fullName) {
   const name = String(fullName || "").trim();
   if (!name) return { first: "", last: "" };
@@ -1971,14 +1981,14 @@ function formatDisplayName(value) {
 function formatDates(birth, death) {
   const t = i18n[lang] || i18n.ms;
   if (!birth && !death) return t.datesUnknown;
-  if (birth && death) return `${birth} - ${death}`;
+  if (birth && death) return `${formatDateDisplay(birth)} - ${formatDateDisplay(death)}`;
   if (birth) {
     const birthDate = parseDateValue(birth);
     const age = !death ? calcAge(birthDate) : null;
     const ageText = age !== null ? ` (${t.ageLabel}: ${age})` : "";
-    return `${t.bornPrefix}${birth}${ageText}`;
+    return `${t.bornPrefix}${formatDateDisplay(birth)}${ageText}`;
   }
-  return `${t.diedPrefix}${death}`;
+  return `${t.diedPrefix}${formatDateDisplay(death)}`;
 }
 
 function openModal(person) {
@@ -1991,8 +2001,8 @@ function openModal(person) {
   storyTitle.textContent = formatDisplayName(person.name);
   storyContent.innerHTML = `
     <div class="story-detail"><strong>${t.modalRelation}</strong><span>${person.relation || "-"}</span></div>
-    <div class="story-detail"><strong>${t.modalBirth}</strong><span>${person.birth || "-"}${ageText}</span></div>
-    <div class="story-detail"><strong>${t.modalDeath}</strong><span>${person.death || "-"}</span></div>
+    <div class="story-detail"><strong>${t.modalBirth}</strong><span>${formatDateDisplay(person.birth) || "-"}${ageText}</span></div>
+    <div class="story-detail"><strong>${t.modalDeath}</strong><span>${formatDateDisplay(person.death) || "-"}</span></div>
     <div class="story-detail"><strong>${t.modalNote}</strong><span>${person.note || "-"}</span></div>
     <div class="story-detail"><strong>${t.modalStory}</strong><span>${person.story || "-"}</span></div>
   `;
