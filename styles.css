@@ -1144,23 +1144,27 @@ input[type="file"].input {
 }
 
 .timeline-item.branch-soft-peach {
-  background: color-mix(in srgb, var(--soft-peach) 22%, #fff);
-  border-color: color-mix(in srgb, var(--soft-peach) 55%, #fff);
+  background: color-mix(in srgb, var(--soft-peach) 28%, #fff);
+  border-color: color-mix(in srgb, var(--soft-peach) 60%, #fff);
+  border-left: 6px solid var(--soft-peach);
 }
 
 .timeline-item.branch-baby-blue {
-  background: color-mix(in srgb, var(--baby-blue) 22%, #fff);
-  border-color: color-mix(in srgb, var(--baby-blue) 55%, #fff);
+  background: color-mix(in srgb, var(--baby-blue) 28%, #fff);
+  border-color: color-mix(in srgb, var(--baby-blue) 60%, #fff);
+  border-left: 6px solid var(--baby-blue);
 }
 
 .timeline-item.branch-mint-green {
-  background: color-mix(in srgb, var(--mint-green) 22%, #fff);
-  border-color: color-mix(in srgb, var(--mint-green) 55%, #fff);
+  background: color-mix(in srgb, var(--mint-green) 28%, #fff);
+  border-color: color-mix(in srgb, var(--mint-green) 60%, #fff);
+  border-left: 6px solid var(--mint-green);
 }
 
 .timeline-item.branch-lavender {
-  background: color-mix(in srgb, var(--lavender) 22%, #fff);
-  border-color: color-mix(in srgb, var(--lavender) 55%, #fff);
+  background: color-mix(in srgb, var(--lavender) 28%, #fff);
+  border-color: color-mix(in srgb, var(--lavender) 60%, #fff);
+  border-left: 6px solid var(--lavender);
 }
 
 .timeline-meta,
