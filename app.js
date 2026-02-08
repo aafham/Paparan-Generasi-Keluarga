@@ -2951,6 +2951,29 @@ function closeExportMenu() {
   if (exportMenuBtn) exportMenuBtn.setAttribute("aria-expanded", "false");
 }
 
+function positionExportMenu() {
+  if (!exportMenu || !exportMenuBtn) return;
+  exportMenu.style.left = "calc(100% + 8px)";
+  exportMenu.style.right = "auto";
+  exportMenu.style.top = "50%";
+  exportMenu.style.transform = "translateY(-50%)";
+  const rect = exportMenu.getBoundingClientRect();
+  const vw = window.innerWidth;
+  if (rect.right > vw - 8) {
+    exportMenu.style.left = "auto";
+    exportMenu.style.right = "calc(100% + 8px)";
+    exportMenu.style.top = "50%";
+    exportMenu.style.transform = "translateY(-50%)";
+  }
+  const updated = exportMenu.getBoundingClientRect();
+  if (updated.left < 8 || updated.right > vw - 8) {
+    exportMenu.style.left = "auto";
+    exportMenu.style.right = "0";
+    exportMenu.style.top = "calc(100% + 8px)";
+    exportMenu.style.transform = "none";
+  }
+}
+
 if (exportMenuBtn) {
   exportMenuBtn.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -2958,6 +2981,9 @@ if (exportMenuBtn) {
     const willOpen = exportMenu.hidden;
     exportMenu.hidden = !willOpen;
     exportMenuBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    if (willOpen) {
+      requestAnimationFrame(positionExportMenu);
+    }
   });
 }
 
