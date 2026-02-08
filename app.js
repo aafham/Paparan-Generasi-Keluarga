@@ -106,6 +106,8 @@ const VIRTUALIZE_THRESHOLD = 1000000;
 const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
 const FORCE_RESET = false;
+const BUILD_ID = window.BUILD_ID || "fallback";
+const SW_RELOAD_MARKER_KEY = "familyTreeSwReloadBuildId";
 
 let treeData = null;
 let peopleById = new Map();
@@ -398,7 +400,10 @@ async function clearSiteCache() {
   if ("serviceWorker" in navigator) {
     try {
       const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.update()));
       await Promise.all(regs.map((reg) => reg.unregister()));
+      const activeReg = await navigator.serviceWorker.getRegistration();
+      if (activeReg) await activeReg.update();
     } catch {
       // ignore service worker errors
     }
@@ -2170,9 +2175,26 @@ if ("serviceWorker" in navigator) {
     updateBanner.hidden = false;
   };
 
+  const canReloadForBuild = () => {
+    try {
+      return sessionStorage.getItem(SW_RELOAD_MARKER_KEY) !== BUILD_ID;
+    } catch {
+      return true;
+    }
+  };
+
+  const markReloadedForBuild = () => {
+    try {
+      sessionStorage.setItem(SW_RELOAD_MARKER_KEY, BUILD_ID);
+    } catch {
+      // ignore storage errors
+    }
+  };
+
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (swReloaded) return;
+    if (swReloaded || !canReloadForBuild()) return;
     swReloaded = true;
+    markReloadedForBuild();
     window.location.reload();
   });
 
@@ -2188,17 +2210,21 @@ if ("serviceWorker" in navigator) {
 
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("service-worker.js?v=20260208", { updateViaCache: "none" })
+      .register(`service-worker.js?v=${BUILD_ID}`, { updateViaCache: "none" })
       .then((reg) => {
         swReg = reg;
         reg.update();
-        if (reg.waiting) showUpdateBanner();
+        if (reg.waiting) {
+          showUpdateBanner();
+          reg.waiting.postMessage("SKIP_WAITING");
+        }
         reg.addEventListener("updatefound", () => {
           const worker = reg.installing;
           if (!worker) return;
           worker.addEventListener("statechange", () => {
             if (worker.state === "installed" && navigator.serviceWorker.controller) {
               showUpdateBanner();
+              if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
             }
           });
         });
