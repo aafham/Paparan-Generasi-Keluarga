@@ -774,6 +774,25 @@ input[type="file"].input {
   padding: 0 clamp(20px, 4vw, 48px) 24px;
 }
 
+.view-switch {
+  display: inline-flex;
+  gap: 8px;
+  padding: 0 clamp(20px, 4vw, 48px) 18px;
+}
+
+.view-switch .btn {
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.view-switch .btn.is-active {
+  background: var(--primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--shadow-soft);
+}
+
 .stat-card {
   background: var(--card);
   border-radius: 14px;
@@ -1766,6 +1785,16 @@ body.hide-tags .person-tags {
 
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .view-switch {
+    padding: 0 16px 16px;
+    width: 100%;
+  }
+
+  .view-switch .btn {
+    flex: 1;
+    min-height: 44px;
   }
 }
 

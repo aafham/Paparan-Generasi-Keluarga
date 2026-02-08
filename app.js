@@ -96,6 +96,8 @@ const timelineMonthSelect = document.getElementById("timeline-month");
 const timelineGenderSelect = document.getElementById("timeline-gender");
 const timelineSortSelect = document.getElementById("timeline-sort");
 const timelineClearBtn = document.getElementById("timeline-clear");
+const viewTreeBtn = document.getElementById("view-tree-btn");
+const viewTimelineBtn = document.getElementById("view-timeline-btn");
 const timelineMoreBtn = document.getElementById("timeline-more-btn");
 const timelineMorePanel = document.getElementById("timeline-more-panel");
 const timelineActiveFilters = document.getElementById("timeline-active-filters");
@@ -728,6 +730,11 @@ function updateTimelineMoreState(nextState) {
   timelineMorePanel.setAttribute("aria-hidden", timelineMoreOpen ? "false" : "true");
   timelineMoreBtn.setAttribute("aria-expanded", timelineMoreOpen ? "true" : "false");
   timelineMoreBtn.textContent = timelineMoreOpen ? t.timelineLess : t.timelineMore;
+}
+
+function updateViewSwitch() {
+  if (viewTreeBtn) viewTreeBtn.classList.toggle("is-active", viewMode === "tree");
+  if (viewTimelineBtn) viewTimelineBtn.classList.toggle("is-active", viewMode === "timeline");
 }
 
 function getPersonDepthMap() {
@@ -2687,6 +2694,31 @@ if (viewToggle) {
     viewMode = viewMode === "tree" ? "timeline" : "tree";
     applyViewMode();
     applyLanguage();
+    updateViewSwitch();
+    savePrefs();
+    updateUrlState();
+  });
+}
+
+if (viewTreeBtn) {
+  viewTreeBtn.addEventListener("click", () => {
+    if (viewMode === "tree") return;
+    viewMode = "tree";
+    applyViewMode();
+    applyLanguage();
+    updateViewSwitch();
+    savePrefs();
+    updateUrlState();
+  });
+}
+
+if (viewTimelineBtn) {
+  viewTimelineBtn.addEventListener("click", () => {
+    if (viewMode === "timeline") return;
+    viewMode = "timeline";
+    applyViewMode();
+    applyLanguage();
+    updateViewSwitch();
     savePrefs();
     updateUrlState();
   });
@@ -3216,6 +3248,7 @@ function applyLanguage() {
   populateTimelineFilters();
   updateTimelineMoreState();
   updateTimelineActiveFilters();
+  updateViewSwitch();
 
   const branchOptions = branchFilter?.options || [];
   if (branchOptions.length > 0) {
