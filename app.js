@@ -93,8 +93,9 @@ const statFemale = document.getElementById("stat-female");
 const themePresetSelect = document.getElementById("theme-preset");
 const timelineGenSelect = document.getElementById("timeline-gen");
 const timelineMonthSelect = document.getElementById("timeline-month");
-const timelineYearFrom = document.getElementById("timeline-year-from");
+const timelineGenderSelect = document.getElementById("timeline-gender");
 const timelineYearTo = document.getElementById("timeline-year-to");
+const timelineSortSelect = document.getElementById("timeline-sort");
 const timelineClearBtn = document.getElementById("timeline-clear");
 
 
@@ -171,8 +172,9 @@ let showTags = true;
 let timelineFilters = {
   generation: "all",
   month: "all",
-  yearFrom: "",
-  yearTo: ""
+  gender: "all",
+  yearTo: "",
+  sort: "year"
 };
 
 const prefs = loadPrefs();
@@ -265,8 +267,17 @@ const i18n = {
     statsFemale: "Perempuan",
     timelineGenLabel: "Generasi",
     timelineMonth: "Bulan Lahir",
-    timelineYearFrom: "Dari Tahun",
+    timelineGender: "Jantina",
+    timelineGenderAll: "Semua",
+    timelineGenderMale: "Lelaki",
+    timelineGenderFemale: "Perempuan",
     timelineYearTo: "Hingga Tahun",
+    timelineSort: "Susun",
+    timelineSortYear: "Ikut Tahun",
+    timelineSortAlpha: "Ikut Abjad",
+    timelineSortMonth: "Ikut Bulan",
+    timelineSortGender: "Ikut Jantina",
+    timelineSortParent: "Ikut Ibu Bapa",
     timelineClear: "Reset",
     themePreset: "Tema",
     themeDefault: "Default",
@@ -388,8 +399,17 @@ const i18n = {
     statsFemale: "Female",
     timelineGenLabel: "Generation",
     timelineMonth: "Birth Month",
-    timelineYearFrom: "From Year",
+    timelineGender: "Gender",
+    timelineGenderAll: "All",
+    timelineGenderMale: "Male",
+    timelineGenderFemale: "Female",
     timelineYearTo: "To Year",
+    timelineSort: "Sort",
+    timelineSortYear: "By Year",
+    timelineSortAlpha: "Alphabetical",
+    timelineSortMonth: "By Month",
+    timelineSortGender: "By Gender",
+    timelineSortParent: "By Parent",
     timelineClear: "Reset",
     themePreset: "Theme",
     themeDefault: "Default",
@@ -1629,17 +1649,27 @@ function renderTimeline() {
   if (!timelineSection) return;
   timelineList.innerHTML = "";
   const depthMap = getPersonDepthMap();
-  const yearFrom = timelineFilters.yearFrom ? Number(timelineFilters.yearFrom) : null;
   const yearTo = timelineFilters.yearTo ? Number(timelineFilters.yearTo) : null;
+  const parentKeyByChild = new Map();
+  treeData.unions.forEach((union) => {
+    const parents = [union.partner1, union.partner2].filter(Boolean).sort().join("|") || "unknown";
+    union.children.forEach((childId) => {
+      if (!parentKeyByChild.has(childId)) parentKeyByChild.set(childId, parents);
+    });
+  });
   const entries = treeData.people.map((person) => {
     const birth = parseYear(person.birth);
     const birthDate = parseDateValue(person.birth);
     const birthMonth = birthDate ? birthDate.getMonth() + 1 : null;
+    const birthDay = birthDate ? birthDate.getDate() : null;
     const order = birth || 9999;
-    return { person, birth, birthMonth, order };
+    const gender = detectGenderFromName(person.name) || "unknown";
+    const nameSort = formatDisplayName(person.name).toLowerCase();
+    const parentKey = parentKeyByChild.get(person.id) || "zzzz";
+    return { person, birth, birthMonth, birthDay, order, gender, nameSort, parentKey };
   });
 
-  const filtered = entries.filter(({ person, birth, birthMonth }) => {
+  const filtered = entries.filter(({ person, birth, birthMonth, gender }) => {
     if (timelineFilters.generation !== "all") {
       const depth = depthMap.get(person.id);
       if (!depth || String(depth) !== String(timelineFilters.generation)) return false;
@@ -1647,12 +1677,39 @@ function renderTimeline() {
     if (timelineFilters.month !== "all") {
       if (!birthMonth || String(birthMonth) !== String(timelineFilters.month)) return false;
     }
-    if (yearFrom && (!birth || birth < yearFrom)) return false;
+    if (timelineFilters.gender !== "all" && gender !== timelineFilters.gender) return false;
     if (yearTo && (!birth || birth > yearTo)) return false;
     return true;
   });
 
-  filtered.sort((a, b) => a.order - b.order);
+  const genderOrder = { male: 1, female: 2, unknown: 3 };
+  const sortMode = timelineFilters.sort || "year";
+  filtered.sort((a, b) => {
+    if (sortMode === "alpha") {
+      return a.nameSort.localeCompare(b.nameSort);
+    }
+    if (sortMode === "month") {
+      const am = a.birthMonth ?? 99;
+      const bm = b.birthMonth ?? 99;
+      if (am !== bm) return am - bm;
+      const ad = a.birthDay ?? 99;
+      const bd = b.birthDay ?? 99;
+      if (ad !== bd) return ad - bd;
+      return a.nameSort.localeCompare(b.nameSort);
+    }
+    if (sortMode === "gender") {
+      const ag = genderOrder[a.gender] ?? 9;
+      const bg = genderOrder[b.gender] ?? 9;
+      if (ag !== bg) return ag - bg;
+      return a.nameSort.localeCompare(b.nameSort);
+    }
+    if (sortMode === "parent") {
+      if (a.parentKey !== b.parentKey) return a.parentKey.localeCompare(b.parentKey);
+      if (a.order !== b.order) return a.order - b.order;
+      return a.nameSort.localeCompare(b.nameSort);
+    }
+    return a.order - b.order;
+  });
 
   filtered.forEach(({ person }) => {
     const item = document.createElement("div");
@@ -2517,13 +2574,6 @@ if (timelineMonthSelect) {
   });
 }
 
-if (timelineYearFrom) {
-  timelineYearFrom.addEventListener("input", () => {
-    timelineFilters.yearFrom = timelineYearFrom.value;
-    renderTimeline();
-  });
-}
-
 if (timelineYearTo) {
   timelineYearTo.addEventListener("input", () => {
     timelineFilters.yearTo = timelineYearTo.value;
@@ -2531,13 +2581,28 @@ if (timelineYearTo) {
   });
 }
 
+if (timelineGenderSelect) {
+  timelineGenderSelect.addEventListener("change", () => {
+    timelineFilters.gender = timelineGenderSelect.value || "all";
+    renderTimeline();
+  });
+}
+
+if (timelineSortSelect) {
+  timelineSortSelect.addEventListener("change", () => {
+    timelineFilters.sort = timelineSortSelect.value || "year";
+    renderTimeline();
+  });
+}
+
 if (timelineClearBtn) {
   timelineClearBtn.addEventListener("click", () => {
-    timelineFilters = { generation: "all", month: "all", yearFrom: "", yearTo: "" };
+    timelineFilters = { generation: "all", month: "all", gender: "all", yearTo: "", sort: "year" };
     if (timelineGenSelect) timelineGenSelect.value = "all";
     if (timelineMonthSelect) timelineMonthSelect.value = "all";
-    if (timelineYearFrom) timelineYearFrom.value = "";
+    if (timelineGenderSelect) timelineGenderSelect.value = "all";
     if (timelineYearTo) timelineYearTo.value = "";
+    if (timelineSortSelect) timelineSortSelect.value = "year";
     renderTimeline();
   });
 }
@@ -3011,8 +3076,9 @@ function applyLanguage() {
   if (settingsShowTags) settingsShowTags.checked = showTags;
   if (settingsDefaultView) settingsDefaultView.value = viewMode;
   if (timelineMonthSelect) timelineMonthSelect.value = timelineFilters.month;
-  if (timelineYearFrom) timelineYearFrom.value = timelineFilters.yearFrom;
+  if (timelineGenderSelect) timelineGenderSelect.value = timelineFilters.gender;
   if (timelineYearTo) timelineYearTo.value = timelineFilters.yearTo;
+  if (timelineSortSelect) timelineSortSelect.value = timelineFilters.sort;
   populateTimelineFilters();
 
   const branchOptions = branchFilter?.options || [];

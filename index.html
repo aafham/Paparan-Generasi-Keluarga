@@ -216,12 +216,26 @@
             <select id="timeline-month" class="select"></select>
           </label>
           <label class="timeline-filter">
-            <span data-i18n="timelineYearFrom">Dari Tahun</span>
-            <input id="timeline-year-from" class="input" type="number" inputmode="numeric" placeholder="1900" />
+            <span data-i18n="timelineGender">Jantina</span>
+            <select id="timeline-gender" class="select">
+              <option value="all" data-i18n="timelineGenderAll">Semua</option>
+              <option value="male" data-i18n="timelineGenderMale">Lelaki</option>
+              <option value="female" data-i18n="timelineGenderFemale">Perempuan</option>
+            </select>
           </label>
           <label class="timeline-filter">
             <span data-i18n="timelineYearTo">Hingga Tahun</span>
             <input id="timeline-year-to" class="input" type="number" inputmode="numeric" placeholder="2026" />
+          </label>
+          <label class="timeline-filter">
+            <span data-i18n="timelineSort">Susun</span>
+            <select id="timeline-sort" class="select">
+              <option value="year" data-i18n="timelineSortYear">Ikut Tahun</option>
+              <option value="alpha" data-i18n="timelineSortAlpha">Ikut Abjad</option>
+              <option value="month" data-i18n="timelineSortMonth">Ikut Bulan</option>
+              <option value="gender" data-i18n="timelineSortGender">Ikut Jantina</option>
+              <option value="parent" data-i18n="timelineSortParent">Ikut Ibu Bapa</option>
+            </select>
           </label>
           <button id="timeline-clear" class="btn ghost small" type="button" data-i18n="timelineClear">Reset</button>
         </div>
