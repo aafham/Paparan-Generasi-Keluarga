@@ -79,6 +79,11 @@ const mobileQuickZoomIn = document.getElementById("m-zoom-in");
 const mobileQuickZoomOut = document.getElementById("m-zoom-out");
 const mobileQuickZoomFit = document.getElementById("m-zoom-fit");
 
+function on(el, event, handler, options) {
+  if (!el) return;
+  el.addEventListener(event, handler, options);
+}
+
 const layoutConfig = {
   cardWidth: 220,
   cardGap: 16,
@@ -104,7 +109,6 @@ const VIRTUALIZE_THRESHOLD = 1000000;
 const STORAGE_KEY = "familyTreePrefs";
 const DATA_KEY = "familyTreeData";
 const FORCE_RESET = false;
-const PWA_CLEANUP_KEY = "pwa_cleanup_done";
 
 let treeData = null;
 let peopleById = new Map();
@@ -382,90 +386,7 @@ async function clearSiteCache() {
   } catch {
     // ignore storage errors
   }
-  await clearBrowserCaches();
-  await unregisterServiceWorkers();
-  window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
-}
-
-async function clearBrowserCaches() {
-  if (!("caches" in window)) return;
-  try {
-    const names = await caches.keys();
-    await Promise.all(names.map((name) => caches.delete(name)));
-  } catch {
-    // ignore cache errors
-  }
-}
-
-async function unregisterServiceWorkers() {
-  try {
-    const sw = navigator["service" + "Worker"];
-    if (!sw) return;
-    const regs = await sw.getRegistrations();
-    await Promise.all(regs.map((reg) => reg.unregister()));
-  } catch {
-    // ignore service worker errors
-  }
-}
-
-function hasPwaCleanupFlag() {
-  try {
-    return localStorage.getItem(PWA_CLEANUP_KEY) === "1";
-  } catch {
-    // ignore storage errors
-  }
-  try {
-    return sessionStorage.getItem(PWA_CLEANUP_KEY) === "1";
-  } catch {
-    // ignore storage errors
-  }
-  return false;
-}
-
-function setPwaCleanupFlag() {
-  try {
-    localStorage.setItem(PWA_CLEANUP_KEY, "1");
-    return;
-  } catch {
-    // ignore storage errors
-  }
-  try {
-    sessionStorage.setItem(PWA_CLEANUP_KEY, "1");
-  } catch {
-    // ignore storage errors
-  }
-}
-
-async function runPwaCleanupOnce() {
-  if (hasPwaCleanupFlag()) return;
-  setPwaCleanupFlag();
-  let didCleanup = false;
-  try {
-    const sw = navigator["service" + "Worker"];
-    if (sw) {
-      const regs = await sw.getRegistrations();
-      if (regs.length) {
-        await Promise.all(regs.map((reg) => reg.unregister()));
-        didCleanup = true;
-      }
-    }
-  } catch {
-    // ignore service worker errors
-  }
-  if ("caches" in window) {
-    try {
-      const names = await caches.keys();
-      if (names.length) {
-        await Promise.all(names.map((name) => caches.delete(name)));
-        didCleanup = true;
-      }
-    } catch {
-      // ignore cache errors
-    }
-  }
-  if (didCleanup) {
-    window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
-  }
+  window.location.reload();
 }
 
 function initFromData(data) {
@@ -1790,18 +1711,18 @@ function openModal(person) {
 }
 
 function updateStoryPanel(person) {
-  storyTitle.textContent = formatDisplayName(person.name);
-  storyBody.textContent = person.story || person.note || i18n[lang].storyEmpty;
+  if (storyTitle) storyTitle.textContent = formatDisplayName(person.name);
+  if (storyBody) storyBody.textContent = person.story || person.note || i18n[lang].storyEmpty;
 }
 
-modal.addEventListener("click", (event) => {
-  if (event.target.dataset.close) {
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
-  }
+on(modal, "click", (event) => {
+  if (!event.target.dataset.close) return;
+  modal.classList.remove("active");
+  modal.setAttribute("aria-hidden", "true");
 });
 
 function applyZoom() {
+  if (!treeCanvas || !treeLines || !treeZoom) return;
   treeCanvas.style.transform = `scale(${scale})`;
   treeLines.style.transform = `scale(${scale})`;
   treeZoom.style.width = `${baseSize.width * scale}px`;
@@ -1860,31 +1781,39 @@ if (mobileActionGo) {
   });
 }
 
-zoomInBtn.addEventListener("click", () => {
-  scale = Math.min(2.2, scale + 0.1);
-  applyZoom();
-  savePrefs();
-  scheduleRender();
-});
+if (zoomInBtn) {
+  zoomInBtn.addEventListener("click", () => {
+    scale = Math.min(2.2, scale + 0.1);
+    applyZoom();
+    savePrefs();
+    scheduleRender();
+  });
+}
 
-zoomOutBtn.addEventListener("click", () => {
-  scale = Math.max(0.6, scale - 0.1);
-  applyZoom();
-  savePrefs();
-  scheduleRender();
-});
+if (zoomOutBtn) {
+  zoomOutBtn.addEventListener("click", () => {
+    scale = Math.max(0.6, scale - 0.1);
+    applyZoom();
+    savePrefs();
+    scheduleRender();
+  });
+}
 
-zoomResetBtn.addEventListener("click", () => {
-  scale = 1;
-  applyZoom();
-  savePrefs();
-  scheduleRender();
-});
+if (zoomResetBtn) {
+  zoomResetBtn.addEventListener("click", () => {
+    scale = 1;
+    applyZoom();
+    savePrefs();
+    scheduleRender();
+  });
+}
 
-zoomFitBtn.addEventListener("click", () => {
-  fitToScreen();
-  savePrefs();
-});
+if (zoomFitBtn) {
+  zoomFitBtn.addEventListener("click", () => {
+    fitToScreen();
+    savePrefs();
+  });
+}
 
 if (focusEldersBtn) {
   focusEldersBtn.addEventListener("click", () => {
@@ -2005,31 +1934,8 @@ let isPanning = false;
 let panStart = { x: 0, y: 0, scrollLeft: 0, scrollTop: 0 };
 let mousePanning = false;
 
-treeWrap.addEventListener("pointerdown", (event) => {
-  if (event.target.closest(".person-card")) return;
-  isPanning = true;
-  treeWrap.setPointerCapture(event.pointerId);
-  treeWrap.classList.add("is-dragging");
-  panStart = {
-    x: event.clientX,
-    y: event.clientY,
-    scrollLeft: treeWrap.scrollLeft,
-    scrollTop: treeWrap.scrollTop
-  };
-  event.preventDefault();
-});
-
-treeWrap.addEventListener("pointermove", (event) => {
-  if (!isPanning) return;
-  if (!treeWrap.hasPointerCapture(event.pointerId)) return;
-  const dx = event.clientX - panStart.x;
-  const dy = event.clientY - panStart.y;
-  treeWrap.scrollLeft = panStart.scrollLeft - dx;
-  treeWrap.scrollTop = panStart.scrollTop - dy;
-  event.preventDefault();
-});
-
 const stopPointerPan = (event) => {
+  if (!treeWrap) return;
   if (event && treeWrap.hasPointerCapture(event.pointerId)) {
     treeWrap.releasePointerCapture(event.pointerId);
   }
@@ -2037,29 +1943,55 @@ const stopPointerPan = (event) => {
   treeWrap.classList.remove("is-dragging");
 };
 
-treeWrap.addEventListener("pointerup", stopPointerPan);
-treeWrap.addEventListener("pointercancel", stopPointerPan);
+if (treeWrap) {
+  treeWrap.addEventListener("pointerdown", (event) => {
+    if (event.target.closest(".person-card")) return;
+    isPanning = true;
+    treeWrap.setPointerCapture(event.pointerId);
+    treeWrap.classList.add("is-dragging");
+    panStart = {
+      x: event.clientX,
+      y: event.clientY,
+      scrollLeft: treeWrap.scrollLeft,
+      scrollTop: treeWrap.scrollTop
+    };
+    event.preventDefault();
+  });
 
-treeWrap.addEventListener("mousedown", (event) => {
-  if (event.button !== 0) return;
-  if (event.target.closest(".person-card")) return;
-  mousePanning = true;
-  treeWrap.classList.add("is-dragging");
-  panStart = {
-    x: event.clientX,
-    y: event.clientY,
-    scrollLeft: treeWrap.scrollLeft,
-    scrollTop: treeWrap.scrollTop
-  };
-  event.preventDefault();
-});
+  treeWrap.addEventListener("pointermove", (event) => {
+    if (!isPanning) return;
+    if (!treeWrap.hasPointerCapture(event.pointerId)) return;
+    const dx = event.clientX - panStart.x;
+    const dy = event.clientY - panStart.y;
+    treeWrap.scrollLeft = panStart.scrollLeft - dx;
+    treeWrap.scrollTop = panStart.scrollTop - dy;
+    event.preventDefault();
+  });
 
-treeWrap.addEventListener("dragstart", (event) => {
-  event.preventDefault();
-});
+  treeWrap.addEventListener("pointerup", stopPointerPan);
+  treeWrap.addEventListener("pointercancel", stopPointerPan);
+
+  treeWrap.addEventListener("mousedown", (event) => {
+    if (event.button !== 0) return;
+    if (event.target.closest(".person-card")) return;
+    mousePanning = true;
+    treeWrap.classList.add("is-dragging");
+    panStart = {
+      x: event.clientX,
+      y: event.clientY,
+      scrollLeft: treeWrap.scrollLeft,
+      scrollTop: treeWrap.scrollTop
+    };
+    event.preventDefault();
+  });
+
+  treeWrap.addEventListener("dragstart", (event) => {
+    event.preventDefault();
+  });
+}
 
 window.addEventListener("mousemove", (event) => {
-  if (!mousePanning) return;
+  if (!mousePanning || !treeWrap) return;
   const dx = event.clientX - panStart.x;
   const dy = event.clientY - panStart.y;
   treeWrap.scrollLeft = panStart.scrollLeft - dx;
@@ -2067,67 +1999,73 @@ window.addEventListener("mousemove", (event) => {
 });
 
 window.addEventListener("mouseup", () => {
-  if (!mousePanning) return;
+  if (!mousePanning || !treeWrap) return;
   mousePanning = false;
   treeWrap.classList.remove("is-dragging");
 });
 
 let scrollStopTimer = null;
-treeWrap.addEventListener("scroll", () => {
-  updateMinimap();
-  if (scrollStopTimer) clearTimeout(scrollStopTimer);
-  scrollStopTimer = setTimeout(() => {
-    scheduleRender();
-  }, 80);
-});
+if (treeWrap) {
+  treeWrap.addEventListener("scroll", () => {
+    updateMinimap();
+    if (scrollStopTimer) clearTimeout(scrollStopTimer);
+    scrollStopTimer = setTimeout(() => {
+      scheduleRender();
+    }, 80);
+  });
+}
 
 window.addEventListener("resize", () => {
   scheduleRender();
   updateMinimap();
 });
 
-searchInput.addEventListener("input", (event) => {
-  const query = event.target.value.trim().toLowerCase();
-  if (!query) {
-    searchResults.classList.remove("active");
+if (searchInput && searchResults) {
+  searchInput.addEventListener("input", (event) => {
+    const query = event.target.value.trim().toLowerCase();
+    if (!query) {
+      searchResults.classList.remove("active");
+      searchResults.innerHTML = "";
+      clearHighlights();
+      lastSearchResults = [];
+      return;
+    }
+
+    const results = treeData.people.filter((person) => person.name.toLowerCase().includes(query));
     searchResults.innerHTML = "";
-    clearHighlights();
-    lastSearchResults = [];
-    return;
-  }
+    lastSearchResults = results;
 
-  const results = treeData.people.filter((person) => person.name.toLowerCase().includes(query));
-  searchResults.innerHTML = "";
-  lastSearchResults = results;
-
-  if (results.length === 0) {
-    const item = document.createElement("div");
-    item.className = "search-item";
-    item.textContent = i18n[lang].searchNone;
-    searchResults.appendChild(item);
-  } else {
-    results.forEach((person) => {
+    if (results.length === 0) {
       const item = document.createElement("div");
       item.className = "search-item";
-      item.textContent = formatDisplayName(person.name);
-      item.addEventListener("click", () => {
-        searchResults.classList.remove("active");
-        searchInput.value = formatDisplayName(person.name);
-        focusPerson(person.id, true);
-      });
+      item.textContent = i18n[lang].searchNone;
       searchResults.appendChild(item);
-    });
-  }
+    } else {
+      results.forEach((person) => {
+        const item = document.createElement("div");
+        item.className = "search-item";
+        item.textContent = formatDisplayName(person.name);
+        item.addEventListener("click", () => {
+          searchResults.classList.remove("active");
+          searchInput.value = formatDisplayName(person.name);
+          focusPerson(person.id, true);
+        });
+        searchResults.appendChild(item);
+      });
+    }
 
-  searchResults.classList.toggle("active", true);
-  highlightMatches(results.map((p) => p.id));
-});
+    searchResults.classList.toggle("active", true);
+    highlightMatches(results.map((p) => p.id));
+  });
+}
 
-searchGoBtn.addEventListener("click", () => {
-  if (lastSearchResults.length === 0) return;
-  const person = lastSearchResults[0];
-  focusPerson(person.id, true);
-});
+if (searchGoBtn) {
+  searchGoBtn.addEventListener("click", () => {
+    if (lastSearchResults.length === 0) return;
+    const person = lastSearchResults[0];
+    focusPerson(person.id, true);
+  });
+}
 
 function clearHighlights() {
   document.querySelectorAll(".highlight").forEach((el) => el.classList.remove("highlight"));
@@ -2145,6 +2083,7 @@ function focusPerson(personId, open = false) {
   const el = elementByPersonId.get(personId);
   const person = peopleById.get(personId);
   if (!person) return;
+  if (!treeWrap) return;
 
   if (viewMode !== "tree") {
     viewMode = "tree";
@@ -2189,46 +2128,51 @@ if (viewToggle) {
   });
 }
 
-exportPngBtn.addEventListener("click", async () => {
-  if (!window.html2canvas) {
-    alert(i18n[lang].exportPngFail);
-    return;
-  }
-  const exportScale = Math.min(3, (window.devicePixelRatio || 1) * 1.5);
-  const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: exportScale });
-  const link = document.createElement("a");
-  link.download = "salasilah-keluarga.png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-});
+if (exportPngBtn) {
+  exportPngBtn.addEventListener("click", async () => {
+    if (!window.html2canvas) {
+      alert(i18n[lang].exportPngFail);
+      return;
+    }
+    if (!treeZoom) return;
+    const exportScale = Math.min(3, (window.devicePixelRatio || 1) * 1.5);
+    const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: exportScale });
+    const link = document.createElement("a");
+    link.download = "salasilah-keluarga.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
 
-exportPdfBtn.addEventListener("click", async () => {
-  if (!window.html2canvas || !window.jspdf) {
-    alert(i18n[lang].exportPdfFail);
-    return;
-  }
+if (exportPdfBtn) {
+  exportPdfBtn.addEventListener("click", async () => {
+    if (!window.html2canvas || !window.jspdf) {
+      alert(i18n[lang].exportPdfFail);
+      return;
+    }
+    if (!treeZoom) return;
 
-  const exportScale = Math.min(3, (window.devicePixelRatio || 1) * 1.5);
-  const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: exportScale });
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
+    const exportScale = Math.min(3, (window.devicePixelRatio || 1) * 1.5);
+    const canvas = await window.html2canvas(treeZoom, { backgroundColor: null, scale: exportScale });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
 
-  const title = treeData.familyName || i18n[lang].appKicker;
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(28);
-  pdf.text(title, 40, 60);
-  pdf.setFontSize(12);
-  pdf.setFont("helvetica", "normal");
-  const locale = lang === "en" ? "en-US" : "ms-MY";
-  const dateLabel = formatText(i18n[lang].exportDate, { date: new Date().toLocaleDateString(locale) });
-  pdf.text(dateLabel, 40, 90);
-  pdf.addPage([canvas.width, canvas.height], "landscape");
-  pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-  pdf.save("salasilah-keluarga.pdf");
-});
+    const title = treeData.familyName || i18n[lang].appKicker;
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(28);
+    pdf.text(title, 40, 60);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "normal");
+    const locale = lang === "en" ? "en-US" : "ms-MY";
+    const dateLabel = formatText(i18n[lang].exportDate, { date: new Date().toLocaleDateString(locale) });
+    pdf.text(dateLabel, 40, 90);
+    pdf.addPage([canvas.width, canvas.height], "landscape");
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("salasilah-keluarga.pdf");
+  });
+}
 
 window.addEventListener("load", () => {
-  runPwaCleanupOnce();
   if (treeData) {
     renderScene();
     applyZoom();
@@ -2236,7 +2180,7 @@ window.addEventListener("load", () => {
 });
 
 function updateMinimap() {
-  if (!minimapCanvas || !layoutRoot) return;
+  if (!minimapCanvas || !layoutRoot || !treeWrap) return;
   const rect = minimapCanvas.getBoundingClientRect();
   const width = Math.max(1, Math.floor(rect.width));
   const height = Math.max(1, Math.floor(rect.height));
@@ -2272,6 +2216,7 @@ function updateMinimap() {
 }
 
 function fitToScreen() {
+  if (!treeWrap) return;
   const pad = 24;
   const targetScale = Math.min(
     (treeWrap.clientWidth - pad) / baseSize.width,
@@ -2407,16 +2352,17 @@ function applyLanguage() {
     if (key && t[key] !== undefined) el.setAttribute("aria-label", t[key]);
   });
 
-  searchInput.placeholder = t.searchPlaceholder;
+  if (treeCanvas) treeCanvas.dataset.emptyText = t.loading;
+  if (searchInput) searchInput.placeholder = t.searchPlaceholder;
   if (viewToggle) viewToggle.textContent = viewMode === "timeline" ? t.viewTree : t.viewTimeline;
   if (compactToggleBtn) compactToggleBtn.textContent = compactMode ? t.compactOn : t.compactOff;
   if (pathToggleBtn) pathToggleBtn.textContent = pathMode ? t.pathOn : t.pathOff;
   if (focusEldersBtn) focusEldersBtn.textContent = t.focusElders;
   if (backTopBtn) backTopBtn.textContent = t.backTop;
-  zoomFitBtn.textContent = t.fit;
-  zoomInBtn.textContent = t.zoomIn;
-  zoomOutBtn.textContent = t.zoomOut;
-  zoomResetBtn.textContent = t.zoomReset;
+  if (zoomFitBtn) zoomFitBtn.textContent = t.fit;
+  if (zoomInBtn) zoomInBtn.textContent = t.zoomIn;
+  if (zoomOutBtn) zoomOutBtn.textContent = t.zoomOut;
+  if (zoomResetBtn) zoomResetBtn.textContent = t.zoomReset;
   if (exportPngBtn) {
     const label = exportPngBtn.querySelector('[data-i18n="exportPng"]');
     if (label) label.textContent = t.exportPng;
@@ -2429,8 +2375,8 @@ function applyLanguage() {
   if (importJsonBtn) importJsonBtn.textContent = t.importJson;
   if (validateDataBtn) validateDataBtn.textContent = t.validateData;
   if (editorToggle) editorToggle.textContent = t.editorToggle;
-  toggleThemeBtn.checked = app.dataset.theme === "dark";
-  langToggleBtn.checked = lang === "en";
+  if (toggleThemeBtn) toggleThemeBtn.checked = app.dataset.theme === "dark";
+  if (langToggleBtn) langToggleBtn.checked = lang === "en";
   if (controlsToggleBtn) {
     controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
   }
@@ -2452,8 +2398,8 @@ function applyLanguage() {
   });
 
   if (!selectedPersonId) {
-    storyTitle.textContent = t.storyTitle;
-    storyBody.textContent = t.storyEmpty;
+    if (storyTitle) storyTitle.textContent = t.storyTitle;
+    if (storyBody) storyBody.textContent = t.storyEmpty;
   }
 
   if (modal?.classList.contains("active") && selectedPersonId) {
@@ -2466,6 +2412,7 @@ function applyLanguage() {
 }
 
 function minimapScrollTo(clientX, clientY) {
+  if (!minimapCanvas || !treeWrap) return;
   const rect = minimapCanvas.getBoundingClientRect();
   const x = clientX - rect.left;
   const y = clientY - rect.top;
@@ -2477,9 +2424,11 @@ function minimapScrollTo(clientX, clientY) {
   treeWrap.scrollTo({ left: Math.max(0, targetX * scale), top: Math.max(0, targetY * scale) });
 }
 
-minimapCanvas.addEventListener("click", (event) => {
-  minimapScrollTo(event.clientX, event.clientY);
-});
+if (minimapCanvas) {
+  minimapCanvas.addEventListener("click", (event) => {
+    minimapScrollTo(event.clientX, event.clientY);
+  });
+}
 
 const minimap = document.getElementById("minimap");
 const minimapWrap = document.querySelector(".brand-minimap-wrap");
