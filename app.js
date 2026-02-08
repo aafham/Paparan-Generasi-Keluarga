@@ -16,6 +16,14 @@ const exportPngBtn = document.getElementById("export-png");
 const exportPdfBtn = document.getElementById("export-pdf");
 const exportMenuBtn = document.getElementById("export-menu-btn");
 const exportMenu = document.getElementById("export-menu");
+const exportJsonBtn = document.getElementById("export-json");
+const importJsonBtn = document.getElementById("import-json");
+const importJsonFile = document.getElementById("import-json-file");
+const validateDataBtn = document.getElementById("validate-data");
+const focusEldersBtn = document.getElementById("focus-elders");
+const backTopBtn = document.getElementById("back-top");
+const pathToggleBtn = document.getElementById("path-toggle");
+const compactToggleBtn = document.getElementById("compact-toggle");
 const validateOutput = document.getElementById("validate-output");
 const modal = document.getElementById("person-modal");
 const modalBody = document.getElementById("modal-body");
@@ -74,6 +82,7 @@ const settingsReset = document.getElementById("setting-reset-settings");
 const settingsShowBirthdate = document.getElementById("setting-show-birthdate");
 const settingsShowAge = document.getElementById("setting-show-age");
 const settingsShowTags = document.getElementById("setting-show-tags");
+const settingsClearData = document.getElementById("setting-clear-data");
 const settingsDataVersion = document.getElementById("settings-data-version");
 const statPeople = document.getElementById("stat-people");
 const statCouples = document.getElementById("stat-couples");
@@ -487,6 +496,30 @@ function applyDetailsVisibility() {
   document.body.classList.toggle("hide-birthdate", !showBirthdate);
   document.body.classList.toggle("hide-age", !showAge);
   document.body.classList.toggle("hide-tags", !showTags);
+}
+
+function openSettingsModal() {
+  if (!settingsModal) return;
+  settingsModal.classList.add("is-open");
+  settingsModal.setAttribute("aria-hidden", "false");
+}
+
+function closeSettingsModal() {
+  if (!settingsModal) return;
+  settingsModal.classList.remove("is-open");
+  settingsModal.setAttribute("aria-hidden", "true");
+}
+
+function toggleControlsCollapsed(nextState) {
+  const target = typeof nextState === "boolean" ? nextState : !controlsCollapsed;
+  controlsCollapsed = target;
+  document.body.classList.toggle("controls-collapsed", controlsCollapsed);
+  applyLanguage();
+  if (isMobileView()) {
+    localStorage.setItem(MOBILE_CONTROLS_KEY, controlsCollapsed ? "1" : "0");
+  }
+  updateSheetHandleState();
+  savePrefs();
 }
 
 function updateSheetHandleState() {
@@ -1819,6 +1852,10 @@ function openModal(person) {
       if (panelEditForm) panelEditForm.hidden = true;
       if (storyPanel) storyPanel.hidden = true;
     };
+    panelCloseBtn.addEventListener("touchstart", () => {
+      if (panelEditForm) panelEditForm.hidden = true;
+      if (storyPanel) storyPanel.hidden = true;
+    }, { passive: true });
   }
 
   if (panelCancelBtn) {
@@ -2000,31 +2037,28 @@ if (themePresetSelect) {
 
 if (controlsToggleBtn) {
   controlsToggleBtn.addEventListener("click", () => {
-    controlsCollapsed = !controlsCollapsed;
-    document.body.classList.toggle("controls-collapsed", controlsCollapsed);
-    applyLanguage();
-    if (isMobileView()) {
-      localStorage.setItem(MOBILE_CONTROLS_KEY, controlsCollapsed ? "1" : "0");
-    }
-    updateSheetHandleState();
-    savePrefs();
+    toggleControlsCollapsed();
   });
 }
 
-if (bottomSheetHandle && controlsToggleBtn) {
+if (bottomSheetHandle) {
   bottomSheetHandle.addEventListener("click", () => {
-    controlsToggleBtn.click();
+    toggleControlsCollapsed();
   });
+  bottomSheetHandle.addEventListener("touchstart", () => {
+    toggleControlsCollapsed();
+  }, { passive: true });
 }
 
-if (mobileSettingsBtn && settingsBtn) {
-  mobileSettingsBtn.addEventListener("click", () => settingsBtn.click());
+if (mobileSettingsBtn) {
+  mobileSettingsBtn.addEventListener("click", () => openSettingsModal());
+  mobileSettingsBtn.addEventListener("touchstart", () => openSettingsModal(), { passive: true });
 }
 
 if (mobileSearchBtn) {
   mobileSearchBtn.addEventListener("click", () => {
-    if (controlsCollapsed && controlsToggleBtn) {
-      controlsToggleBtn.click();
+    if (controlsCollapsed) {
+      toggleControlsCollapsed(false);
     }
     if (searchInput) {
       setTimeout(() => {
@@ -2032,6 +2066,11 @@ if (mobileSearchBtn) {
       }, 50);
     }
   });
+  mobileSearchBtn.addEventListener("touchstart", () => {
+    if (controlsCollapsed) {
+      toggleControlsCollapsed(false);
+    }
+  }, { passive: true });
 }
 
 if (resetViewBtn) {
@@ -2347,24 +2386,18 @@ if (timelineClearBtn) {
   });
 }
 
-if (settingsBtn && settingsModal) {
+if (settingsBtn) {
   settingsBtn.addEventListener("click", () => {
-    settingsModal.classList.add("is-open");
-    settingsModal.setAttribute("aria-hidden", "false");
+    openSettingsModal();
   });
 }
 
 if (settingsModal) {
   settingsModal.addEventListener("click", (event) => {
     if (!event.target.dataset.settingsClose) return;
-    settingsModal.classList.remove("is-open");
-    settingsModal.setAttribute("aria-hidden", "true");
+    closeSettingsModal();
   });
-}
-
-if (settingsModal) {
-  settingsModal.classList.remove("is-open");
-  settingsModal.setAttribute("aria-hidden", "true");
+  closeSettingsModal();
 }
 
 if (settingsCompact) {
