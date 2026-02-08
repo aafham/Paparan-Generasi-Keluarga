@@ -38,6 +38,15 @@
           <span class="toggle-track"></span>
           <span class="toggle-label" data-i18n="langToggle">BM / EN</span>
         </label>
+        <button id="clear-cache" class="btn danger small" type="button" data-i18n-title="clearCache" data-i18n-aria="clearCache">
+          <span class="btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path d="M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 11a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="btn-text" data-i18n="clearCache">Clear Cache</span>
+        </button>
       </div>
       <div class="controls">
         <div class="control-group">
@@ -82,18 +91,7 @@
           <button id="zoom-reset" class="btn ghost" data-i18n="zoomReset">Reset</button>
           <button id="zoom-fit" class="btn ghost" data-i18n="fit">Fit Skrin</button>
         </div>
-        <div class="control-row actions-main">
-          <button id="focus-elders" class="btn ghost" data-i18n="focusElders">Fokus Tok/Wan</button>
-          <button id="back-top" class="btn ghost" data-i18n="backTop">Kembali Atas</button>
-          <button id="path-toggle" class="btn ghost">Laluan Saya</button>
-          <button id="compact-toggle" class="btn ghost">Mode Ringkas</button>
-          <button id="view-toggle" class="btn ghost">Lihat Timeline</button>
-          <button id="validate-data" class="btn ghost" data-i18n="validateData">Validasi Data</button>
-        </div>
         <div id="validate-output" class="validate-output" aria-live="polite"></div>
-        <div class="control-row actions-editor">
-          <button id="editor-toggle" class="btn ghost" data-i18n="editorToggle">Editor Data</button>
-        </div>
         <div class="control-group generation-row">
           <div>
             <label class="label" data-i18n="generationLabel">Generasi (Collapse/Expand)</label>

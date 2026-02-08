@@ -68,6 +68,7 @@ const backTopBtn = document.getElementById("back-top");
 const pathToggleBtn = document.getElementById("path-toggle");
 const compactToggleBtn = document.getElementById("compact-toggle");
 const langToggleBtn = document.getElementById("lang-toggle");
+const clearCacheBtn = document.getElementById("clear-cache");
 const mobileActionSelect = document.getElementById("mobile-action");
 const mobileActionLabel = document.getElementById("mobile-action-label");
 const mobileActionGo = document.getElementById("mobile-action-go");
@@ -219,6 +220,8 @@ const i18n = {
     genderLabel: "Jantina",
     genderMale: "Lelaki",
     genderFemale: "Perempuan",
+    clearCache: "Clear Cache",
+    clearCacheConfirm: "Padam cache untuk laman ini? Data tersimpan di pelayar akan dipadam.",
     okBtn: "OK",
     errStructure: "Struktur utama mesti ada `people` dan `unions`.",
     errPersonNoId: "Ada ahli tanpa id.",
@@ -323,6 +326,8 @@ const i18n = {
     genderLabel: "Gender",
     genderMale: "Male",
     genderFemale: "Female",
+    clearCache: "Clear Cache",
+    clearCacheConfirm: "Clear cache for this site? This will remove data stored in your browser.",
     okBtn: "OK",
     errStructure: "Root structure must include `people` and `unions`.",
     errPersonNoId: "A person is missing an id.",
@@ -342,6 +347,38 @@ const i18n = {
 
 function formatText(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => (vars[key] !== undefined ? vars[key] : ""));
+}
+
+async function clearSiteCache() {
+  const t = i18n[lang] || i18n.ms;
+  if (!confirm(t.clearCacheConfirm)) return;
+  try {
+    localStorage.clear();
+  } catch {
+    // ignore storage errors
+  }
+  try {
+    sessionStorage.clear();
+  } catch {
+    // ignore storage errors
+  }
+  if ("caches" in window) {
+    try {
+      const names = await caches.keys();
+      await Promise.all(names.map((name) => caches.delete(name)));
+    } catch {
+      // ignore cache errors
+    }
+  }
+  if ("serviceWorker" in navigator) {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    } catch {
+      // ignore service worker errors
+    }
+  }
+  window.location.reload();
 }
 
 function initFromData(data) {
@@ -851,7 +888,7 @@ function refreshEditorLists() {
   treeData.people.forEach((person) => {
     const option = document.createElement("option");
     option.value = person.id;
-    option.textContent = person.name;
+    option.textContent = formatDisplayName(person.name);
     editorPerson.appendChild(option);
   });
 
@@ -859,7 +896,7 @@ function refreshEditorLists() {
   treeData.people.forEach((person) => {
     const option = document.createElement("option");
     option.value = person.id;
-    option.textContent = person.name;
+    option.textContent = formatDisplayName(person.name);
     editorPartner.appendChild(option);
   });
 
@@ -1202,6 +1239,7 @@ function renderNode(node) {
 }
 
 function createPersonCard(person, depth) {
+  const displayName = formatDisplayName(person.name);
   const card = document.createElement("div");
   card.className = "person-card";
   card.dataset.personId = person.id;
@@ -1223,18 +1261,18 @@ function createPersonCard(person, depth) {
   if (person.photo) {
     const img = document.createElement("img");
     img.src = person.photo;
-    img.alt = person.name;
+    img.alt = displayName || person.name || "";
     avatar.appendChild(img);
   } else {
-    avatar.textContent = initials(person.name);
+    avatar.textContent = initials(displayName || person.name || "");
   }
 
   const nameWrap = document.createElement("div");
   const name = document.createElement("div");
   name.className = "person-name";
-  const split = splitNameByBin(person.name || "");
-  const firstName = person.firstName || split.first || person.name || "";
-  name.textContent = firstName;
+  const split = splitNameByBin(displayName || person.name || "");
+  const firstName = formatDisplayName(person.firstName || split.first || person.name || "");
+  name.textContent = firstName || displayName || person.name || "";
   const meta = document.createElement("div");
   meta.className = "person-meta";
   const birthLine = document.createElement("div");
@@ -1409,7 +1447,7 @@ function renderTimeline() {
     item.className = "timeline-item";
     if (person.death) item.classList.add("deceased");
     item.innerHTML = `
-      <div class="timeline-name">${person.name}</div>
+      <div class="timeline-name">${formatDisplayName(person.name)}</div>
       <div class="timeline-meta">${formatDates(person.birth, person.death)}</div>
       <div class="timeline-relation">${person.relation || ""}</div>
     `;
@@ -1492,6 +1530,25 @@ function initials(name) {
     .toUpperCase();
 }
 
+function formatDisplayName(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const isAllUpper = raw === raw.toUpperCase();
+  if (!isAllUpper) return raw;
+  return raw
+    .toLowerCase()
+    .split(/\s+/)
+    .map((part) => {
+      if (!part) return "";
+      if (part === "bin" || part === "binti" || part === "bt") return part;
+      return part
+        .split("-")
+        .map((chunk) => (chunk ? chunk[0].toUpperCase() + chunk.slice(1) : ""))
+        .join("-");
+    })
+    .join(" ");
+}
+
 function formatDates(birth, death) {
   const t = i18n[lang] || i18n.ms;
   if (!birth && !death) return t.datesUnknown;
@@ -1512,7 +1569,7 @@ function openModal(person) {
   const birthDate = parseDateValue(person.birth);
   const age = !person.death ? calcAge(birthDate) : null;
   const ageText = age !== null ? ` (${t.ageLabel}: ${age})` : "";
-  storyTitle.textContent = person.name;
+  storyTitle.textContent = formatDisplayName(person.name);
   storyContent.innerHTML = `
     <div class="story-detail"><strong>${t.modalRelation}</strong><span>${person.relation || "-"}</span></div>
     <div class="story-detail"><strong>${t.modalBirth}</strong><span>${person.birth || "-"}${ageText}</span></div>
@@ -1621,7 +1678,7 @@ function openModal(person) {
 }
 
 function updateStoryPanel(person) {
-  storyTitle.textContent = person.name;
+  storyTitle.textContent = formatDisplayName(person.name);
   storyBody.textContent = person.story || person.note || i18n[lang].storyEmpty;
 }
 
@@ -1744,6 +1801,12 @@ langToggleBtn.addEventListener("change", () => {
   scheduleRender();
   savePrefs();
 });
+
+if (clearCacheBtn) {
+  clearCacheBtn.addEventListener("click", () => {
+    clearSiteCache();
+  });
+}
 
 if (exportJsonBtn) {
   exportJsonBtn.addEventListener("click", () => {
@@ -1903,10 +1966,10 @@ searchInput.addEventListener("input", (event) => {
     results.forEach((person) => {
       const item = document.createElement("div");
       item.className = "search-item";
-      item.textContent = person.name;
+      item.textContent = formatDisplayName(person.name);
       item.addEventListener("click", () => {
         searchResults.classList.remove("active");
-        searchInput.value = person.name;
+        searchInput.value = formatDisplayName(person.name);
         focusPerson(person.id, true);
       });
       searchResults.appendChild(item);
