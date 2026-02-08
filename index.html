@@ -18,6 +18,10 @@
         <p class="kicker" data-i18n="appKicker">Salasilah Keluarga</p>
         <h1 data-i18n="appTitle">Paparan Generasi Keluarga</h1>
         <p class="subtitle" data-i18n="appSubtitle">Semua ahli keluarga dalam satu pandangan yang jelas, mudah, dan mesra.</p>
+        <div id="update-banner" class="update-banner" hidden>
+          <span data-i18n="updateReady">Versi baru tersedia.</span>
+          <button id="update-reload" class="btn ghost small" data-i18n="updateReload">Muat Semula</button>
+        </div>
         <div class="brand-minimap-wrap">
           <div class="minimap-label" data-i18n="minimapTitle">Minimap</div>
           <div class="minimap minimap-brand" id="minimap">
@@ -49,6 +53,7 @@
         </button>
       </div>
       <div class="controls">
+        <button id="controls-toggle" class="controls-toggle" type="button">Tutup Panel</button>
         <div class="control-group">
           <label for="search" class="label" data-i18n="searchLabel">Carian nama</label>
           <div class="search-row">
@@ -72,6 +77,7 @@
           <select id="mobile-action" class="select">
             <option value="" data-i18n="mobilePick">Pilih aksi...</option>
             <option value="zoom-reset" data-i18n="zoomReset">Reset</option>
+            <option value="reset-view" data-i18n="resetView">Reset View</option>
             <option value="export-png" data-i18n="exportPng">Export PNG</option>
             <option value="export-pdf" data-i18n="exportPdf">Export PDF</option>
           </select>
@@ -83,6 +89,7 @@
           <button id="zoom-out" class="btn" data-i18n="zoomOut">Zoom -</button>
           <button id="zoom-reset" class="btn ghost" data-i18n="zoomReset">Reset</button>
           <button id="zoom-fit" class="btn ghost" data-i18n="fit">Fit Skrin</button>
+          <button id="reset-view" class="btn ghost" data-i18n="resetView">Reset View</button>
         </div>
         <div id="validate-output" class="validate-output" aria-live="polite"></div>
         <div class="control-group generation-row">
@@ -136,6 +143,7 @@
             <svg class="tree-lines" id="tree-lines" xmlns="http://www.w3.org/2000/svg"></svg>
             <div class="tree-canvas" id="tree-canvas" aria-live="polite"></div>
           </div>
+          <div id="tree-status" class="tree-status" aria-live="polite"></div>
         </div>
         <aside class="story-panel" id="story-panel" hidden>
           <div class="story-head">
@@ -187,54 +195,7 @@
             </div>
           </form>
         </aside>
-        <aside class="editor-panel" id="editor-panel" hidden>
-          <h2 data-i18n="editorTitle">Editor Ahli Keluarga</h2>
-          <div class="editor-grid">
-            <label class="label" for="editor-person" data-i18n="editorPersonLabel">Pilih ahli</label>
-            <select id="editor-person" class="select"></select>
-
-            <label class="label" for="editor-name" data-i18n="editorNameLabel">Nama penuh</label>
-            <input id="editor-name" class="input" type="text" />
-
-            <label class="label" for="editor-relation" data-i18n="editorRelationLabel">Hubungan</label>
-            <input id="editor-relation" class="input" type="text" />
-
-            <label class="label" for="editor-birth" data-i18n="editorBirthLabel">Tarikh lahir</label>
-            <input id="editor-birth" class="input" type="date" />
-
-            <label class="label" for="editor-death" data-i18n="editorDeathLabel">Tarikh meninggal</label>
-            <input id="editor-death" class="input" type="date" />
-
-            <label class="label" for="editor-photo" data-i18n="editorPhotoLabel">URL gambar</label>
-            <input id="editor-photo" class="input" type="text" />
-            <input id="editor-photo-file" class="input" type="file" accept="image/*" />
-
-            <label class="label" for="editor-note" data-i18n="editorNoteLabel">Nota ringkas</label>
-            <textarea id="editor-note" class="textarea"></textarea>
-
-            <label class="label" for="editor-story" data-i18n="editorStoryLabel">Cerita panjang</label>
-            <textarea id="editor-story" class="textarea"></textarea>
-
-            <label class="label" for="editor-parent" data-i18n="editorParentLabel">Tambah sebagai anak kepada pasangan</label>
-            <select id="editor-parent" class="select"></select>
-
-            <label class="label" for="editor-partner" data-i18n="editorPartnerLabel">Tambah pasangan kepada ahli dipilih</label>
-            <select id="editor-partner" class="select"></select>
-
-          </div>
-          <div class="editor-actions">
-            <button id="editor-save" class="btn" data-i18n="editorSave">Simpan</button>
-            <button id="editor-add" class="btn ghost" data-i18n="editorAdd">Tambah Ahli Baru</button>
-            <button id="editor-link-partner" class="btn ghost" data-i18n="editorLinkPartner">Bina Pasangan</button>
-            <button id="editor-delete" class="btn danger" data-i18n="editorDelete">Padam</button>
-          </div>
-          <p class="editor-hint" data-i18n="editorHint">Data disimpan di pelayar (localStorage). Guna Export PNG/PDF untuk kongsi, atau kemas kini data.json bila perlu.</p>
-        </aside>
       </div>
-      <section class="timeline-section" id="timeline-section" hidden>
-        <h2 data-i18n="timelineTitle">Timeline Keluarga</h2>
-        <div class="timeline-list" id="timeline-list"></div>
-      </section>
     </main>
   </div>
 

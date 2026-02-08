@@ -1,6 +1,7 @@
 ﻿const treeWrap = document.getElementById("tree-wrap");
 const treeZoom = document.getElementById("tree-zoom");
 const treeCanvas = document.getElementById("tree-canvas");
+const treeStatus = document.getElementById("tree-status");
 const treeLines = document.getElementById("tree-lines");
 const minimapCanvas = document.getElementById("minimap-canvas");
 const searchInput = document.getElementById("search");
@@ -9,6 +10,7 @@ const searchGoBtn = document.getElementById("search-go");
 const zoomInBtn = document.getElementById("zoom-in");
 const zoomOutBtn = document.getElementById("zoom-out");
 const zoomResetBtn = document.getElementById("zoom-reset");
+const resetViewBtn = document.getElementById("reset-view");
 const toggleThemeBtn = document.getElementById("toggle-theme");
 const exportPngBtn = document.getElementById("export-png");
 const exportPdfBtn = document.getElementById("export-pdf");
@@ -20,6 +22,9 @@ const validateOutput = document.getElementById("validate-output");
 const modal = document.getElementById("person-modal");
 const modalBody = document.getElementById("modal-body");
 const app = document.getElementById("app");
+const updateBanner = document.getElementById("update-banner");
+const updateReloadBtn = document.getElementById("update-reload");
+const controlsToggleBtn = document.getElementById("controls-toggle");
 const generationControls = document.getElementById("generation-controls");
 const branchFilter = document.getElementById("branch-filter");
 const viewToggle = document.getElementById("view-toggle");
@@ -128,6 +133,7 @@ let recoveryAttempted = false;
 let lang = "ms";
 let compactMode = false;
 let pathMode = false;
+let controlsCollapsed = false;
 
 const prefs = loadPrefs();
 const i18n = {
@@ -220,6 +226,12 @@ const i18n = {
     genderLabel: "Jantina",
     genderMale: "Lelaki",
     genderFemale: "Perempuan",
+    updateReady: "Versi baru tersedia.",
+    updateReload: "Muat Semula",
+    controlsToggleOpen: "Buka Panel",
+    controlsToggleClose: "Tutup Panel",
+    resetView: "Reset View",
+    loading: "Memuatkan data...",
     clearCache: "Clear Cache",
     clearCacheConfirm: "Padam cache untuk laman ini? Data tersimpan di pelayar akan dipadam.",
     okBtn: "OK",
@@ -326,6 +338,12 @@ const i18n = {
     genderLabel: "Gender",
     genderMale: "Male",
     genderFemale: "Female",
+    updateReady: "Update available.",
+    updateReload: "Reload",
+    controlsToggleOpen: "Show Panel",
+    controlsToggleClose: "Hide Panel",
+    resetView: "Reset View",
+    loading: "Loading data...",
     clearCache: "Clear Cache",
     clearCacheConfirm: "Clear cache for this site? This will remove data stored in your browser.",
     okBtn: "OK",
@@ -347,6 +365,13 @@ const i18n = {
 
 function formatText(template, vars = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => (vars[key] !== undefined ? vars[key] : ""));
+}
+
+function setTreeStatus(message = "", isError = false) {
+  if (!treeStatus) return;
+  treeStatus.textContent = message;
+  treeStatus.hidden = !message;
+  treeStatus.classList.toggle("is-error", isError);
 }
 
 async function clearSiteCache() {
@@ -404,6 +429,7 @@ function initFromData(data) {
   if (prefs.lang) lang = prefs.lang;
   if (prefs.compactMode) compactMode = true;
   if (prefs.pathMode) pathMode = true;
+  if (prefs.controlsCollapsed) controlsCollapsed = true;
   if (!BRANCH_FILTER_ENABLED) branchFilterValue = "all";
   if (!GENERATION_FILTER_ENABLED) hiddenGenerations.clear();
 
@@ -427,10 +453,13 @@ function initFromData(data) {
   initEditor();
   applyLanguage();
   document.body.classList.toggle("compact", compactMode);
+  document.body.classList.toggle("controls-collapsed", controlsCollapsed);
+  if (!timelineSection) viewMode = "tree";
   applyViewMode();
   renderScene();
   applyZoom();
   treeWrap.scrollTo({ left: 0, top: 0 });
+  setTreeStatus("");
   restoreFromUrl();
   if (pathMode) applyLineageHighlight();
   if (treeCanvas && treeCanvas.children.length === 0) {
@@ -457,6 +486,7 @@ function recoverEmptyView() {
   if (treeCanvas && treeCanvas.children.length === 0) {
     const t = i18n[lang] || i18n.ms;
     treeCanvas.textContent = t.loadFail;
+    setTreeStatus(t.loadFail, true);
   }
 }
 
@@ -506,6 +536,11 @@ if (stored) {
   }
 }
 
+if (!treeCanvas || !treeCanvas.children.length) {
+  const t = i18n[lang] || i18n.ms;
+  setTreeStatus(t.loading);
+}
+
 fetch("data.json")
   .then((res) => res.json())
   .then((data) => {
@@ -533,6 +568,7 @@ fetch("data.json")
     if (!stored) {
       const t = i18n[lang] || i18n.ms;
       treeCanvas.textContent = t.loadFail;
+      setTreeStatus(t.loadFail, true);
     }
     console.error(err);
   });
@@ -555,7 +591,8 @@ function savePrefs() {
     branchFilter: branchFilterValue,
     lang,
     compactMode,
-    pathMode
+    pathMode,
+    controlsCollapsed
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
@@ -780,6 +817,7 @@ function buildBranchFilter() {
 }
 
 function initEditor() {
+  if (!editorPanel || !editorPerson) return;
   if (editorPhotoFile) {
     editorPhotoFile.addEventListener("change", async (event) => {
       const file = event.target.files?.[0];
@@ -1024,6 +1062,12 @@ function generateUnionId() {
 }
 
 function applyViewMode() {
+  if (!timelineSection) {
+    viewMode = "tree";
+    if (treeWrap) treeWrap.hidden = false;
+    document.body.dataset.view = "tree";
+    return;
+  }
   if (viewMode === "timeline") {
     document.body.dataset.view = "timeline";
     timelineSection.hidden = false;
@@ -1048,8 +1092,12 @@ function scheduleRender() {
 
 function renderScene() {
   if (viewMode === "timeline") {
-    renderTimeline();
-    return;
+    if (!timelineSection) {
+      viewMode = "tree";
+    } else {
+      renderTimeline();
+      return;
+    }
   }
 
   treeCanvas.innerHTML = "";
@@ -1703,6 +1751,7 @@ const actionEntries = [
   ["zoom-in", zoomInBtn],
   ["zoom-out", zoomOutBtn],
   ["zoom-reset", zoomResetBtn],
+  ["reset-view", resetViewBtn],
   ["zoom-fit", zoomFitBtn],
   ["focus-elders", focusEldersBtn],
   ["back-top", backTopBtn],
@@ -1811,6 +1860,24 @@ langToggleBtn.addEventListener("change", () => {
   scheduleRender();
   savePrefs();
 });
+
+if (controlsToggleBtn) {
+  controlsToggleBtn.addEventListener("click", () => {
+    controlsCollapsed = !controlsCollapsed;
+    document.body.classList.toggle("controls-collapsed", controlsCollapsed);
+    applyLanguage();
+    savePrefs();
+  });
+}
+
+if (resetViewBtn) {
+  resetViewBtn.addEventListener("click", () => {
+    scale = 1;
+    applyZoom();
+    treeWrap.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+    savePrefs();
+  });
+}
 
 if (clearCacheBtn) {
   clearCacheBtn.addEventListener("click", () => {
@@ -2096,24 +2163,42 @@ exportPdfBtn.addEventListener("click", async () => {
 
 if ("serviceWorker" in navigator) {
   let swReloaded = false;
+  let swReg = null;
+
+  const showUpdateBanner = () => {
+    if (!updateBanner) return;
+    updateBanner.hidden = false;
+  };
+
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (swReloaded) return;
     swReloaded = true;
     window.location.reload();
   });
 
+  if (updateReloadBtn) {
+    updateReloadBtn.addEventListener("click", () => {
+      if (swReg?.waiting) {
+        swReg.waiting.postMessage("SKIP_WAITING");
+      } else {
+        window.location.reload();
+      }
+    });
+  }
+
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("service-worker.js?v=20260208", { updateViaCache: "none" })
       .then((reg) => {
+        swReg = reg;
         reg.update();
-        if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
+        if (reg.waiting) showUpdateBanner();
         reg.addEventListener("updatefound", () => {
           const worker = reg.installing;
           if (!worker) return;
           worker.addEventListener("statechange", () => {
             if (worker.state === "installed" && navigator.serviceWorker.controller) {
-              if (reg.waiting) reg.waiting.postMessage("SKIP_WAITING");
+              showUpdateBanner();
             }
           });
         });
@@ -2267,6 +2352,7 @@ function syncMobileLabels() {
 
     const optionMap = {
       "zoom-reset": zoomResetBtn,
+      "reset-view": resetViewBtn,
       "toggle-theme": toggleThemeBtn,
       "lang-toggle": langToggleBtn,
       "export-png": exportPngBtn,
@@ -2324,6 +2410,9 @@ function applyLanguage() {
   if (editorToggle) editorToggle.textContent = t.editorToggle;
   toggleThemeBtn.checked = app.dataset.theme === "dark";
   langToggleBtn.checked = lang === "en";
+  if (controlsToggleBtn) {
+    controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
+  }
 
   const branchOptions = branchFilter?.options || [];
   if (branchOptions.length > 0) {
