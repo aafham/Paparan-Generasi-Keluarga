@@ -1535,93 +1535,6 @@ body.hide-tags .person-tags {
   cursor: default;
 }
 
-.onboarding {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 70;
-}
-
-.onboarding.is-open {
-  display: flex;
-}
-
-.onboarding-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 18, 15, 0.55);
-  backdrop-filter: blur(3px);
-}
-
-.onboarding-card {
-  position: relative;
-  width: min(620px, 92vw);
-  background: var(--card);
-  color: var(--ink);
-  border-radius: 20px;
-  box-shadow: var(--shadow-strong);
-  padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  animation: panelIn 0.45s ease both;
-}
-
-.onboarding-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.onboarding-header {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.onboarding-step {
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.onboarding-list {
-  margin: 0 0 16px;
-  padding-left: 20px;
-  display: grid;
-  gap: 8px;
-  color: var(--ink);
-}
-
-.onboarding-list li {
-  line-height: 1.6;
-}
-
-.onboarding-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.onboarding-actions .btn {
-  min-width: 88px;
-}
-
-.onboarding-highlight {
-  position: relative;
-  z-index: 5;
-  box-shadow: var(--ring-strong);
-  border-radius: 12px;
-}
 
 .modal-close {
   border: none;
@@ -1713,6 +1626,9 @@ body.hide-tags .person-tags {
 }
 
 @media (max-width: 720px) {
+  .tree-section {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom));
+  }
   body {
     padding-top: 56px;
   }
@@ -1940,17 +1856,6 @@ body.hide-tags .person-tags {
     width: 100%;
   }
 
-  .onboarding-card {
-    padding: 18px;
-  }
-
-  .onboarding-actions {
-    justify-content: stretch;
-  }
-
-  .onboarding-actions .btn {
-    flex: 1 1 120px;
-  }
 
   .settings-card {
     padding: 18px;

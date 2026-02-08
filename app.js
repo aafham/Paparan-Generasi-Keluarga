@@ -16,10 +16,6 @@ const exportPngBtn = document.getElementById("export-png");
 const exportPdfBtn = document.getElementById("export-pdf");
 const exportMenuBtn = document.getElementById("export-menu-btn");
 const exportMenu = document.getElementById("export-menu");
-const exportJsonBtn = document.getElementById("export-json");
-const importJsonBtn = document.getElementById("import-json");
-const importJsonFile = document.getElementById("import-json-file");
-const validateDataBtn = document.getElementById("validate-data");
 const validateOutput = document.getElementById("validate-output");
 const modal = document.getElementById("person-modal");
 const modalBody = document.getElementById("modal-body");
@@ -33,7 +29,6 @@ const storyTitle = document.getElementById("story-title");
 const storyBody = document.getElementById("story-body");
 const storyContent = document.getElementById("story-content");
 const panelEditBtn = document.getElementById("panel-edit");
-const panelDeleteBtn = document.getElementById("panel-delete");
 const panelCloseBtn = document.getElementById("panel-close");
 const panelEditForm = document.getElementById("panel-edit-form");
 const panelCancelBtn = document.getElementById("panel-cancel");
@@ -50,28 +45,7 @@ const panelEditNote = document.getElementById("panel-edit-note");
 const panelEditStory = document.getElementById("panel-edit-story");
 const timelineSection = document.getElementById("timeline-section");
 const timelineList = document.getElementById("timeline-list");
-const editorToggle = document.getElementById("editor-toggle");
-const editorPanel = document.getElementById("editor-panel");
-const editorPerson = document.getElementById("editor-person");
-const editorName = document.getElementById("editor-name");
-const editorRelation = document.getElementById("editor-relation");
-const editorBirth = document.getElementById("editor-birth");
-const editorDeath = document.getElementById("editor-death");
-const editorPhoto = document.getElementById("editor-photo");
-const editorPhotoFile = document.getElementById("editor-photo-file");
-const editorNote = document.getElementById("editor-note");
-const editorStory = document.getElementById("editor-story");
-const editorParent = document.getElementById("editor-parent");
-const editorPartner = document.getElementById("editor-partner");
-const editorSave = document.getElementById("editor-save");
-const editorAdd = document.getElementById("editor-add");
-const editorLinkPartner = document.getElementById("editor-link-partner");
-const editorDelete = document.getElementById("editor-delete");
 const zoomFitBtn = document.getElementById("zoom-fit");
-const focusEldersBtn = document.getElementById("focus-elders");
-const backTopBtn = document.getElementById("back-top");
-const pathToggleBtn = document.getElementById("path-toggle");
-const compactToggleBtn = document.getElementById("compact-toggle");
 const langToggleBtn = document.getElementById("lang-toggle");
 const clearCacheBtn = document.getElementById("clear-cache");
 const mobileActionSelect = document.getElementById("mobile-action");
@@ -202,10 +176,6 @@ const i18n = {
     viewTree: "Lihat Tree",
     compactOn: "Mode Penuh",
     compactOff: "Mode Ringkas",
-    pathOn: "Sembunyi Laluan",
-    pathOff: "Laluan Saya",
-    focusElders: "Fokus Tok/Wan",
-    backTop: "Kembali Atas",
     fit: "Fit Skrin",
     zoomIn: "Zoom +",
     zoomOut: "Zoom -",
@@ -214,32 +184,12 @@ const i18n = {
     langToggle: "BM / EN",
     exportPng: "Export PNG",
     exportPdf: "Export PDF",
-    exportJson: "Export JSON",
-    importJson: "Import JSON",
-    validateData: "Validasi Data",
-    editorToggle: "Editor Data",
     branchLabel: "Tapis cabang",
     generationLabel: "Generasi (Lipat/Buka)",
     legendParentChild: "Garis sambungan ibu bapa \u2192 anak",
     legendCouple: "Pasangan ditunjukkan secara selari",
     storyTitle: "Cerita Keluarga",
     storyEmpty: "Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.",
-    editorTitle: "Editor Ahli Keluarga",
-    editorPersonLabel: "Pilih ahli",
-    editorNameLabel: "Nama penuh",
-    editorRelationLabel: "Hubungan",
-    editorBirthLabel: "Tarikh lahir",
-    editorDeathLabel: "Tarikh meninggal",
-    editorPhotoLabel: "URL gambar",
-    editorNoteLabel: "Nota ringkas",
-    editorStoryLabel: "Cerita panjang",
-    editorParentLabel: "Tambah sebagai anak kepada pasangan",
-    editorPartnerLabel: "Tambah pasangan kepada ahli dipilih",
-    editorSave: "Simpan",
-    editorAdd: "Tambah Ahli Baru",
-    editorLinkPartner: "Bina Pasangan",
-    editorDelete: "Padam",
-    editorHint: "Data disimpan di pelayar (localStorage). Guna Export PNG/PDF untuk kongsi, atau kemas kini data.json bila perlu.",
     timelineTitle: "Timeline Keluarga",
     modalClose: "Tutup",
     modalEdit: "Edit",
@@ -266,9 +216,6 @@ const i18n = {
     bornPrefix: "Lahir: ",
     diedPrefix: "Meninggal: ",
     loadFail: "Gagal memuatkan data keluarga.",
-    importFail: "Import gagal: format JSON tidak sah.",
-    deleteBlocked: "Tidak boleh padam kerana masih terikat dengan pasangan/anak. Padam hubungan dahulu.",
-    partnerExists: "Pasangan ini sudah wujud.",
     exportDate: "Tarikh eksport: {date}",
     exportPngFail: "Gagal export PNG: library tidak tersedia.",
     exportPdfFail: "Gagal export PDF: library tidak tersedia.",
@@ -352,8 +299,6 @@ const i18n = {
     compactOff: "Compact Mode",
     pathOn: "Hide Path",
     pathOff: "My Lineage",
-    focusElders: "Focus Elders",
-    backTop: "Back Top",
     fit: "Fit Screen",
     zoomIn: "Zoom +",
     zoomOut: "Zoom -",
@@ -362,32 +307,12 @@ const i18n = {
     langToggle: "EN / BM",
     exportPng: "Export PNG",
     exportPdf: "Export PDF",
-    exportJson: "Export JSON",
-    importJson: "Import JSON",
-    validateData: "Validate Data",
-    editorToggle: "Data Editor",
     branchLabel: "Filter branch",
     generationLabel: "Generation (Collapse/Expand)",
     legendParentChild: "Parent \u2192 child connection",
     legendCouple: "Partners shown side by side",
     storyTitle: "Family Story",
     storyEmpty: "Tap any family member to see detailed notes.",
-    editorTitle: "Family Editor",
-    editorPersonLabel: "Select member",
-    editorNameLabel: "Full name",
-    editorRelationLabel: "Relation",
-    editorBirthLabel: "Birth date",
-    editorDeathLabel: "Death date",
-    editorPhotoLabel: "Image URL",
-    editorNoteLabel: "Short note",
-    editorStoryLabel: "Long story",
-    editorParentLabel: "Add as child to couple",
-    editorPartnerLabel: "Add partner to selected member",
-    editorSave: "Save",
-    editorAdd: "Add New Member",
-    editorLinkPartner: "Link Partner",
-    editorDelete: "Delete",
-    editorHint: "Data is stored in the browser (localStorage). Use Export PNG/PDF to share, or update data.json when needed.",
     timelineTitle: "Family Timeline",
     modalClose: "Close",
     modalEdit: "Edit",
@@ -414,9 +339,6 @@ const i18n = {
     bornPrefix: "Born: ",
     diedPrefix: "Died: ",
     loadFail: "Failed to load family data.",
-    importFail: "Import failed: invalid JSON format.",
-    deleteBlocked: "Cannot delete because this person is linked to a partner/child. Remove relationships first.",
-    partnerExists: "This partner pair already exists.",
     exportDate: "Export date: {date}",
     exportPngFail: "PNG export failed: library not available.",
     exportPdfFail: "PDF export failed: library not available.",
@@ -565,6 +487,11 @@ function applyDetailsVisibility() {
   document.body.classList.toggle("hide-birthdate", !showBirthdate);
   document.body.classList.toggle("hide-age", !showAge);
   document.body.classList.toggle("hide-tags", !showTags);
+}
+
+function updateSheetHandleState() {
+  if (!bottomSheetHandle) return;
+  bottomSheetHandle.setAttribute("aria-expanded", (!controlsCollapsed).toString());
 }
 
 function ensureTreeVisible() {
@@ -762,7 +689,6 @@ function initFromData(data) {
   }
   buildGenerationControls();
   buildBranchFilter();
-  initEditor();
   if (defaultView) viewMode = defaultView;
   applyLanguage();
   applyThemePreset();
@@ -783,6 +709,7 @@ function initFromData(data) {
   if (settingsDataVersion) settingsDataVersion.textContent = treeData?.dataVersion || "-";
   document.body.classList.toggle("compact", compactMode);
   document.body.classList.toggle("controls-collapsed", controlsCollapsed);
+  updateSheetHandleState();
   if (!timelineSection) viewMode = "tree";
   applyViewMode();
   renderScene();
@@ -1149,178 +1076,6 @@ function buildBranchFilter() {
   });
 }
 
-function initEditor() {
-  if (!editorPanel || !editorPerson) return;
-  if (editorPhotoFile) {
-    editorPhotoFile.addEventListener("change", async (event) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      try {
-        const dataUrl = await fileToDataUrl(file);
-        editorPhoto.value = dataUrl;
-      } finally {
-        editorPhotoFile.value = "";
-      }
-    });
-  }
-
-  if (editorToggle) {
-    editorToggle.addEventListener("click", () => {
-      const next = editorPanel.hidden === true ? false : true;
-      editorPanel.hidden = next;
-    });
-  }
-
-  refreshEditorLists();
-  editorPerson.addEventListener("change", () => {
-    const person = peopleById.get(editorPerson.value);
-    if (person) fillEditor(person);
-  });
-
-  editorSave.addEventListener("click", () => {
-    const id = editorPerson.value;
-    const person = peopleById.get(id);
-    if (!person) return;
-    person.name = editorName.value.trim();
-    person.relation = editorRelation.value.trim();
-    person.birth = editorBirth.value.trim();
-    person.death = editorDeath.value.trim();
-    person.photo = editorPhoto.value.trim();
-    person.note = editorNote.value.trim();
-    person.story = editorStory.value.trim();
-    storeData();
-    rebuildFromData();
-  });
-
-  editorAdd.addEventListener("click", () => {
-    const newId = generateId();
-    const person = {
-      id: newId,
-      name: editorName.value.trim() || "Ahli Baru",
-      birth: editorBirth.value.trim(),
-      death: editorDeath.value.trim(),
-      relation: editorRelation.value.trim(),
-      note: editorNote.value.trim(),
-      story: editorStory.value.trim(),
-      photo: editorPhoto.value.trim()
-    };
-    treeData.people.push(person);
-    const parentId = editorParent.value;
-    if (parentId) {
-      const union = treeData.unions.find((u) => u.id === parentId);
-      if (union) union.children.push(newId);
-    }
-    storeData();
-    rebuildFromData();
-    editorPerson.value = newId;
-    fillEditor(person);
-  });
-
-  editorDelete.addEventListener("click", () => {
-    const id = editorPerson.value;
-    if (!id) return;
-    const isPartner = treeData.unions.some((u) => u.partner1 === id || u.partner2 === id);
-    const isChild = treeData.unions.some((u) => u.children.includes(id));
-    if (isPartner || isChild) {
-      alert(i18n[lang].deleteBlocked);
-      return;
-    }
-    treeData.people = treeData.people.filter((p) => p.id !== id);
-    if (treeData.selfId === id) treeData.selfId = "";
-    storeData();
-    rebuildFromData();
-  });
-
-  editorLinkPartner.addEventListener("click", () => {
-    const personId = editorPerson.value;
-    const partnerId = editorPartner.value;
-    if (!personId || !partnerId || personId === partnerId) return;
-    const exists = treeData.unions.some((u) => {
-      const pairA = [u.partner1, u.partner2].filter(Boolean).sort().join("|");
-      const pairB = [personId, partnerId].sort().join("|");
-      return pairA === pairB;
-    });
-    if (exists) {
-      alert(i18n[lang].partnerExists);
-      return;
-    }
-    treeData.unions.push({
-      id: generateUnionId(),
-      partner1: personId,
-      partner2: partnerId,
-      children: []
-    });
-    storeData();
-    rebuildFromData();
-  });
-}
-
-function refreshEditorLists() {
-  const t = i18n[lang] || i18n.ms;
-  editorPerson.innerHTML = "";
-  treeData.people.forEach((person) => {
-    const option = document.createElement("option");
-    option.value = person.id;
-    option.textContent = formatDisplayName(person.name);
-    editorPerson.appendChild(option);
-  });
-
-  editorPartner.innerHTML = "";
-  treeData.people.forEach((person) => {
-    const option = document.createElement("option");
-    option.value = person.id;
-    option.textContent = formatDisplayName(person.name);
-    editorPartner.appendChild(option);
-  });
-
-  editorParent.innerHTML = "";
-  const empty = document.createElement("option");
-  empty.value = "";
-  empty.textContent = t.parentNone;
-  editorParent.appendChild(empty);
-  treeData.unions.forEach((union) => {
-    const p1 = peopleById.get(union.partner1);
-    const p2 = peopleById.get(union.partner2);
-    const label = [p1?.name, p2?.name].filter(Boolean).join(" & ") || union.id;
-    const option = document.createElement("option");
-    option.value = union.id;
-    option.textContent = label;
-    editorParent.appendChild(option);
-  });
-
-  if (treeData.people[0]) {
-    editorPerson.value = treeData.people[0].id;
-    editorPartner.value = treeData.people[0].id;
-    fillEditor(treeData.people[0]);
-  }
-}
-
-function fillEditor(person) {
-  editorName.value = person.name || "";
-  editorRelation.value = person.relation || "";
-  editorBirth.value = person.birth || "";
-  editorDeath.value = person.death || "";
-  editorPhoto.value = person.photo || "";
-  editorNote.value = person.note || "";
-  editorStory.value = person.story || "";
-}
-
-function deletePersonAndCleanup(personId) {
-  if (!personId) return;
-  treeData.people = treeData.people.filter((p) => p.id !== personId);
-  if (treeData.selfId === personId) treeData.selfId = "";
-  treeData.unions.forEach((union) => {
-    if (union.partner1 === personId) union.partner1 = "";
-    if (union.partner2 === personId) union.partner2 = "";
-    union.children = (union.children || []).filter((cid) => cid !== personId);
-  });
-  treeData.unions = treeData.unions.filter((union) => {
-    const hasPartner = Boolean(union.partner1 || union.partner2);
-    const hasChildren = (union.children || []).length > 0;
-    return hasPartner || hasChildren;
-  });
-}
-
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1343,7 +1098,6 @@ function rebuildFromData() {
   buildGenerationControls();
   buildBranchFilter();
   renderScene();
-  refreshEditorLists();
   applyLanguage();
   if (pathMode) applyLineageHighlight();
 }
@@ -2009,7 +1763,6 @@ function openModal(person) {
 
   if (panelEditForm) panelEditForm.hidden = true;
   if (panelEditBtn) panelEditBtn.hidden = false;
-  if (panelDeleteBtn) panelDeleteBtn.hidden = false;
 
   if (panelEditName) panelEditName.value = person.name || "";
   if (panelEditFirst && panelEditLast) {
@@ -2074,14 +1827,6 @@ function openModal(person) {
     };
   }
 
-  if (panelDeleteBtn) {
-    panelDeleteBtn.onclick = () => {
-      if (!confirm(i18n[lang].modalDeleteConfirm)) return;
-      deletePersonAndCleanup(person.id);
-      storeData();
-      rebuildFromData();
-    };
-  }
 
   if (panelEditForm) {
     panelEditForm.onsubmit = (event) => {
@@ -2135,19 +1880,11 @@ const actionEntries = [
   ["zoom-reset", zoomResetBtn],
   ["reset-view", resetViewBtn],
   ["zoom-fit", zoomFitBtn],
-  ["focus-elders", focusEldersBtn],
-  ["back-top", backTopBtn],
-  ["path-toggle", pathToggleBtn],
-  ["compact-toggle", compactToggleBtn],
   ["toggle-theme", toggleThemeBtn],
   ["lang-toggle", langToggleBtn],
   ["view-toggle", viewToggle],
   ["export-png", exportPngBtn],
-  ["export-pdf", exportPdfBtn],
-  ["export-json", exportJsonBtn],
-  ["import-json", importJsonBtn],
-  ["validate-data", validateDataBtn],
-  ["editor-toggle", editorToggle]
+  ["export-pdf", exportPdfBtn]
 ];
 const actionMap = new Map(actionEntries.filter(([, el]) => el));
 
@@ -2269,6 +2006,7 @@ if (controlsToggleBtn) {
     if (isMobileView()) {
       localStorage.setItem(MOBILE_CONTROLS_KEY, controlsCollapsed ? "1" : "0");
     }
+    updateSheetHandleState();
     savePrefs();
   });
 }
@@ -3064,7 +2802,6 @@ function applyLanguage() {
   if (exportJsonBtn) exportJsonBtn.textContent = t.exportJson;
   if (importJsonBtn) importJsonBtn.textContent = t.importJson;
   if (validateDataBtn) validateDataBtn.textContent = t.validateData;
-  if (editorToggle) editorToggle.textContent = t.editorToggle;
   if (toggleThemeBtn) toggleThemeBtn.checked = app.dataset.theme === "dark";
   if (langToggleBtn) langToggleBtn.checked = lang === "en";
   if (controlsToggleBtn) {
@@ -3092,10 +2829,6 @@ function applyLanguage() {
     for (let i = 1; i < branchOptions.length; i += 1) {
       branchOptions[i].textContent = formatText(t.branchName, { n: i });
     }
-  }
-
-  if (editorParent?.options?.length) {
-    editorParent.options[0].textContent = t.parentNone;
   }
 
   generationControls?.querySelectorAll(".gen-chip").forEach((chip) => {
@@ -3174,10 +2907,19 @@ if (minimap) {
     minimapWrap.classList.add("is-collapsed");
   };
 
+  const toggleMinimapMobile = () => {
+    if (!minimapWrap) return;
+    if (minimapWrap.classList.contains("is-open")) {
+      closeMinimapMobile();
+    } else {
+      openMinimapMobile();
+    }
+  };
+
   const showMinimap = () => {
     if (!minimapWrap) return;
     if (isMobileView()) {
-      openMinimapMobile();
+      toggleMinimapMobile();
       return;
     }
     minimapWrap.classList.remove("is-collapsed");
@@ -3256,7 +2998,12 @@ if (minimap) {
   window.addEventListener("scroll", scheduleHide, true);
   window.addEventListener("touchend", scheduleHide, { passive: true });
   window.addEventListener("resize", () => {
-    if (isMobileView()) closeMinimapMobile();
+    if (isMobileView()) {
+      closeMinimapMobile();
+    } else if (minimapWrap) {
+      minimapWrap.classList.remove("is-open");
+      scheduleHide();
+    }
   });
 }
 
