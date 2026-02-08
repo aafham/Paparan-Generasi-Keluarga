@@ -2808,6 +2808,11 @@ if (settingsModal) {
   });
 }
 
+if (settingsModal) {
+  settingsModal.classList.remove("is-open");
+  settingsModal.setAttribute("aria-hidden", "true");
+}
+
 if (settingsCompact) {
   settingsCompact.addEventListener("change", () => {
     compactMode = settingsCompact.checked;

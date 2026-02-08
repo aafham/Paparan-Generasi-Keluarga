@@ -43,68 +43,68 @@
       <div id="bottom-sheet" class="bottom-sheet">
         <div id="sheet-handle" class="sheet-handle" role="button" aria-label="Toggle panel"></div>
         <div class="controls">
-        <button id="controls-toggle" class="controls-toggle" type="button">Tutup Panel</button>
-        <div class="control-group">
-          <label for="search" class="label" data-i18n="searchLabel">Carian nama</label>
-          <div class="search-row">
-            <input id="search" type="search" placeholder="Cari nama ahli keluarga..." data-i18n-placeholder="searchPlaceholder" />
-            <button id="search-go" class="btn ghost small" data-i18n="searchGo">Cari & Fokus</button>
+          <button id="controls-toggle" class="controls-toggle" type="button">Tutup Panel</button>
+          <div class="control-group">
+            <label for="search" class="label" data-i18n="searchLabel">Carian nama</label>
+            <div class="search-row">
+              <input id="search" type="search" placeholder="Cari nama ahli keluarga..." data-i18n-placeholder="searchPlaceholder" />
+              <button id="search-go" class="btn ghost small" data-i18n="searchGo">Cari & Fokus</button>
+            </div>
+            <div id="search-results" class="search-results" aria-live="polite"></div>
           </div>
-          <div id="search-results" class="search-results" aria-live="polite"></div>
-        </div>
-        <div class="control-group" hidden>
-          <label for="branch-filter" class="label" data-i18n="branchLabel">Tapis cabang</label>
-          <select id="branch-filter" class="select"></select>
-        </div>
-        <div class="control-group">
-          <label for="theme-preset" class="label" data-i18n="themePreset">Tema</label>
-          <select id="theme-preset" class="select">
-            <option value="default" data-i18n="themeDefault">Default</option>
-            <option value="heritage" data-i18n="themeHeritage">Heritage</option>
-            <option value="ocean" data-i18n="themeOcean">Ocean</option>
-            <option value="sunset" data-i18n="themeSunset">Sunset</option>
-          </select>
-        </div>
-        <div class="mobile-actions" aria-label="Aksi mudah alih">
-          <div class="control-row mobile-quick">
-            <button class="btn" id="m-zoom-in" data-action="zoom-in" data-i18n="zoomIn">Zoom +</button>
-            <button class="btn" id="m-zoom-out" data-action="zoom-out" data-i18n="zoomOut">Zoom -</button>
-            <button class="btn ghost" id="m-zoom-fit" data-action="zoom-fit" data-i18n="fit">Fit Skrin</button>
+          <div class="control-group" hidden>
+            <label for="branch-filter" class="label" data-i18n="branchLabel">Tapis cabang</label>
+            <select id="branch-filter" class="select"></select>
           </div>
-        <div class="control-group mobile-select">
-          <label class="label" id="mobile-action-label" for="mobile-action" data-i18n="mobileActions">Aksi lain</label>
-          <select id="mobile-action" class="select">
-            <option value="" data-i18n="mobilePick">Pilih aksi...</option>
-            <option value="zoom-reset" data-i18n="zoomReset">Reset</option>
-            <option value="reset-view" data-i18n="resetView">Reset View</option>
-            <option value="export-png" data-i18n="exportPng">Export PNG</option>
-            <option value="export-pdf" data-i18n="exportPdf">Export PDF</option>
-          </select>
-          <button id="mobile-action-go" class="btn ghost" disabled data-i18n="okBtn">OK</button>
-        </div>
-        </div>
-        <div class="control-row actions-zoom">
-          <button id="zoom-in" class="btn" data-i18n="zoomIn">Zoom +</button>
-          <button id="zoom-out" class="btn" data-i18n="zoomOut">Zoom -</button>
-          <button id="zoom-reset" class="btn ghost" data-i18n="zoomReset">Reset</button>
-          <button id="zoom-fit" class="btn ghost" data-i18n="fit">Fit Skrin</button>
-          <button id="reset-view" class="btn ghost" data-i18n="resetView">Reset View</button>
-          <button id="view-toggle" class="btn ghost" data-i18n="viewTimeline">Lihat Timeline</button>
-        </div>
-        <div id="validate-output" class="validate-output" aria-live="polite"></div>
-        <div class="control-group generation-row">
-          <div>
-            <label class="label" data-i18n="generationLabel">Generasi (Collapse/Expand)</label>
-            <div id="generation-controls" class="generation-controls"></div>
+          <div class="control-group">
+            <label for="theme-preset" class="label" data-i18n="themePreset">Tema</label>
+            <select id="theme-preset" class="select">
+              <option value="default" data-i18n="themeDefault">Default</option>
+              <option value="heritage" data-i18n="themeHeritage">Heritage</option>
+              <option value="ocean" data-i18n="themeOcean">Ocean</option>
+              <option value="sunset" data-i18n="themeSunset">Sunset</option>
+            </select>
           </div>
-          <div class="export-actions">
-            <button id="export-menu-btn" class="btn ghost" type="button" data-i18n="exportMenu">Export</button>
-            <div id="export-menu" class="export-menu" hidden>
-              <button id="export-png" class="btn ghost small" type="button" data-i18n="exportPng">Export PNG</button>
-              <button id="export-pdf" class="btn ghost small" type="button" data-i18n="exportPdf">Export PDF</button>
+          <div class="mobile-actions" aria-label="Aksi mudah alih">
+            <div class="control-row mobile-quick">
+              <button class="btn" id="m-zoom-in" data-action="zoom-in" data-i18n="zoomIn">Zoom +</button>
+              <button class="btn" id="m-zoom-out" data-action="zoom-out" data-i18n="zoomOut">Zoom -</button>
+              <button class="btn ghost" id="m-zoom-fit" data-action="zoom-fit" data-i18n="fit">Fit Skrin</button>
+            </div>
+            <div class="control-group mobile-select">
+              <label class="label" id="mobile-action-label" for="mobile-action" data-i18n="mobileActions">Aksi lain</label>
+              <select id="mobile-action" class="select">
+                <option value="" data-i18n="mobilePick">Pilih aksi...</option>
+                <option value="zoom-reset" data-i18n="zoomReset">Reset</option>
+                <option value="reset-view" data-i18n="resetView">Reset View</option>
+                <option value="export-png" data-i18n="exportPng">Export PNG</option>
+                <option value="export-pdf" data-i18n="exportPdf">Export PDF</option>
+              </select>
+              <button id="mobile-action-go" class="btn ghost" disabled data-i18n="okBtn">OK</button>
             </div>
           </div>
-        </div>
+          <div class="control-row actions-zoom">
+            <button id="zoom-in" class="btn" data-i18n="zoomIn">Zoom +</button>
+            <button id="zoom-out" class="btn" data-i18n="zoomOut">Zoom -</button>
+            <button id="zoom-reset" class="btn ghost" data-i18n="zoomReset">Reset</button>
+            <button id="zoom-fit" class="btn ghost" data-i18n="fit">Fit Skrin</button>
+            <button id="reset-view" class="btn ghost" data-i18n="resetView">Reset View</button>
+            <button id="view-toggle" class="btn ghost" data-i18n="viewTimeline">Lihat Timeline</button>
+          </div>
+          <div id="validate-output" class="validate-output" aria-live="polite"></div>
+          <div class="control-group generation-row">
+            <div>
+              <label class="label" data-i18n="generationLabel">Generasi (Collapse/Expand)</label>
+              <div id="generation-controls" class="generation-controls"></div>
+            </div>
+            <div class="export-actions">
+              <button id="export-menu-btn" class="btn ghost" type="button" data-i18n="exportMenu">Export</button>
+              <div id="export-menu" class="export-menu" hidden>
+                <button id="export-png" class="btn ghost small" type="button" data-i18n="exportPng">Export PNG</button>
+                <button id="export-pdf" class="btn ghost small" type="button" data-i18n="exportPdf">Export PDF</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
