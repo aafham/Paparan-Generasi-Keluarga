@@ -29,6 +29,7 @@ const modal = document.getElementById("person-modal");
 const modalBody = document.getElementById("modal-body");
 const app = document.getElementById("app");
 const controlsToggleBtn = document.getElementById("controls-toggle");
+const mobilePanelBtn = document.getElementById("mobile-panel-btn");
 const generationControls = document.getElementById("generation-controls");
 const branchFilter = document.getElementById("branch-filter");
 const viewToggle = document.getElementById("view-toggle");
@@ -71,6 +72,7 @@ const miniZoomInBtn = document.getElementById("mini-zoom-in");
 const miniZoomOutBtn = document.getElementById("mini-zoom-out");
 const miniZoomFitBtn = document.getElementById("mini-zoom-fit");
 const settingsBtn = document.getElementById("settings-btn");
+const bottomSheet = document.getElementById("bottom-sheet");
 const settingsModal = document.getElementById("settings-modal");
 const settingsCompact = document.getElementById("settings-compact");
 const settingsLines = document.getElementById("settings-lines");
@@ -259,8 +261,8 @@ const i18n = {
     searchPlaceholder: "Cari nama ahli keluarga...",
     statsPeople: "Jumlah Ahli",
     statsCouples: "Jumlah Pasangan",
-    statsMale: "Lelaki (bin)",
-    statsFemale: "Perempuan (binti)",
+    statsMale: "Lelaki",
+    statsFemale: "Perempuan",
     timelineGenLabel: "Generasi",
     timelineMonth: "Bulan Lahir",
     timelineYearFrom: "Dari Tahun",
@@ -382,8 +384,8 @@ const i18n = {
     searchPlaceholder: "Search family member...",
     statsPeople: "Total People",
     statsCouples: "Couples",
-    statsMale: "Male (bin)",
-    statsFemale: "Female (binti)",
+    statsMale: "Male",
+    statsFemale: "Female",
     timelineGenLabel: "Generation",
     timelineMonth: "Birth Month",
     timelineYearFrom: "From Year",
@@ -2046,6 +2048,15 @@ if (controlsToggleBtn) {
   });
 }
 
+if (mobilePanelBtn) {
+  mobilePanelBtn.addEventListener("click", () => {
+    toggleControlsCollapsed();
+  });
+  mobilePanelBtn.addEventListener("touchstart", () => {
+    toggleControlsCollapsed();
+  }, { passive: true });
+}
+
 if (bottomSheetHandle) {
   bottomSheetHandle.addEventListener("click", () => {
     toggleControlsCollapsed();
@@ -2053,6 +2064,67 @@ if (bottomSheetHandle) {
   bottomSheetHandle.addEventListener("touchstart", () => {
     toggleControlsCollapsed();
   }, { passive: true });
+}
+
+const sheetControls = document.querySelector("#bottom-sheet .controls");
+const sheetDragState = {
+  active: false,
+  startY: 0,
+  deltaY: 0
+};
+
+const setSheetOffset = (offset) => {
+  if (!bottomSheet) return;
+  bottomSheet.style.transform = `translateY(${offset}px)`;
+};
+
+const resetSheetOffset = () => {
+  if (!bottomSheet) return;
+  bottomSheet.style.transform = "";
+  bottomSheet.classList.remove("is-dragging");
+  sheetDragState.active = false;
+  sheetDragState.deltaY = 0;
+};
+
+if (bottomSheet) {
+  bottomSheet.addEventListener("touchstart", (event) => {
+    if (!isMobileView()) return;
+    const targetInControls = sheetControls && sheetControls.contains(event.target);
+    if (targetInControls && sheetControls.scrollTop > 0 && !controlsCollapsed) return;
+    const touch = event.touches[0];
+    sheetDragState.active = true;
+    sheetDragState.startY = touch.clientY;
+    sheetDragState.deltaY = 0;
+    bottomSheet.classList.add("is-dragging");
+  }, { passive: true });
+
+  bottomSheet.addEventListener("touchmove", (event) => {
+    if (!sheetDragState.active || !isMobileView()) return;
+    const touch = event.touches[0];
+    const dy = touch.clientY - sheetDragState.startY;
+    sheetDragState.deltaY = dy;
+    if (controlsCollapsed) {
+      const offset = Math.min(0, dy);
+      setSheetOffset(offset);
+    } else {
+      const offset = Math.max(0, dy);
+      setSheetOffset(offset);
+    }
+    event.preventDefault();
+  }, { passive: false });
+
+  bottomSheet.addEventListener("touchend", () => {
+    if (!sheetDragState.active) return;
+    const dy = sheetDragState.deltaY;
+    if (!controlsCollapsed && dy > 80) {
+      toggleControlsCollapsed(true);
+    } else if (controlsCollapsed && dy < -60) {
+      toggleControlsCollapsed(false);
+    }
+    resetSheetOffset();
+  });
+
+  bottomSheet.addEventListener("touchcancel", resetSheetOffset);
 }
 
 if (mobileSettingsBtn) {
@@ -2844,6 +2916,9 @@ function applyLanguage() {
   if (langToggleBtn) langToggleBtn.checked = lang === "en";
   if (controlsToggleBtn) {
     controlsToggleBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
+  }
+  if (mobilePanelBtn) {
+    mobilePanelBtn.textContent = controlsCollapsed ? t.controlsToggleOpen : t.controlsToggleClose;
   }
   if (settingsBtn) settingsBtn.textContent = t.settingsTitle;
   if (themePresetSelect) themePresetSelect.value = themePreset;
