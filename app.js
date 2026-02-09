@@ -277,6 +277,7 @@ const i18n = {
     timelineGenderFemale: "Perempuan",
     timelineSort: "Susun",
     timelineSortYear: "Ikut Tahun",
+    timelineSortAge: "Ikut Umur",
     timelineSortAlpha: "Ikut Abjad",
     timelineSortMonth: "Ikut Bulan",
     timelineSortGender: "Ikut Jantina",
@@ -411,6 +412,7 @@ const i18n = {
     timelineGenderFemale: "Female",
     timelineSort: "Sort",
     timelineSortYear: "By Year",
+    timelineSortAge: "By Age",
     timelineSortAlpha: "Alphabetical",
     timelineSortMonth: "By Month",
     timelineSortGender: "By Gender",
@@ -1791,11 +1793,12 @@ function renderTimeline() {
     const birthDate = parseDateValue(person.birth);
     const birthMonth = birthDate ? birthDate.getMonth() + 1 : null;
     const birthDay = birthDate ? birthDate.getDate() : null;
+    const birthTime = birthDate ? birthDate.getTime() : null;
     const order = birth || 9999;
     const gender = detectGenderFromName(person.name) || "unknown";
     const nameSort = formatDisplayName(person.name).toLowerCase();
     const parentKey = parentKeyByChild.get(person.id) || "zzzz";
-    return { person, birth, birthMonth, birthDay, order, gender, nameSort, parentKey };
+    return { person, birth, birthMonth, birthDay, birthTime, order, gender, nameSort, parentKey };
   });
 
   const filtered = entries.filter(({ person, birth, birthMonth, gender }) => {
@@ -1813,6 +1816,12 @@ function renderTimeline() {
   const genderOrder = { male: 1, female: 2, unknown: 3 };
   const sortMode = timelineFilters.sort || "year";
   filtered.sort((a, b) => {
+    if (sortMode === "age") {
+      const at = a.birthTime ?? Number.POSITIVE_INFINITY;
+      const bt = b.birthTime ?? Number.POSITIVE_INFINITY;
+      if (at !== bt) return at - bt;
+      return a.nameSort.localeCompare(b.nameSort);
+    }
     if (sortMode === "alpha") {
       return a.nameSort.localeCompare(b.nameSort);
     }

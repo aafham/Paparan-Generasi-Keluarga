@@ -53,17 +53,24 @@
     { "id": "p54", "name": "Nur Muhammad Bin Muadz", "birth": "2018-06-11", "death": "", "relation": "Cicit", "note": "", "photo": "" },
     { "id": "p55", "name": "Nur Nuha Musfirah Binti Muadz", "birth": "2020-11-15", "death": "", "relation": "Cicit", "note": "", "photo": "" },
     { "id": "p56", "name": "Nur Maisarah Izzati Binti Muadz", "birth": "2023-07-15", "death": "", "relation": "Cicit", "note": "", "photo": "" },
-    { "id": "p57", "name": "Nur Syatirah Binti Noor Azri", "birth": "1994-07-27", "death": "", "relation": "Cucu", "note": "Anak ketiga", "photo": "" },
+    { "id": "p64", "name": "Nur Ahmad Syatir Bin Noor Azri", "birth": "1992-10-26", "death": "", "relation": "Cucu", "note": "Anak ketiga", "photo": "" },
+    { "id": "p65", "name": "Shafiqah Nabilah Binti Bsime", "birth": "1991-12-18", "death": "", "relation": "Menantu", "note": "", "photo": "" },
+    { "id": "p66", "name": "Nur Ahmad Qowiy Bin Nur Ahmad Syatir", "birth": "2016-12-21", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p67", "name": "Nur Hana Saffiyah Binti Nur Ahmad Syatir", "birth": "2018-08-08", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p68", "name": "Nur Hannan Syakila Binti Nur Ahmad Syatir", "birth": "2019-07-13", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p69", "name": "Nur Haura Khadijah Binti Nur Ahmad Syatir", "birth": "2021-02-16", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p70", "name": "Nur Haniyah Nusaibah Binti Nur Ahmad Syatir", "birth": "2025-01-01", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p57", "name": "Nur Syatirah Binti Noor Azri", "birth": "1994-07-27", "death": "", "relation": "Cucu", "note": "Anak keempat", "photo": "" },
     { "id": "p58", "name": "Nor Najmi Naqiyuddin Bin Abd Rahman", "birth": "1994-12-21", "death": "", "relation": "Menantu", "note": "", "photo": "" },
-    { "id": "p59", "name": "Umar Abdul Aziz Bin Noor Azri", "birth": "1998-08-14", "death": "", "relation": "Cucu", "note": "Anak keempat", "photo": "" },
+    { "id": "p59", "name": "Umar Abdul Aziz Bin Noor Azri", "birth": "1998-08-14", "death": "", "relation": "Cucu", "note": "Anak kelima", "photo": "" },
     { "id": "p41", "name": "Ahmad Afham Bin Noor Azizan", "birth": "1994-11-21", "death": "", "relation": "Cucu", "note": "Anak ketiga", "photo": "" },
     { "id": "p42", "name": "Ahmad Afiq Bin Noor Azizan", "birth": "2001-04-25", "death": "", "relation": "Cucu", "note": "Anak keempat", "photo": "" },
     { "id": "p43", "name": "Nur Az Zahra Binti Noor Azizan", "birth": "2013-02-05", "death": "", "relation": "Cucu", "note": "Anak kelima", "photo": "" },
 
-    { "id": "p20", "name": "Nur Nafisah Binti Nur Ahmad Wafiy", "birth": "2014-08-12", "death": "", "relation": "Cucu", "note": "", "photo": "" },
-    { "id": "p21", "name": "Ahmad Naufal Bin Nur Ahmad Wafiy", "birth": "2016-09-27", "death": "", "relation": "Cucu", "note": "", "photo": "" },
-    { "id": "p22", "name": "Ahmad Nabhan Bin Nur Ahmad Wafiy", "birth": "2019-03-08", "death": "", "relation": "Cucu", "note": "", "photo": "" },
-    { "id": "p23", "name": "Nur Fasihah Binti Nur Ahmad Wafiy", "birth": "2023-03-17", "death": "", "relation": "Cucu", "note": "", "photo": "" },
+    { "id": "p20", "name": "Nur Nafisah Binti Nur Ahmad Wafiy", "birth": "2014-08-12", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p21", "name": "Ahmad Naufal Bin Nur Ahmad Wafiy", "birth": "2016-09-27", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p22", "name": "Ahmad Nabhan Bin Nur Ahmad Wafiy", "birth": "2019-03-08", "death": "", "relation": "Cicit", "note": "", "photo": "" },
+    { "id": "p23", "name": "Nur Fasihah Binti Nur Ahmad Wafiy", "birth": "2023-03-17", "death": "", "relation": "Cicit", "note": "", "photo": "" },
 
     { "id": "p30", "name": "Nur Ahmad Wafiy Bin Noor Azri", "birth": "1986-11-21", "death": "", "relation": "Cucu", "note": "", "photo": "" },
     { "id": "p31", "name": "Norliza Binti Mat Salleh", "birth": "1988-07-16", "death": "", "relation": "Menantu", "note": "", "photo": "" },
@@ -78,7 +85,7 @@
     { "id": "u1", "partner1": "p1", "partner2": "p2", "children": ["p3", "p5", "p7", "p9"] },
     { "id": "u2", "partner1": "p3", "partner2": "p4", "children": ["p11", "p44", "p12", "p14"] },
     { "id": "u3", "partner1": "p5", "partner2": "p6", "children": ["p15", "p36", "p41", "p42", "p43"] },
-    { "id": "u4", "partner1": "p7", "partner2": "p8", "children": ["p30", "p52", "p57", "p59"] },
+    { "id": "u4", "partner1": "p7", "partner2": "p8", "children": ["p30", "p52", "p64", "p57", "p59"] },
     { "id": "u5", "partner1": "p9", "partner2": "p10", "children": ["p25", "p26", "p27", "p28", "p29"] },
     { "id": "u6", "partner1": "p30", "partner2": "p31", "children": ["p20", "p21", "p22", "p23"] },
     { "id": "u7", "partner1": "p14", "partner2": "p32", "children": ["p33", "p34", "p35"] },
@@ -88,6 +95,7 @@
     { "id": "u11", "partner1": "p11", "partner2": "p48", "children": ["p49", "p50", "p51"] },
     { "id": "u14", "partner1": "p12", "partner2": "p60", "children": ["p61", "p62", "p63"] },
     { "id": "u12", "partner1": "p52", "partner2": "p53", "children": ["p54", "p55", "p56"] },
-    { "id": "u13", "partner1": "p57", "partner2": "p58", "children": [] }
+    { "id": "u13", "partner1": "p57", "partner2": "p58", "children": [] },
+    { "id": "u15", "partner1": "p64", "partner2": "p65", "children": ["p66", "p67", "p68", "p69", "p70"] }
   ]
 }
