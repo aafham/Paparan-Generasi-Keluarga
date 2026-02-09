@@ -23,7 +23,7 @@
                    },
                    {
                        "id":  "p3",
-                       "name":  "Noor Azmah Binti Mohd Isa",
+                      "name":  "Noor Azmah Binti Mohamad Isa",
                        "birth":  "1956-02-13",
                        "death":  "",
                        "relation":  "Anak pertama",
@@ -41,7 +41,7 @@
                    },
                    {
                        "id":  "p5",
-                       "name":  "Noor Azizan Bin Mohd Isa",
+                      "name":  "Noor Azizan Bin Mohamad Isa",
                        "birth":  "1960-04-12",
                        "death":  "",
                        "relation":  "Anak kedua",
@@ -59,7 +59,7 @@
                    },
                    {
                        "id":  "p7",
-                       "name":  "Noor Azri Bin Mohd Isa",
+                      "name":  "Noor Azri Bin Mohamad Isa",
                        "birth":  "1962-09-07",
                        "death":  "",
                        "relation":  "Anak ketiga",
@@ -212,7 +212,7 @@
                    },
                    {
                        "id":  "p34",
-                       "name":  "Auni Alyssa Bt Mohd Syazwan Akmal",
+                      "name":  "Auni Alyssa Binti Mohd Syazwan Akmal",
                        "birth":  "2022-05-25",
                        "death":  "",
                        "relation":  "Cicit",
@@ -221,7 +221,7 @@
                    },
                    {
                        "id":  "p35",
-                       "name":  "Airin Aryssa Bt Mohd Syazwan Akmal",
+                      "name":  "Airin Aryssa Binti Mohd Syazwan Akmal",
                        "birth":  "2023-09-27",
                        "death":  "",
                        "relation":  "Cicit",
