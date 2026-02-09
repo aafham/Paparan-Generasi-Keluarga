@@ -90,6 +90,8 @@ const statPeople = document.getElementById("stat-people");
 const statCouples = document.getElementById("stat-couples");
 const statMale = document.getElementById("stat-male");
 const statFemale = document.getElementById("stat-female");
+const statUpcomingName = document.getElementById("stat-upcoming-name");
+const statUpcomingMeta = document.getElementById("stat-upcoming-meta");
 const themePresetSelect = document.getElementById("theme-preset");
 const timelineGenSelect = document.getElementById("timeline-gen");
 const timelineMonthSelect = document.getElementById("timeline-month");
@@ -269,6 +271,9 @@ const i18n = {
     statsCouples: "Jumlah Pasangan",
     statsMale: "Lelaki",
     statsFemale: "Perempuan",
+    statsUpcoming: "Ulang Tahun Terdekat",
+    statsUpcomingEmpty: "Tiada data",
+    statsUpcomingToday: "Hari ini",
     timelineGenLabel: "Generasi",
     timelineMonth: "Bulan Lahir",
     timelineGender: "Jantina",
@@ -404,6 +409,9 @@ const i18n = {
     statsCouples: "Couples",
     statsMale: "Male",
     statsFemale: "Female",
+    statsUpcoming: "Upcoming Birthday",
+    statsUpcomingEmpty: "No data",
+    statsUpcomingToday: "Today",
     timelineGenLabel: "Generation",
     timelineMonth: "Birth Month",
     timelineGender: "Gender",
@@ -576,6 +584,7 @@ function ensureTreeVisible() {
 
 function updateStats() {
   if (!treeData) return;
+  const t = i18n[lang] || i18n.ms;
   const peopleCount = treeData.people.length;
   const couplesCount = treeData.unions.length;
   let maleCount = 0;
@@ -589,6 +598,47 @@ function updateStats() {
   if (statCouples) statCouples.textContent = String(couplesCount);
   if (statMale) statMale.textContent = String(maleCount);
   if (statFemale) statFemale.textContent = String(femaleCount);
+
+  if (statUpcomingName || statUpcomingMeta) {
+    const today = new Date();
+    const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    let best = null;
+    treeData.people.forEach((person) => {
+      const birthDate = parseDateValue(person.birth);
+      if (!birthDate) return;
+      const next = new Date(todayMid.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+      if (next < todayMid) next.setFullYear(next.getFullYear() + 1);
+      const diff = next.getTime() - todayMid.getTime();
+      const name = formatDisplayName(person.name);
+      if (!best || diff < best.diff || (diff === best.diff && name.localeCompare(best.name) < 0)) {
+        best = { person, birthDate, next, diff, name };
+      }
+    });
+
+    if (!best) {
+      if (statUpcomingName) statUpcomingName.textContent = t.statsUpcomingEmpty || "-";
+      if (statUpcomingMeta) statUpcomingMeta.textContent = "";
+    } else {
+      const monthsMs = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"];
+      const monthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthLabels = lang === "en" ? monthsEn : monthsMs;
+      const day = best.next.getDate();
+      const monthLabel = monthLabels[best.next.getMonth()];
+      const age = calcAge(best.birthDate, best.next);
+      const daysAway = Math.round((best.next.getTime() - todayMid.getTime()) / 86400000);
+      let meta = `${day} ${monthLabel}`;
+      if (age !== null) {
+        meta += ` | ${age} ${lang === "en" ? "yrs" : "thn"}`;
+      }
+      if (daysAway === 0) {
+        meta += ` | ${t.statsUpcomingToday}`;
+      } else if (daysAway > 0) {
+        meta += ` | ${daysAway} ${lang === "en" ? "days" : "hari"} ${lang === "en" ? "to go" : "lagi"}`;
+      }
+      if (statUpcomingName) statUpcomingName.textContent = best.name || "-";
+      if (statUpcomingMeta) statUpcomingMeta.textContent = meta;
+    }
+  }
 }
 
 function populateTimelineFilters() {
