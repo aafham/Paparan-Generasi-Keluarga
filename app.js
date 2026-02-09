@@ -1878,9 +1878,19 @@ function parseYear(value) {
 
 function parseDateValue(value) {
   if (!value) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
   const str = String(value).trim();
   if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
     const [y, m, d] = str.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const dmMatch = str.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (dmMatch) {
+    const d = Number(dmMatch[1]);
+    const m = Number(dmMatch[2]);
+    const y = Number(dmMatch[3]);
     return new Date(y, m - 1, d);
   }
   if (/^\d{4}$/.test(str)) {
@@ -1892,9 +1902,20 @@ function parseDateValue(value) {
 
 function formatDateDisplay(value) {
   if (!value) return "";
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const d = String(value.getDate()).padStart(2, "0");
+    const m = String(value.getMonth() + 1).padStart(2, "0");
+    const y = value.getFullYear();
+    return `${d}/${m}/${y}`;
+  }
   const str = String(value).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-    const [y, m, d] = str.split("-");
+  if (!str) return "";
+  if (/^\d{4}$/.test(str)) return str;
+  const parsed = parseDateValue(str);
+  if (parsed) {
+    const d = String(parsed.getDate()).padStart(2, "0");
+    const m = String(parsed.getMonth() + 1).padStart(2, "0");
+    const y = parsed.getFullYear();
     return `${d}/${m}/${y}`;
   }
   return str;
@@ -2936,8 +2957,7 @@ if (exportPdfBtn) {
     pdf.text(title, 40, 60);
     pdf.setFontSize(12);
     pdf.setFont("helvetica", "normal");
-    const locale = lang === "en" ? "en-US" : "ms-MY";
-    const dateLabel = formatText(i18n[lang].exportDate, { date: new Date().toLocaleDateString(locale) });
+    const dateLabel = formatText(i18n[lang].exportDate, { date: formatDateDisplay(new Date()) });
     pdf.text(dateLabel, 40, 90);
     pdf.addPage([canvas.width, canvas.height], "landscape");
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
