@@ -90,6 +90,8 @@ const statPeople = document.getElementById("stat-people");
 const statCouples = document.getElementById("stat-couples");
 const statMale = document.getElementById("stat-male");
 const statFemale = document.getElementById("stat-female");
+const statCucu = document.getElementById("stat-cucu");
+const statCicit = document.getElementById("stat-cicit");
 const statUpcomingName = document.getElementById("stat-upcoming-name");
 const statUpcomingMeta = document.getElementById("stat-upcoming-meta");
 const themePresetSelect = document.getElementById("theme-preset");
@@ -269,6 +271,10 @@ const i18n = {
     searchPlaceholder: "Cari nama ahli keluarga...",
     statsPeople: "Jumlah Ahli",
     statsCouples: "Jumlah Pasangan",
+    statsGender: "Jantina",
+    statsDescendants: "Keturunan",
+    statsCucu: "Cucu",
+    statsCicit: "Cicit",
     statsMale: "Lelaki",
     statsFemale: "Perempuan",
     statsUpcoming: "Ulang Tahun Terdekat",
@@ -407,6 +413,10 @@ const i18n = {
     searchPlaceholder: "Search family member...",
     statsPeople: "Total People",
     statsCouples: "Couples",
+    statsGender: "Gender",
+    statsDescendants: "Descendants",
+    statsCucu: "Grandkids",
+    statsCicit: "Great-grandkids",
     statsMale: "Male",
     statsFemale: "Female",
     statsUpcoming: "Upcoming Birthday",
@@ -589,15 +599,21 @@ function updateStats() {
   const couplesCount = treeData.unions.length;
   let maleCount = 0;
   let femaleCount = 0;
+  let cucuCount = 0;
+  let cicitCount = 0;
   treeData.people.forEach((person) => {
     const gender = detectGenderFromName(person.name);
     if (gender === "male") maleCount += 1;
     if (gender === "female") femaleCount += 1;
+    if (person.relation === "Cucu") cucuCount += 1;
+    if (person.relation === "Cicit") cicitCount += 1;
   });
   if (statPeople) statPeople.textContent = String(peopleCount);
   if (statCouples) statCouples.textContent = String(couplesCount);
   if (statMale) statMale.textContent = String(maleCount);
   if (statFemale) statFemale.textContent = String(femaleCount);
+  if (statCucu) statCucu.textContent = String(cucuCount);
+  if (statCicit) statCicit.textContent = String(cicitCount);
 
   if (statUpcomingName || statUpcomingMeta) {
     const today = new Date();

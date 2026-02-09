@@ -818,6 +818,31 @@ input[type="file"].input {
   color: var(--ink);
 }
 
+.stat-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.stat-split-item {
+  display: grid;
+  gap: 4px;
+}
+
+.stat-sub-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.stat-card--descendants .stat-sub-label {
+  letter-spacing: 0.08em;
+  white-space: normal;
+  line-height: 1.2;
+}
+
 .stat-sub {
   font-size: 12px;
   color: var(--muted);
