@@ -211,6 +211,8 @@ const i18n = {
     legendCouple: "Pasangan ditunjukkan secara selari",
     storyTitle: "Cerita Keluarga",
     storyEmpty: "Klik pada mana-mana ahli keluarga untuk melihat catatan panjang.",
+    spouseHusband: "Suami",
+    spouseWife: "Isteri",
     timelineTitle: "Timeline Keluarga",
     modalClose: "Tutup",
     modalEdit: "Edit",
@@ -353,6 +355,8 @@ const i18n = {
     legendCouple: "Partners shown side by side",
     storyTitle: "Family Story",
     storyEmpty: "Tap any family member to see detailed notes.",
+    spouseHusband: "Husband",
+    spouseWife: "Wife",
     timelineTitle: "Family Timeline",
     modalClose: "Close",
     modalEdit: "Edit",
@@ -1693,19 +1697,29 @@ function createPersonCard(person, depth) {
 
   const tags = document.createElement("div");
   tags.className = "person-tags";
-  const relationText = person.relation || "";
-  const noteText = person.note || "";
-  let tagText = "";
-  if (noteText && relationText) {
-    tagText = `${noteText}, ${relationText}`;
-  } else {
-    tagText = relationText || noteText;
-  }
-  if (tagText) {
+  const relationText = localizeTagText(person.relation || "", lang);
+  const noteText = localizeTagText(person.note || "", lang);
+  const tagsQueue = [];
+  if (noteText) tagsQueue.push(noteText);
+  if (relationText && relationText !== noteText) tagsQueue.push(relationText);
+  tagsQueue.forEach((text) => {
     const tag = document.createElement("span");
     tag.className = "tag";
-    tag.textContent = tagText;
+    tag.textContent = text;
     tags.appendChild(tag);
+  });
+  if (isPartnered(person.id)) {
+    const gender = detectGenderFromName(person.name);
+    const spouseLabel = gender === "male" ? i18n[lang].spouseHusband : gender === "female" ? i18n[lang].spouseWife : "";
+    const existingText = tagsQueue.join(" ").toLowerCase();
+    const spouseLower = spouseLabel.toLowerCase();
+    const hasSpouseAlready = existingText.includes(spouseLower) || existingText.includes("suami") || existingText.includes("isteri") || existingText.includes("husband") || existingText.includes("wife");
+    if (spouseLabel && !hasSpouseAlready) {
+      const spouseTag = document.createElement("span");
+      spouseTag.className = "tag";
+      spouseTag.textContent = spouseLabel;
+      tags.appendChild(spouseTag);
+    }
   }
   // No Bin/Binti tag on card
 
@@ -2036,6 +2050,42 @@ function detectGenderFromName(fullName) {
   if (name.includes(" binti ") || name.includes(" bt ")) return "female";
   if (name.includes(" bin ")) return "male";
   return "";
+}
+
+function isPartnered(personId) {
+  if (!treeData?.unions) return false;
+  return treeData.unions.some((u) => u.partner1 === personId || u.partner2 === personId);
+}
+
+function localizeTagText(text, langCode) {
+  const raw = String(text || "").trim();
+  if (!raw) return "";
+  if (langCode !== "en") return raw;
+  const map = {
+    "anak sulung": "First child",
+    "anak pertama": "First child",
+    "anak kedua": "Second child",
+    "anak ketiga": "Third child",
+    "anak keempat": "Fourth child",
+    "anak kelima": "Fifth child",
+    "anak keenam": "Sixth child",
+    "anak ketujuh": "Seventh child",
+    "anak kelapan": "Eighth child",
+    "anak kesembilan": "Ninth child",
+    "anak kesepuluh": "Tenth child",
+    "cucu": "Grandchild",
+    "cicit": "Great-grandchild",
+    "menantu": "In-law",
+    "tok": "Grandmother",
+    "wan": "Grandfather",
+    "isteri": "Wife",
+    "suami": "Husband"
+  };
+  const lower = raw.toLowerCase();
+  if (map[lower]) return map[lower];
+  const match = lower.match(/^anak ke-(\d+)$/);
+  if (match) return `Child #${match[1]}`;
+  return raw;
 }
 
 function calcAge(birthDate, refDate = new Date()) {

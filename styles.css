@@ -1645,9 +1645,12 @@ body.compact .person-name {
 .tag {
   font-size: calc(12px * var(--card-scale));
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--branch-color, var(--primary)) 15%, transparent);
   color: var(--branch-color, var(--primary));
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
 body.hide-birthdate .person-birth {

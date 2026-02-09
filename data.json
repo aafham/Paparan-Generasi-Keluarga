@@ -15,7 +15,7 @@
                    {
                        "id":  "p2",
                        "name":  "MOHAMAD ISA BIN MOHAMAD ARIFF",
-                       "birth":  "1924-03-05",
+                      "birth":  "1924-05-03",
                        "death":  "1991-01-24",
                       "relation":  "Wan",
                       "note":  "Suami",
@@ -26,8 +26,8 @@
                       "name":  "Noor Azmah Binti Mohamad Isa",
                        "birth":  "1956-02-13",
                        "death":  "",
-                       "relation":  "Anak pertama",
-                       "note":  "Anak ketiga",
+                      "relation":  "Anak sulung",
+                      "note":  "",
                        "photo":  ""
                    },
                    {
@@ -36,7 +36,7 @@
                        "birth":  "1952-10-26",
                        "death":  "2021-10-25",
                        "relation":  "Menantu",
-                       "note":  "Anak sulung",
+                      "note":  "",
                        "photo":  ""
                    },
                    {
@@ -54,7 +54,7 @@
                        "birth":  "1959-07-22",
                        "death":  "",
                        "relation":  "Menantu",
-                       "note":  "Anak ketiga",
+                      "note":  "",
                        "photo":  ""
                    },
                    {
