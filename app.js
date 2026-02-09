@@ -1868,18 +1868,18 @@ function renderTimeline() {
       if (!parentKeyByChild.has(childId)) parentKeyByChild.set(childId, parents);
     });
   });
-  const entries = treeData.people.map((person) => {
-    const birth = parseYear(person.birth);
-    const birthDate = parseDateValue(person.birth);
-    const birthMonth = birthDate ? birthDate.getMonth() + 1 : null;
-    const birthDay = birthDate ? birthDate.getDate() : null;
-    const birthTime = birthDate ? birthDate.getTime() : null;
-    const order = birth || 9999;
-    const gender = detectGenderFromName(person.name) || "unknown";
-    const nameSort = formatDisplayName(person.name).toLowerCase();
-    const parentKey = parentKeyByChild.get(person.id) || "zzzz";
-    return { person, birth, birthMonth, birthDay, birthTime, order, gender, nameSort, parentKey };
-  });
+    const entries = treeData.people.map((person) => {
+      const birth = parseYear(person.birth);
+      const birthDate = parseDateValue(person.birth);
+      const birthMonth = birthDate ? birthDate.getMonth() + 1 : null;
+      const birthDay = birthDate ? birthDate.getDate() : null;
+      const birthTime = birthDate ? birthDate.getTime() : null;
+      const order = birthTime ?? Number.POSITIVE_INFINITY;
+      const gender = detectGenderFromName(person.name) || "unknown";
+      const nameSort = formatDisplayName(person.name).toLowerCase();
+      const parentKey = parentKeyByChild.get(person.id) || "zzzz";
+      return { person, birth, birthMonth, birthDay, birthTime, order, gender, nameSort, parentKey };
+    });
 
   const filtered = entries.filter(({ person, birth, birthMonth, gender }) => {
     if (timelineFilters.generation !== "all") {
@@ -1895,11 +1895,23 @@ function renderTimeline() {
 
   const genderOrder = { male: 1, female: 2, unknown: 3 };
   const sortMode = timelineFilters.sort || "year";
-  filtered.sort((a, b) => {
-    if (sortMode === "age") {
-      const at = a.birthTime ?? Number.POSITIVE_INFINITY;
-      const bt = b.birthTime ?? Number.POSITIVE_INFINITY;
-      if (at !== bt) return at - bt;
+    filtered.sort((a, b) => {
+      if (sortMode === "year") {
+        const ay = a.birth ?? 9999;
+        const by = b.birth ?? 9999;
+        if (ay !== by) return ay - by;
+        const am = a.birthMonth ?? 99;
+        const bm = b.birthMonth ?? 99;
+        if (am !== bm) return am - bm;
+        const ad = a.birthDay ?? 99;
+        const bd = b.birthDay ?? 99;
+        if (ad !== bd) return ad - bd;
+        return a.nameSort.localeCompare(b.nameSort);
+      }
+      if (sortMode === "age") {
+        const at = a.birthTime ?? Number.POSITIVE_INFINITY;
+        const bt = b.birthTime ?? Number.POSITIVE_INFINITY;
+        if (at !== bt) return at - bt;
       return a.nameSort.localeCompare(b.nameSort);
     }
     if (sortMode === "alpha") {
