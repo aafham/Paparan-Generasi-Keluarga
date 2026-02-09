@@ -852,8 +852,12 @@ input[type="file"].input {
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
+}
+
+.story-open .content-grid {
+  grid-template-columns: minmax(0, 1fr) 300px;
 }
 
 .story-panel,
@@ -1458,6 +1462,13 @@ body.compact .person-name {
 .person-name {
   font-weight: 600;
   font-size: calc(16px * var(--card-scale));
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  min-height: calc(2.4em * var(--card-scale));
 }
 
 .gen-badge {
@@ -1520,10 +1531,11 @@ body.hide-tags .person-tags {
 
 .generation-divider {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, var(--line) 20%, var(--line) 80%, rgba(0, 0, 0, 0) 100%);
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(30, 30, 30, 0.22) 15%, rgba(30, 30, 30, 0.28) 50%, rgba(30, 30, 30, 0.22) 85%, rgba(0, 0, 0, 0) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
@@ -1695,6 +1707,35 @@ body.hide-tags .person-tags {
   gap: 12px;
 }
 
+.settings-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+  align-items: end;
+}
+
+.settings-grid--toggles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  margin-top: 12px;
+}
+
+.settings-grid--toggles .toggle,
+.settings-grid--tools .btn {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.settings-grid--tools {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.settings-grid--tools .settings-close-btn {
+  grid-column: 1 / -1;
+}
+
 .settings-range,
 .settings-select {
   display: grid;
@@ -1799,6 +1840,11 @@ body.hide-tags .person-tags {
     padding: 24px;
   }
 
+  .generation-divider {
+    left: 24px;
+    right: 24px;
+  }
+
   .content-grid {
     grid-template-columns: 1fr;
   }
@@ -1810,6 +1856,15 @@ body.hide-tags .person-tags {
 
   .generation-label {
     transform: translateX(0);
+  }
+
+  .settings-row {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-grid--toggles,
+  .settings-grid--tools {
+    grid-template-columns: 1fr;
   }
 
   .stats {
@@ -2059,6 +2114,11 @@ body.hide-tags .person-tags {
     padding: 14px;
     min-height: 62svh;
     border-radius: 18px;
+  }
+
+  .generation-divider {
+    left: 14px;
+    right: 14px;
   }
 
   .modal-row {

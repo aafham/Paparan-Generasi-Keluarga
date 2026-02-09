@@ -247,6 +247,8 @@
               <span data-i18n="settingsSizeLarge">Besar</span>
             </div>
           </div>
+        </div>
+        <div class="settings-row">
           <label class="settings-select">
             <span class="label" data-i18n="themePreset">Tema</span>
             <select id="theme-preset" class="select">
@@ -261,6 +263,8 @@
             <span class="toggle-track"></span>
             <span class="toggle-label" data-i18n="themeToggle">Light / Dark</span>
           </label>
+        </div>
+        <div class="settings-grid settings-grid--toggles">
           <label class="toggle">
             <input id="lang-toggle" type="checkbox" />
             <span class="toggle-track"></span>
@@ -307,14 +311,14 @@
 
       <div class="settings-section">
         <h3 data-i18n="settingsTools">Tools</h3>
-        <div class="settings-grid">
+        <div class="settings-grid settings-grid--tools">
           <button id="setting-reset-settings" class="btn ghost small" type="button" data-i18n="settingsReset">
             Reset settings
           </button>
           <button id="clear-cache" class="btn danger small" type="button" data-i18n="clearCache">
             Clear Cache
           </button>
-          <button class="btn ghost small" type="button" data-settings-close="true" data-i18n="settingsClose">
+          <button class="btn ghost small settings-close-btn" type="button" data-settings-close="true" data-i18n="settingsClose">
             Close
           </button>
         </div>

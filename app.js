@@ -808,6 +808,7 @@ function initFromData(data) {
   mintGreenPeople = computeBranchPeople(MINT_GREEN_ROOT_ID);
   lavenderPeople = computeBranchPeople(LAVENDER_ROOT_ID);
   if (storyPanel) storyPanel.hidden = true;
+  if (app) app.classList.remove("story-open");
 
   if (prefs.theme) {
     app.dataset.theme = prefs.theme;
@@ -1662,6 +1663,8 @@ function drawLines(root, visibleNodes) {
   }
   const visibleSet = new Set(visibleNodes.map((node) => node.id));
   treeLines.innerHTML = "";
+  if (!treeCanvas) return;
+  const canvasBox = treeCanvas.getBoundingClientRect();
 
   function drawNodeEdges(node) {
     if (node.type === "union") {
@@ -1687,6 +1690,8 @@ function drawLines(root, visibleNodes) {
         const minX = Math.min(...childPoints.map((p) => p.x));
         const maxX = Math.max(...childPoints.map((p) => p.x));
         const stroke = `${branchPalette[node.branchId] || "#7a8a80"}CC`;
+        const barPad = 14;
+        const barInset = 6;
 
         const trunk = document.createElementNS("http://www.w3.org/2000/svg", "path");
         trunk.setAttribute("d", `M ${parentCenterX} ${parentBottomY} V ${midY}`);
@@ -1698,11 +1703,18 @@ function drawLines(root, visibleNodes) {
 
         const bar = document.createElementNS("http://www.w3.org/2000/svg", "line");
         if (minX === maxX) {
-          bar.setAttribute("x1", minX - 24);
-          bar.setAttribute("x2", maxX + 24);
+          bar.setAttribute("x1", minX - barPad);
+          bar.setAttribute("x2", maxX + barPad);
         } else {
-          bar.setAttribute("x1", minX);
-          bar.setAttribute("x2", maxX);
+          const x1 = minX + barInset;
+          const x2 = maxX - barInset;
+          if (x2 - x1 < barPad * 2) {
+            bar.setAttribute("x1", minX - barPad);
+            bar.setAttribute("x2", maxX + barPad);
+          } else {
+            bar.setAttribute("x1", x1);
+            bar.setAttribute("x2", x2);
+          }
         }
         bar.setAttribute("y1", midY);
         bar.setAttribute("y2", midY);
@@ -1746,12 +1758,12 @@ function drawLines(root, visibleNodes) {
         const x1 = leftBox.right - canvasBox.left;
         const x2 = rightBox.left - canvasBox.left;
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", x1 + 6);
+        line.setAttribute("x1", x1 + 8);
         line.setAttribute("y1", y);
-        line.setAttribute("x2", x2 - 6);
+        line.setAttribute("x2", x2 - 8);
         line.setAttribute("y2", y);
         line.setAttribute("stroke", `${branchPalette[node.branchId] || "#7a8a80"}CC`);
-        line.setAttribute("stroke-width", "3");
+        line.setAttribute("stroke-width", "2.5");
         line.setAttribute("stroke-linecap", "round");
         treeLines.appendChild(line);
       }
@@ -2002,10 +2014,16 @@ function formatDates(birth, death) {
   return `${t.diedPrefix}${formatDateDisplay(death)}`;
 }
 
+function setStoryPanelOpen(isOpen) {
+  if (!app) return;
+  app.classList.toggle("story-open", isOpen);
+}
+
 function openModal(person) {
   const t = i18n[lang] || i18n.ms;
   if (!storyContent) return;
   if (storyPanel) storyPanel.hidden = false;
+  setStoryPanelOpen(true);
   const birthDate = parseDateValue(person.birth);
   const age = !person.death ? calcAge(birthDate) : null;
   const ageText = age !== null ? ` (${t.ageLabel}: ${age})` : "";
@@ -2075,10 +2093,12 @@ function openModal(person) {
     panelCloseBtn.onclick = () => {
       if (panelEditForm) panelEditForm.hidden = true;
       if (storyPanel) storyPanel.hidden = true;
+      setStoryPanelOpen(false);
     };
     panelCloseBtn.addEventListener("touchstart", () => {
       if (panelEditForm) panelEditForm.hidden = true;
       if (storyPanel) storyPanel.hidden = true;
+      setStoryPanelOpen(false);
     }, { passive: true });
   }
 
