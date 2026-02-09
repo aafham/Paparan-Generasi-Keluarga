@@ -1541,6 +1541,8 @@ body.compact .person-name {
 .person-card.deceased {
   opacity: 0.7;
   filter: grayscale(0.15);
+  --card-fill: #e5e7e8;
+  --card-ink: #5a605d;
 }
 
 .person-card.path-on {

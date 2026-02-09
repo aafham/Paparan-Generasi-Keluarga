@@ -9,16 +9,16 @@
                        "birth":  "1936-07-19",
                        "death":  "",
                        "relation":  "Tok",
-                      "note":  "Anak sulung",
+                       "note":  "Anak sulung",
                        "photo":  ""
                    },
                    {
                        "id":  "p2",
                        "name":  "MOHAMAD ISA BIN MOHAMAD ARIFF",
-                       "birth":  "1926-03-05",
+                       "birth":  "1924-03-05",
                        "death":  "1991-01-24",
                        "relation":  "Wan",
-                      "note":  "Anak kedua",
+                       "note":  "Anak kedua",
                        "photo":  ""
                    },
                    {
@@ -27,7 +27,7 @@
                        "birth":  "1956-02-13",
                        "death":  "",
                        "relation":  "Anak pertama",
-                      "note":  "Anak ketiga",
+                       "note":  "Anak ketiga",
                        "photo":  ""
                    },
                    {
@@ -36,7 +36,7 @@
                        "birth":  "1952-10-26",
                        "death":  "2021-10-25",
                        "relation":  "Menantu",
-                       "note":  "",
+                       "note":  "Anak sulung",
                        "photo":  ""
                    },
                    {
@@ -45,7 +45,7 @@
                        "birth":  "1960-04-12",
                        "death":  "",
                        "relation":  "Anak kedua",
-                       "note":  "",
+                       "note":  "Anak kedua",
                        "photo":  ""
                    },
                    {
@@ -54,13 +54,13 @@
                        "birth":  "1959-07-22",
                        "death":  "",
                        "relation":  "Menantu",
-                       "note":  "",
+                       "note":  "Anak ketiga",
                        "photo":  ""
                    },
                    {
                        "id":  "p7",
                        "name":  "Noor Azri Bin Mohd Isa",
-                      "birth":  "1962-09-07",
+                       "birth":  "1962-09-07",
                        "death":  "",
                        "relation":  "Anak ketiga",
                        "note":  "",
@@ -239,9 +239,9 @@
                    },
                    {
                        "id":  "p45",
-                       "name":  "Halmi Bin Abdullah",
-                      "birth":  "2018-09-02",
-                       "death":  "",
+                      "name":  "Md Halmi Bin Mat Isa",
+                      "birth":  "",
+                      "death":  "2025-11-19",
                        "relation":  "Menantu",
                        "note":  "",
                        "photo":  ""
@@ -330,28 +330,28 @@
                    {
                        "id":  "p38",
                        "name":  "Aisyah Nuha Binti Mohd Hanif",
-                      "birth":  "2018-09-02",
+                       "birth":  "2018-09-02",
                        "death":  "",
                        "relation":  "Cicit",
-                       "note":  "",
+                       "note":  "Anak sulung",
                        "photo":  ""
                    },
                    {
                        "id":  "p39",
                        "name":  "Auni Nasuha Binti Mohd Hanif",
-                      "birth":  "2023-05-29",
+                       "birth":  "2023-05-29",
                        "death":  "",
                        "relation":  "Cicit",
-                       "note":  "",
+                       "note":  "Anak kedua",
                        "photo":  ""
                    },
                    {
                        "id":  "p40",
                        "name":  "Ahmad Thaqif Bin Mohd Hanif",
-                      "birth":  "2025-04-02",
+                       "birth":  "2025-04-02",
                        "death":  "",
                        "relation":  "Cicit",
-                       "note":  "",
+                       "note":  "Anak ketiga",
                        "photo":  ""
                    },
                    {
