@@ -1871,6 +1871,12 @@ function renderTimeline() {
       <div class="timeline-relation">${person.relation || ""}</div>
     `;
     item.addEventListener("click", () => {
+      if (isMobileView()) {
+        openTimelineInlineDetail(person, item);
+        selectedPersonId = person.id;
+        updateUrlState();
+        return;
+      }
       openModal(person);
       updateStoryPanel(person);
       selectedPersonId = person.id;
@@ -2019,6 +2025,14 @@ function setStoryPanelOpen(isOpen) {
   app.classList.toggle("story-open", isOpen);
 }
 
+function closeStoryPanel() {
+  selectedPersonId = "";
+  clearSelectionHighlight();
+  if (panelEditForm) panelEditForm.hidden = true;
+  if (storyPanel) storyPanel.hidden = true;
+  setStoryPanelOpen(false);
+}
+
 function openModal(person) {
   const t = i18n[lang] || i18n.ms;
   if (!storyContent) return;
@@ -2090,16 +2104,8 @@ function openModal(person) {
   }
 
   if (panelCloseBtn) {
-    panelCloseBtn.onclick = () => {
-      if (panelEditForm) panelEditForm.hidden = true;
-      if (storyPanel) storyPanel.hidden = true;
-      setStoryPanelOpen(false);
-    };
-    panelCloseBtn.addEventListener("touchstart", () => {
-      if (panelEditForm) panelEditForm.hidden = true;
-      if (storyPanel) storyPanel.hidden = true;
-      setStoryPanelOpen(false);
-    }, { passive: true });
+    panelCloseBtn.onclick = closeStoryPanel;
+    panelCloseBtn.addEventListener("touchstart", closeStoryPanel, { passive: true });
   }
 
   if (panelCancelBtn) {
@@ -2137,11 +2143,53 @@ function updateStoryPanel(person) {
   if (storyBody) storyBody.textContent = person.story || person.note || i18n[lang].storyEmpty;
 }
 
+function openTimelineInlineDetail(person, itemEl) {
+  if (!timelineList || !itemEl) return;
+  const existing = timelineList.querySelector(".timeline-detail");
+  if (existing) existing.remove();
+  const t = i18n[lang] || i18n.ms;
+  const birthDate = parseDateValue(person.birth);
+  const age = !person.death ? calcAge(birthDate) : null;
+  const ageText = age !== null ? `${t.ageLabel}: ${age}` : "";
+  const detail = document.createElement("div");
+  detail.className = "timeline-detail";
+  detail.innerHTML = `
+    <div class="timeline-detail-head">
+      <div class="timeline-detail-title">${formatDisplayName(person.name)}</div>
+      <button type="button" class="timeline-detail-close" aria-label="${t.modalClose}">×</button>
+    </div>
+    <div class="timeline-detail-grid">
+      <div class="timeline-detail-row"><strong>${t.modalRelation}</strong><span>${person.relation || "-"}</span></div>
+      <div class="timeline-detail-row">
+        <strong>${t.modalBirth}</strong>
+        <span>
+          <div>${formatDateDisplay(person.birth) || "-"}</div>
+          ${ageText ? `<div class="timeline-detail-age">${ageText}</div>` : ""}
+        </span>
+      </div>
+      <div class="timeline-detail-row"><strong>${t.modalDeath}</strong><span>${formatDateDisplay(person.death) || "-"}</span></div>
+      <div class="timeline-detail-row"><strong>${t.modalNote}</strong><span>${person.note || "-"}</span></div>
+      <div class="timeline-detail-row"><strong>${t.modalStory}</strong><span>${person.story || "-"}</span></div>
+    </div>
+  `;
+  const closeBtn = detail.querySelector(".timeline-detail-close");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      detail.remove();
+    });
+  }
+  itemEl.insertAdjacentElement("afterend", detail);
+  detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
 on(modal, "click", (event) => {
   if (!event.target.dataset.close) return;
   modal.classList.remove("active");
   modal.setAttribute("aria-hidden", "true");
 });
+
+on(panelCloseBtn, "click", closeStoryPanel);
+on(panelCloseBtn, "touchstart", closeStoryPanel, { passive: true });
 
 function applyZoom() {
   if (!treeCanvas || !treeLines || !treeZoom) return;
