@@ -853,6 +853,7 @@ input[type="file"].input {
 .stat-card--birthday .stat-value {
   font-size: 18px;
   line-height: 1.25;
+  white-space: pre-line;
 }
 
 .legend-dot {

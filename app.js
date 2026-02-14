@@ -622,7 +622,8 @@ function updateStats() {
   if (statUpcomingName || statUpcomingMeta) {
     const today = new Date();
     const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    let best = null;
+    let bestDiff = Number.POSITIVE_INFINITY;
+    const bestMatches = [];
     treeData.people.forEach((person) => {
       const birthDate = parseDateValue(person.birth);
       if (!birthDate) return;
@@ -630,23 +631,32 @@ function updateStats() {
       if (next < todayMid) next.setFullYear(next.getFullYear() + 1);
       const diff = next.getTime() - todayMid.getTime();
       const name = formatDisplayName(person.name);
-      if (!best || diff < best.diff || (diff === best.diff && name.localeCompare(best.name) < 0)) {
-        best = { person, birthDate, next, diff, name };
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestMatches.length = 0;
+        bestMatches.push({ person, birthDate, next, diff, name });
+      } else if (diff === bestDiff) {
+        bestMatches.push({ person, birthDate, next, diff, name });
       }
     });
 
-    if (!best) {
+    if (!bestMatches.length) {
       if (statUpcomingName) statUpcomingName.textContent = t.statsUpcomingEmpty || "-";
       if (statUpcomingMeta) statUpcomingMeta.textContent = "";
     } else {
+      bestMatches.sort((a, b) => a.name.localeCompare(b.name, lang === "en" ? "en" : "ms"));
+      const first = bestMatches[0];
       const monthsMs = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis"];
       const monthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const monthLabels = lang === "en" ? monthsEn : monthsMs;
-      const day = best.next.getDate();
-      const monthLabel = monthLabels[best.next.getMonth()];
-      const age = calcAge(best.birthDate, best.next);
-      const daysAway = Math.round((best.next.getTime() - todayMid.getTime()) / 86400000);
+      const day = first.next.getDate();
+      const monthLabel = monthLabels[first.next.getMonth()];
+      const age = bestMatches.length === 1 ? calcAge(first.birthDate, first.next) : null;
+      const daysAway = Math.round((first.next.getTime() - todayMid.getTime()) / 86400000);
       let meta = `${day} ${monthLabel}`;
+      if (bestMatches.length > 1) {
+        meta += ` | ${bestMatches.length} ${lang === "en" ? "people" : "orang"}`;
+      }
       if (age !== null) {
         meta += ` | ${age} ${lang === "en" ? "yrs" : "thn"}`;
       }
@@ -655,7 +665,7 @@ function updateStats() {
       } else if (daysAway > 0) {
         meta += ` | ${daysAway} ${lang === "en" ? "days" : "hari"} ${lang === "en" ? "to go" : "lagi"}`;
       }
-      if (statUpcomingName) statUpcomingName.textContent = best.name || "-";
+      if (statUpcomingName) statUpcomingName.textContent = bestMatches.map((item) => item.name).join("\n") || "-";
       if (statUpcomingMeta) statUpcomingMeta.textContent = meta;
     }
   }
