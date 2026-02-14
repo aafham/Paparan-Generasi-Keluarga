@@ -631,12 +631,14 @@ function updateStats() {
       if (next < todayMid) next.setFullYear(next.getFullYear() + 1);
       const diff = next.getTime() - todayMid.getTime();
       const name = formatDisplayName(person.name);
+      const split = splitNameByBin(name);
+      const upcomingName = split.first || name;
       if (diff < bestDiff) {
         bestDiff = diff;
         bestMatches.length = 0;
-        bestMatches.push({ person, birthDate, next, diff, name });
+        bestMatches.push({ person, birthDate, next, diff, name: upcomingName });
       } else if (diff === bestDiff) {
-        bestMatches.push({ person, birthDate, next, diff, name });
+        bestMatches.push({ person, birthDate, next, diff, name: upcomingName });
       }
     });
 
